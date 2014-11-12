@@ -15,8 +15,8 @@ require 'json'
 
 #WRITE TO CONSOLE
 puts "working"	#script is running
-fname = "AgencySpeed_avg #{Time.now.strftime('%Y%m%d-%H%M%S')}.txt"		#Creates a new .txt file in directory of .rb
-gname = "AgencySpeed_bus #{Time.now.strftime('%Y%m%d-%H%M%S')}.txt"		#Creates a new .txt file in directory of .rb
+fname = "AgencySpeed_bus #{Time.now.strftime('%Y%m%d-%H%M%S')}.txt"		#Creates a new .txt file in directory of .rb
+gname = "AgencySpeed_avg #{Time.now.strftime('%Y%m%d-%H%M%S')}.txt"		#Creates a new .txt file in directory of .rb
 hname = "AgencySpeed_log #{Time.now.strftime('%Y%m%d-%H%M%S')}.txt"		#Creates a new .txt file in directory of .rb
 puts 'How long to sleep (in seconds) between each loop? (typically ~5)'
 d = gets.to_i 															#delay in seconds between each repeat iteration
