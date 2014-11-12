@@ -1,3 +1,4 @@
+# A script
 require 'unirest'
 require 'json'
 
