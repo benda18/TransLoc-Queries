@@ -4,6 +4,8 @@
 #	xx3. for multiple agencies
 # 	xx4. and is refreshed every (d) seconds
 #	xx5. tracks moving avg fleet speed
+# 	6. writes somefile.txt  with a header <time>,<agency>,<count>,<avg speed>
+#	7. populates somefile.txt with  data
 
 
 
@@ -15,7 +17,7 @@ require 'json'
 
 #WRITE TO CONSOLE
 puts "working"	#script is running
-#fname = "CAT Parse #{Time.now.strftime('%Y%m%d-%H%M%S')}.txt"		#Creates a new .txt file in directory of .rb
+fname = "AgencySpeedData #{Time.now.strftime('%Y%m%d-%H%M%S')}.txt"		#Creates a new .txt file in directory of .rb
 #somefile = File.open(fname, "w")									#Opens a writable copy of fname.txt
 puts 'How long to sleep (in seconds) between each loop? (typically ~5)'
 d = gets.to_i 															#delay in seconds between each repeat iteration
@@ -60,10 +62,12 @@ sleep(2)
 #puts "Iterations: #{varNum}"		#count of loops to perform
 #puts "#{varI} of #{varNum}"			#x of y count
 
+#SOMEFILE HEADER
+#somefile.puts "time,agency,count,speed"
 
-
-
-
+File.open(fname, "a+") do |f1|
+	f1.puts "time,agency,count,speed"
+end
 
 #BEGIN FIRST ITERATION
 begin
@@ -86,7 +90,7 @@ varAvg = 0															#A value derived from varSum divided by varCount
 # the mashape call to TransLoc api
 response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C20&callback=call",
   headers:{
-    "X-Mashape-Key" => "<key>"
+    "X-Mashape-Key" => "5SA6zZbMxpmshjhL0Y8ERCZ2WqnIp1zgKOmjsnXy5WDKmZaGC4"
   }
 #parse the call  
 payload2 = response.body				#sets the call response body as a variable
@@ -99,7 +103,7 @@ data_hash["data"]["20"].each do |ary|	#for each object in the array,
 varSpd = ary["speed"]					#set var for "speed" value in array,
 varCount = varCount + 1					#increase repeat iterations by 1,
 varSum = varSum + ary["speed"]			#separately, set var for sum of all "speed" values in array,
-varCcumSpd = varCcumSpd + varSpd	#cumulative speed tracking
+varCcumSpd = varCcumSpd + varSpd		#cumulative speed tracking
 varCcumCt = varCcumCt + 1				#cumulative count tracking
 end										#...end array loop
 
@@ -115,7 +119,7 @@ varTcumCt = varTcumCt + 1				#cumulative count tracking
 end										#...end array loop
 
 
-#write the data somewhere
+#write the data in the console
 #somefile.puts "Average MPH"				#write "Average MPH" header to the .txt file
 varAvg = varSum / varCount				#calculate CAT instant average bus speed
 varAvgt = varSumt / varCountt			#calculate TTA instant average bus speed
@@ -131,6 +135,15 @@ puts "Variable Inputs:" 					#variable inputs
 puts "Loop delay: #{d} seconds" 			#loop delay in seconds
 puts "Iterations: #{varI} of #{varNum+1}"		#x of y count
 
+#WRITE TO SOMEFILE
+#somefile.puts "#{varTime},CAT,#{varCount},#{varAvg}"
+File.open(fname, "a+") do |f2|
+	f2.puts "#{varTime},CAT,#{varCount},#{varAvg}"
+end
+#somefile.puts "#{varTime},TTA,#{varCountt},#{varAvgt}"
+File.open(fname, "a+") do |f3|
+	f3.puts "#{varTime},TTA,#{varCountt},#{varAvgt}"
+end
 
 #somefile.puts varAvg.round(1)			#write the average bus speed to the .txt file
 # log to console
@@ -142,10 +155,6 @@ sleep(d)
 
 end until varI > varNum
 
-
-
-
-								#writes nth repeat iteration to console 
 
 #CLEANUP
 #somefile.close							#closes .txt file
