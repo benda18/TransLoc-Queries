@@ -1,3 +1,4 @@
+# A script that queries TransLoc api 1.2 VEHICLES and logs to a file
 require 'unirest'
 require 'json'
 #fname = "sample.txt"
