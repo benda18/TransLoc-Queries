@@ -17,7 +17,7 @@ somefile = File.open(fname, "w")
 
 response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=20&callback=call",
   headers:{
-    "X-Mashape-Key" => "5SA6zZbMxpmshjhL0Y8ERCZ2WqnIp1zgKOmjsnXy5WDKmZaGC4"
+    "X-Mashape-Key" => "<key>"
   }
 
 payload2 = response.body
