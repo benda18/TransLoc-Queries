@@ -34,6 +34,7 @@ TO RUN THE SCRIPT:
   speed for the duration of the script.  
 
 FURTHER NOTES:
+
 1. The script is written to call the TransLoc "Vehicles" api and query certain data on vehicle speed, location, 
   bearing, route and segment.  You can tweak this to call more or less data by referencing the api at Mashape. 
 2. The script is writen to query only 2 agencies - Triangle Transit and Capital Area Transit in North Carolina.  
