@@ -8,8 +8,9 @@
 #	xx7. populates files with data
 #	xx8. longitude and latitude
 # 	xx9. log file
-#	xxx10. log as many attribute fields as possible
-# 	xxx11. fix kmh/mph speed issue
+#	xx10. log as many attribute fields as possible
+# 	xx11. fix kmh/mph speed issue
+#	xx12. add instant speed bar graph to console
 
 #REQUIRE STATEMENTS
 require 'unirest'
@@ -25,7 +26,6 @@ d = gets.to_i 															#delay in seconds between each repeat iteration
 puts "\e[H\e[2J"
 puts "#{d} seconds delay"
 sleep(2)
-
 
 #INITIAL VARIABLES
 b = 0
@@ -57,6 +57,8 @@ end
 File.open(gname, "a+") do |g7|
 	g7.puts "time,agency,count_buses,mph"
 end
+
+#WRITE TO LOG FILE
 File.open(hname, "a+") do |h2|
 	h2.puts "###CONSOLE LOG FILE###"
 	h2.puts ""
@@ -138,12 +140,16 @@ varTcum = varTcumSpd / varTcumCt			#calculate TTA cumulative avgerage bus speed
 varCcum = varCcumSpd / varCcumCt			#calculate CAT cumulative average bus speed
 puts "\e[H\e[2J"							#clears console
 puts "Current Time: #{varTime}"				#current time
-puts "#{e} #{varAvg.round(1)} (#{varCcum.round(1)} cumulative)"
-puts "#{f} #{varAvgt.round(1)} (#{varTcum.round(1)} cumulative)"
-puts ""										#space
+puts "#{e} #{varAvg.round(1)} (#{varCcum.round(0)} cum.)"	#CAT speed data
+puts "#{f} #{varAvgt.round(1)} (#{varTcum.round(0)} cum.)"	#TTA speed data
+puts ""										
 puts "Variable Inputs:" 					#variable inputs
 puts "Loop delay: #{d} seconds" 			#loop delay in seconds
 puts "Iterations: #{varI} of #{varNum+1}"	#x of y count
+puts""										
+puts "----5----10---15---20---25---30MPH"	#instant bar graph
+puts "C" * varAvg.round(0)					#instant bar graph - cat
+puts "T" * varAvgt.round(0)					#instant bar graph - tta
 
 #WRITE TO SOMEFILE
 File.open(gname, "a+") do |g2|
