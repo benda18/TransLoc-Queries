@@ -13,7 +13,7 @@ that means that I've deleted the others.
 
 TO RUN THE SCRIPT:
 
-1. you will need a <key> from mashape.com. Mashape hosts the TransLoc api; create an account there
+1. you will need a KEY from mashape.com. Mashape hosts the TransLoc api; create an account there
   and insert your unique key in the .rb script where you see <key>.  
 2. you'll need to install a copy of Ruby on your machine and ensure that you install the following gems:
   * unirest - installing this gave me problems.  google is your friend. 
