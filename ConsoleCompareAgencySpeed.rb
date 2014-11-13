@@ -8,6 +8,7 @@
 #	xx7. populates files with data
 #	xx8. longitude and latitude
 # 	xx9. log file
+#	xxx10. log as many attribute fields as possible
 
 #REQUIRE STATEMENTS
 require 'unirest'
@@ -50,7 +51,7 @@ sleep(2)
 
 #SOMEFILE HEADER
 File.open(fname, "a+") do |f1|
-	f1.puts "time,agency,bus_id,speed,lon,lat"
+	f1.puts "time,agency,bus_id,speed,lon,lat,route,heading,segment_id"
 end
 File.open(gname, "a+") do |g7|
 	g7.puts "time,agency,count_buses,speed"
@@ -97,6 +98,9 @@ varSpd = ary["speed"]						#set var for "speed" value in array,
 varVID = ary["vehicle_id"]					#set var for "vehicle_id" value in array,
 varLng = ary["location"]["lng"]				#set var for longitude value in array,
 varLat = ary["location"]["lat"]				#set var for latitude value in array,
+varRt = ary["route_id"]						#set var for route_id value in array
+varHd = ary["heading"]						#set var for heading value in array
+varSeg = ary["segment_id"]					#set var for segment_id value in array
 varCount = varCount + 1						#increase repeat iterations by 1,
 varSum = varSum + ary["speed"]				#separately, set var for sum of all "speed" values in array,
 varCcumSpd = varCcumSpd + varSpd			#cumulative speed tracking
@@ -104,7 +108,7 @@ varCcumCt = varCcumCt + 1					#cumulative count tracking
 
 #write it to a file
 File.open(fname, "a+") do |f4|
-	f4.puts "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},CAT,#{varVID},#{varSpd},#{varLng},#{varLat}"
+	f4.puts "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},CAT,#{varVID},#{varSpd},#{varLng},#{varLat},#{varRt},#{varHd},#{varSeg}"
 end
 end											#...end array loop
 
@@ -114,12 +118,15 @@ varSpdt = aryt["speed"]						#set var for "speed" value in array,
 varVIDt = aryt["vehicle_id"]				#set var for "vehicle_id" value in array,
 varLngt = aryt["location"]["lng"]			#set var for longitude value in array,
 varLatt = aryt["location"]["lat"]			#set var for latitude value in array,
+varRtt = aryt["route_id"]					#set var for route_id value in array
+varHdt = aryt["heading"]						#set var for heading value in array
+varSegt = aryt["segment_id"]					#set var for segment_id value in array
 varCountt = varCountt + 1					#increase repeat iterations by 1,
 varSumt = varSumt + aryt["speed"]			#separately, set var for sum of all "speed" values in array,
 varTcumSpd = varTcumSpd + varSpdt			#cumulative speed tracking
 varTcumCt = varTcumCt + 1					#cumulative count tracking
 File.open(fname, "a+") do |f5|
-	f5.puts "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},TTA,#{varVIDt},#{varSpdt},#{varLngt},#{varLatt}"
+	f5.puts "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},TTA,#{varVIDt},#{varSpdt},#{varLngt},#{varLatt},#{varRtt},#{varHdt},#{varSegt}"
 end	
 end											#...end array loop
 	
