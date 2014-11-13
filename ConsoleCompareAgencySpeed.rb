@@ -9,6 +9,7 @@
 #	xx8. longitude and latitude
 # 	xx9. log file
 #	xxx10. log as many attribute fields as possible
+# 	xxx11. fix kmh/mph speed issue
 
 #REQUIRE STATEMENTS
 require 'unirest'
@@ -51,10 +52,10 @@ sleep(2)
 
 #SOMEFILE HEADER
 File.open(fname, "a+") do |f1|
-	f1.puts "time,agency,bus_id,speed,lon,lat,route,heading,segment_id"
+	f1.puts "time,agency,bus_id,mph,lon,lat,route,heading,segment_id"
 end
 File.open(gname, "a+") do |g7|
-	g7.puts "time,agency,count_buses,speed"
+	g7.puts "time,agency,count_buses,mph"
 end
 File.open(hname, "a+") do |h2|
 	h2.puts "###CONSOLE LOG FILE###"
@@ -94,7 +95,7 @@ data_hash = JSON.parse(payload)				#parses the response body and stores as a var
 
 #loop through CAT parsed data to get the data you want
 data_hash["data"]["20"].each do |ary|		#for each object in the array,
-varSpd = ary["speed"]						#set var for "speed" value in array,
+varSpd = ary["speed"] * 0.621371			#set var for "speed" (mph) value in array - api default units is kmh
 varVID = ary["vehicle_id"]					#set var for "vehicle_id" value in array,
 varLng = ary["location"]["lng"]				#set var for longitude value in array,
 varLat = ary["location"]["lat"]				#set var for latitude value in array,
@@ -102,7 +103,7 @@ varRt = ary["route_id"]						#set var for route_id value in array
 varHd = ary["heading"]						#set var for heading value in array
 varSeg = ary["segment_id"]					#set var for segment_id value in array
 varCount = varCount + 1						#increase repeat iterations by 1,
-varSum = varSum + ary["speed"]				#separately, set var for sum of all "speed" values in array,
+varSum = varSum + varSpd					#separately, set var for sum of all "speed" values in array,
 varCcumSpd = varCcumSpd + varSpd			#cumulative speed tracking
 varCcumCt = varCcumCt + 1					#cumulative count tracking
 
@@ -114,7 +115,7 @@ end											#...end array loop
 
 #loop through TTA parsed data to get the data you want
 data_hash["data"]["12"].each do |aryt|		#for each object in the array,
-varSpdt = aryt["speed"]						#set var for "speed" value in array,
+varSpdt = aryt["speed"] * 0.621371			#set var for "speed" value in array,
 varVIDt = aryt["vehicle_id"]				#set var for "vehicle_id" value in array,
 varLngt = aryt["location"]["lng"]			#set var for longitude value in array,
 varLatt = aryt["location"]["lat"]			#set var for latitude value in array,
@@ -122,7 +123,7 @@ varRtt = aryt["route_id"]					#set var for route_id value in array
 varHdt = aryt["heading"]						#set var for heading value in array
 varSegt = aryt["segment_id"]					#set var for segment_id value in array
 varCountt = varCountt + 1					#increase repeat iterations by 1,
-varSumt = varSumt + aryt["speed"]			#separately, set var for sum of all "speed" values in array,
+varSumt = varSumt + varSpdt			#separately, set var for sum of all "speed" values in array,
 varTcumSpd = varTcumSpd + varSpdt			#cumulative speed tracking
 varTcumCt = varTcumCt + 1					#cumulative count tracking
 File.open(fname, "a+") do |f5|
