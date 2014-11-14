@@ -12,6 +12,7 @@
 # 	xx11. fix kmh/mph speed issue
 #	xx12. add rolling average speed bar graph to console
 #	xx13. add wolfline & other agencies
+#	xx14. write html chart file. 
 
 
 #FYI "agency_id" values for specific agencies
@@ -32,6 +33,7 @@ puts "working"	#script is running
 fname = "AgencySpeed_bus #{Time.now.strftime('%Y%m%d')}.txt"		#Creates a new .txt file in directory of .rb
 gname = "AgencySpeed_avg #{Time.now.strftime('%Y%m%d')}.txt"		#Creates a new .txt file in directory of .rb
 hname = "AgencySpeed_log #{Time.now.strftime('%Y%m%d')}.txt"		#Creates a new .txt file in directory of .rb
+cname = "FleetSpeedChart.html"										#Creates a line chart using google charts api for bus fleet speed
 puts 'How long to sleep (in seconds) between each loop? (typically ~5)'
 d = gets.to_i 															#delay in seconds between each repeat iteration
 puts "\e[H\e[2J"
@@ -54,6 +56,89 @@ varCcum = 0
 varWcumSpd = 0
 varWcumCt = 0
 varWcum = 0	
+
+
+#variables related to line chart
+vc1 = 0
+vc2 = 0
+vc3 = 0
+vc4 = 0
+vc5 = 0
+vc6 = 0
+vc7 = 0
+vc8 = 0
+vc9 = 0
+vc10 = 0
+vc11 = 0
+vc12 = 0
+vc13 = 0
+vc14 = 0
+vc15 = 0
+vc16 = 0
+vc17 = 0
+vc18 = 0
+vc19 = 0
+vc20 = 0
+vt1 = 0
+vt2 = 0
+vt3 = 0
+vt4 = 0
+vt5 = 0
+vt6 = 0
+vt7 = 0
+vt8 = 0
+vt9 = 0
+vt10 = 0
+vt11 = 0
+vt12 = 0
+vt13 = 0
+vt14 = 0
+vt15 = 0
+vt16 = 0
+vt17 = 0
+vt18 = 0
+vt19 = 0
+vt20 = 0
+vw1 = 0
+vw2 = 0
+vw3 = 0
+vw4 = 0
+vw5 = 0
+vw6 = 0
+vw7 = 0
+vw8 = 0
+vw9 = 0
+vw10 = 0
+vw11 = 0
+vw12 = 0
+vw13 = 0
+vw14 = 0
+vw15 = 0
+vw16 = 0
+vw17 = 0
+vw18 = 0
+vw19 = 0
+vw20 = 0
+ti20 = 0
+ti19 = 0
+ti18 = 0
+ti17 = 0
+ti16 = 0
+ti15 = 0
+ti14 = 0
+ti13 = 0
+ti12 = 0
+ti11 = 0
+ti10 = 0
+ti9 = 0
+ti8 = 0
+ti7 = 0
+ti6 = 0
+ti5 = 0
+ti4 = 0
+ti3 = 0
+ti2 = 0
+ti1 = 0
 
 
 varI = 0				#variable that represents starting integer for loop count
@@ -89,6 +174,9 @@ begin
 # variables
 varI +=1;
 varTime = "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')}"
+
+varTi1 = "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}"
+
 varCountw = 0
 varCountt = 0
 varCount = 0 								#Counts the number of buses that respond during 
@@ -166,8 +254,6 @@ varHdt = 0
 varSegt = 0
 end											#...end array loop
 
-
-
 #loop through WLF parsed data to get the data you want
 data_hash["data"]["16"].each do |aryw|		#for each object in the array,
 varSpdw = aryw["speed"] * 0.621371			#set var for "speed" value in array, convert to mph
@@ -193,10 +279,6 @@ varHdw = 0
 varSegw = 0
 end											#...end array loop
 
-
-
-
-
 #write the data in the console	
 varAvg = varSum / varCount					#calculate CAT instant average bus speed
 varAvgt = varSumt / varCountt				#calculate TTA instant average bus speed
@@ -205,12 +287,6 @@ varTcum = varTcumSpd / varTcumCt			#calculate TTA cumulative avgerage bus speed
 varCcum = varCcumSpd / varCcumCt			#calculate CAT cumulative average bus speed
 varWcum = varWcumSpd / varWcumCt			#calculate WLF cumulative average bus speed
 puts "\e[H\e[2J"							#clears console
-#puts "Current Time: #{varTime}"				#current time
-#puts "#{e} #{varAvg.round(1)} (#{varCcum.round(0)} cum.)"	#CAT speed data
-#puts "#{f} #{varAvgt.round(1)} (#{varTcum.round(0)} cum.)"	#TTA speed data
-#puts "#{w} #{varAvgw.round(1)} (#{varWcum.round(0)} cum.)"	#WLF speed data
-#puts ""										
-#puts "Variable Inputs:" 					#variable inputs
 puts "Loop delay: #{d} seconds" 			#loop delay in seconds
 puts "Iterations: #{varI} of #{varNum+1}"	#x of y count
 puts""	
@@ -222,12 +298,6 @@ puts "TTA|#{"i" * varAvgt.round(0)}"					#instant bar graph - TTA
 puts "   |#{"a" * varTcum.round(0)}"					#avg bar graph - TTA
 puts "WLF|#{"i" * varAvgw.round(0)}"					#instant bar graph - WLF
 puts "   |#{"a" * varWcum.round(0)}"					#avg bar graph - WLF
-#puts""
-#puts "Average Fleet Speed"									
-#puts "   |----5----10---15---20---25---30mph"	#avg bar graph
-#puts "CAT|#{"a" * varCcum.round(0)}"					#avg bar graph - cat
-#puts "TTA|#{"a" * varTcum.round(0)}"					#avg bar graph - TTA
-#puts "WLF|#{"a" * varWcum.round(0)}"					#avg bar graph - WLF
 puts""
 puts "Buses in Service"
 puts "...|----10---20---30---40---50---60---70---80buses"	#bus count bar graph
@@ -246,7 +316,7 @@ File.open(gname, "a+") do |g4|
 	g4.puts "#{varTime},WLF,#{varCountw},#{varAvgw.round(1)}"
 end
 
-
+#writes to log file
 File.open(hname, "a+") do |h1|
 	h1.puts ""
 	h1.puts ""
@@ -256,6 +326,217 @@ File.open(hname, "a+") do |h1|
 	h1.puts "#{f} #{varAvgt.round(1)} (#{varTcum.round(1)} cumulative)"
 	h1.puts "#{w} #{varAvgw.round(1)} (#{varWcum.round(1)} cumulative)"
 end
+
+vc20 = vc19
+vc19 = vc18
+vc18 = vc17
+vc17 = vc16
+vc16 = vc15
+vc15 = vc14
+vc14 = vc13
+vc13 = vc12
+vc12 = vc11
+vc11 = vc10
+vc10 = vc9
+vc9 = vc8
+vc8 = vc7
+vc7 = vc6
+vc6 = vc5
+vc5 = vc4
+vc4 = vc3
+vc3 = vc2
+vc2 = vc1
+vc1 = varAvg
+vt20 = vt19
+vt19 = vt18
+vt18 = vt17
+vt17 = vt16
+vt16 = vt15
+vt15 = vt14
+vt14 = vt13
+vt13 = vt12
+vt12 = vt11
+vt11 = vt10
+vt10 = vt9
+vt9 = vt8
+vt8 = vt7
+vt7 = vt6
+vt6 = vt5
+vt5 = vt4
+vt4 = vt3
+vt3 = vt2
+vt2 = vt1
+vt1 = varAvgt
+vw20 = vw19
+vw19 = vw18
+vw18 = vw17
+vw17 = vw16
+vw16 = vw15
+vw15 = vw14
+vw14 = vw13
+vw13 = vw12
+vw12 = vw11
+vw11 = vw10
+vw10 = vw9
+vw9 = vw8
+vw8 = vw7
+vw7 = vw6
+vw6 = vw5
+vw5 = vw4
+vw4 = vw3
+vw3 = vw2
+vw2 = vw1
+vw1 = varAvgw
+ti20 = ti19
+ti19 = ti18
+ti18 = ti17
+ti17 = ti16
+ti16 = ti15
+ti15 = ti14
+ti14 = ti13
+ti13 = ti12
+ti12 = ti11
+ti11 = ti10
+ti10 = ti9
+ti9 = ti8
+ti8 = ti7
+ti7 = ti6
+ti6 = ti5
+ti5 = ti4
+ti4 = ti3
+ti3 = ti2
+ti2 = ti1
+ti1 = varTi1
+
+#writes to HTML line chart
+File.open(cname, "w+") do |c1|
+	c1.puts "<html>"
+	c1.puts "<head>"
+	c1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{" src="}#{'"'}#{"https://www.google.com/jsapi"}#{'"'}#{"></script>"}"
+	c1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{">"}"
+	c1.puts "#{"google.load("}#{'"'}#{"visualization"}#{'"'}#{", "}#{'"'}#{"1"}#{'"'}#{", {packages:["}#{'"'}#{"corechart"}#{'"'}#{"]"}#{'}'}#{");"}"
+	c1.puts "#{"google.setOnLoadCallback(drawChart);"}"
+	c1.puts "#{"var c1 = "}#{vc1}"
+    c1.puts "#{"var c2 = "}#{vc2}"
+    c1.puts "#{"var c3 = "}#{vc3}"
+    c1.puts "#{"var c4 = "}#{vc4}"
+    c1.puts "#{"var c5 = "}#{vc5}"
+    c1.puts "#{"var c6 = "}#{vc6}"
+    c1.puts "#{"var c7 = "}#{vc7}"
+    c1.puts "#{"var c8 = "}#{vc8}"
+    c1.puts "#{"var c9 = "}#{vc9}"
+    c1.puts "#{"var c10 = "}#{vc10}"
+    c1.puts "#{"var c11 = "}#{vc11}"
+    c1.puts "#{"var c12 = "}#{vc12}"
+    c1.puts "#{"var c13 = "}#{vc13}"
+    c1.puts "#{"var c14 = "}#{vc14}"
+    c1.puts "#{"var c15 = "}#{vc15}"
+    c1.puts "#{"var c16 = "}#{vc16}"
+    c1.puts "#{"var c17 = "}#{vc17}"
+    c1.puts "#{"var c18 = "}#{vc18}"
+    c1.puts "#{"var c19 = "}#{vc19}"
+    c1.puts "#{"var c20 = "}#{vc20}"
+	c1.puts "#{"var t1 = "}#{vt1}"
+    c1.puts "#{"var t2 = "}#{vt2}"
+    c1.puts "#{"var t3 = "}#{vt3}"
+    c1.puts "#{"var t4 = "}#{vt4}"
+	c1.puts "#{"var t5 = "}#{vt5}"
+    c1.puts "#{"var t6 = "}#{vt6}"
+    c1.puts "#{"var t7 = "}#{vt7}"
+    c1.puts "#{"var t8 = "}#{vt8}"
+    c1.puts "#{"var t9 = "}#{vt9}"
+    c1.puts "#{"var t10 = "}#{vt10}"
+    c1.puts "#{"var t11 = "}#{vt11}"
+    c1.puts "#{"var t12 = "}#{vt12}"
+    c1.puts "#{"var t13 = "}#{vt13}"
+    c1.puts "#{"var t14 = "}#{vt14}"
+	c1.puts "#{"var t15 = "}#{vt15}"
+    c1.puts "#{"var t16 = "}#{vt16}"
+    c1.puts "#{"var t17 = "}#{vt17}"
+    c1.puts "#{"var t18 = "}#{vt18}"
+    c1.puts "#{"var t19 = "}#{vt19}"
+    c1.puts "#{"var t20 = "}#{vt20}"
+	c1.puts "#{"var w1 = "}#{vw1}"
+    c1.puts "#{"var w2 = "}#{vw2}"
+    c1.puts "#{"var w3 = "}#{vw3}"
+    c1.puts "#{"var w4 = "}#{vw4}"
+    c1.puts "#{"var w5 = "}#{vw5}"
+    c1.puts "#{"var w6 = "}#{vw6}"
+    c1.puts "#{"var w7 = "}#{vw7}"
+    c1.puts "#{"var w8 = "}#{vw8}"
+    c1.puts "#{"var w9 = "}#{vw9}"
+    c1.puts "#{"var w10 = "}#{vw10}"
+	c1.puts "#{"var w11 = "}#{vw11}"
+    c1.puts "#{"var w12 = "}#{vw12}"
+    c1.puts "#{"var w13 = "}#{vw13}"
+    c1.puts "#{"var w14 = "}#{vw14}"
+    c1.puts "#{"var w15 = "}#{vw15}"
+    c1.puts "#{"var w16 = "}#{vw16}"
+    c1.puts "#{"var w17 = "}#{vw17}"
+    c1.puts "#{"var w18 = "}#{vw18}"
+    c1.puts "#{"var w19 = "}#{vw19}"
+    c1.puts "#{"var w20 = "}#{vw20}"
+	c1.puts "#{"var ti1 = "}#{"'"}#{ti1}#{"'"}"
+    c1.puts "#{"var ti2 = "}#{"'"}#{ti2}#{"'"}"
+    c1.puts "#{"var ti3 = "}#{"'"}#{ti3}#{"'"}"
+    c1.puts "#{"var ti4 = "}#{"'"}#{ti4}#{"'"}"
+    c1.puts "#{"var ti5 = "}#{"'"}#{ti5}#{"'"}"
+    c1.puts "#{"var ti6 = "}#{"'"}#{ti6}#{"'"}"
+    c1.puts "#{"var ti7 = "}#{"'"}#{ti7}#{"'"}"
+    c1.puts "#{"var ti8 = "}#{"'"}#{ti8}#{"'"}"
+    c1.puts "#{"var ti9 = "}#{"'"}#{ti9}#{"'"}"
+    c1.puts "#{"var ti10 = "}#{"'"}#{ti10}#{"'"}"
+    c1.puts "#{"var ti11 = "}#{"'"}#{ti11}#{"'"}"
+    c1.puts "#{"var ti12 = "}#{"'"}#{ti12}#{"'"}"
+    c1.puts "#{"var ti13 = "}#{"'"}#{ti13}#{"'"}"
+    c1.puts "#{"var ti14 = "}#{"'"}#{ti14}#{"'"}"
+    c1.puts "#{"var ti15 = "}#{"'"}#{ti15}#{"'"}"
+    c1.puts "#{"var ti16 = "}#{"'"}#{ti16}#{"'"}"
+    c1.puts "#{"var ti17 = "}#{"'"}#{ti17}#{"'"}"
+    c1.puts "#{"var ti18 = "}#{"'"}#{ti18}#{"'"}"
+    c1.puts "#{"var ti19 = "}#{"'"}#{ti19}#{"'"}"
+    c1.puts "#{"var ti20 = "}#{"'"}#{ti20}#{"'"}"
+	c1.puts "#{"function drawChart() {"}"
+	c1.puts "#{"var data = google.visualization.arrayToDataTable(["}"
+    c1.puts "#{"['P',	'CAT',	'TTA',	'WLF'],"}"
+    c1.puts "#{"[ti1,	c1,		t1,		w1],"}"
+    c1.puts "#{"[ti2,	c2,		t2,		w2],"}"
+	c1.puts "#{"[ti3,	c3,		t3,		w3],"}"
+	c1.puts "#{"[ti4,	c4,		t4,		w4],"}"
+	c1.puts "#{"[ti5,	c5,		t5,		w5],"}"
+	c1.puts "#{"[ti6,	c6,		t6,		w6],"}"
+	c1.puts "#{"[ti7,	c7,		t7,		w7],"}"
+	c1.puts "#{"[ti8,	c8,		t8,		w8],"}"
+	c1.puts "#{"[ti9,	c9,		t9,		w9],"}"
+	c1.puts "#{"[ti10,	c10,	t10,	w10],"}"	
+	c1.puts "#{"[ti11,	c11,	t11,	w11],"}"
+    c1.puts "#{"[ti12,	c12,	t12,	w12],"}"
+	c1.puts "#{"[ti13,	c13,	t13,	w13],"}"
+	c1.puts "#{"[ti14,	c14,	t14,	w14],"}"
+	c1.puts "#{"[ti15,	c15,	t15,	w15],"}"
+	c1.puts "#{"[ti16,	c16,	t16,	w16],"}"
+	c1.puts "#{"[ti17,	c17,	t17,	w17],"}"
+	c1.puts "#{"[ti18,	c18,	t18,	w18],"}"
+	c1.puts "#{"[ti19,	c19,	t19,	w19],"}"
+	c1.puts "#{"[ti20,	c20,	t20,	w20]"}"	
+	c1.puts "#{"]);"}"
+	c1.puts "#{"var options = {"}"
+	c1.puts "#{"title: 'Bus Fleet Speed',"}"
+	c1.puts "#{"hAxis: {showTextEvery: 3, direction: -1},"}"	#option
+	c1.puts "#{"};"}"
+	c1.puts "#{"var chart = new google.visualization.LineChart(document.getElementById('chart_div'));"}"
+	c1.puts "#{"chart.draw(data, options);"}"
+	c1.puts "#{"}"}"
+	c1.puts "#{"</script>"}"
+	c1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{"5"}#{'"'}#{">"}#{'"'}"#refresh code
+	c1.puts "#{"</head>"}"
+	c1.puts "#{"<body>"}"
+	c1.puts "#{"<div id="}#{'"'}#{"chart_div"}#{'"'}#{" style="}#{'"'}#{"width: 900px; height: 500px;"}#{'"'}#{"></div>"}"
+	c1.puts "#{"</body>"}"
+	c1.puts "#{"</html>"}"
+
+	end
+
 sleep(d)
 end until varI > varNum
 
