@@ -16,8 +16,9 @@
 #	xx13. add wolfline & other agencies
 #	xx14. write html chart file. 
 #	15. fix force close error - probably something to with null variable handling
-#	16. dashboard away from console and into google charts. 
-#	17.	google bar chart for bus instant and average speed
+#	xx16. dashboard away from console and into google charts. 
+#	xx17.	google bar chart for bus instant and average speed
+# 	xx18. historgram for individual bus speed
 
 #<agency_id values for reference>
 # C-Tran/Cary 		= 367
@@ -201,10 +202,24 @@ puts "\e[H\e[2J"
 puts "#{varNum} loops"
 sleep(2)
 
-#<dashboard>
+
 
 #---ITERATIVE LOOP---
 begin
+#<dashboard>
+File.open(cname, "w+") do |c1|
+	c1.puts "<html>"
+	c1.puts "<head>"
+	c1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{11}#{'"'}#{">"}#{'"'}"#refresh code
+	c1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{" src="}#{'"'}#{"https://www.google.com/jsapi"}#{'"'}#{"></script>"}"
+#historgram
+	c1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{">"}"		#<script type="text/javascript">
+	c1.puts "#{"google.load("}#{'"'}#{"visualization"}#{'"'}#{", "}#{'"'}#{"1"}#{'"'}#{", {packages:["}#{'"'}#{"corechart"}#{'"'}#{"]"}#{'}'}#{");"}"	# google.load("visualization", "1", {packages:["corechart"]});
+	c1.puts "#{"google.setOnLoadCallback(drawChart3);"}"					# google.setOnLoadCallback(drawChart3);
+	c1.puts "#{"function drawChart3() {"}"									# function drawChart3() {
+	c1.puts "#{"var data3 = google.visualization.arrayToDataTable(["}"		# var data3 = google.visualization.arrayToDataTable([	
+	c1.puts "#{"['Bus_id', 'MPH'],"}"
+end
 #<variables>
 varI +=1;
 varTime = "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')}"
@@ -281,6 +296,20 @@ varCount = varCount + 1						#increase repeat iterations by 1,
 varSum = varSum + varSpd					#separately, set var for sum of all "speed" values in array,
 varCcumSpd = varCcumSpd + varSpd			#cumulative speed tracking
 varCcumCt = varCcumCt + 1					#cumulative count tracking
+
+#histogram
+if varSpd > 0
+File.open(cname, "a+") do |c1|
+	c1.puts "#{"['"}#{varVID}#{"', "}#{varSpd}#{"],"}"
+end
+end
+if ary ==data_hash["data"]["20"].last
+	File.open(cname, "a+") do |c1|
+	c1.puts "#{"['"}#{varVID}#{"', "}#{varSpd}#{"]]);"}"
+	end
+end
+
+
 #write it to a file
 File.open(fname, "a+") do |f4|
 	f4.puts "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},CAT,#{varVID},#{varSpd.round(1)},#{varLng},#{varLat},#{varRt},#{varHd},#{varSeg}"
@@ -456,10 +485,20 @@ ti3 = ti2
 ti2 = ti1
 ti1 = varTi1
 
-File.open(cname, "w+") do |c1|
-	c1.puts "<html>"
-	c1.puts "<head>"
-	c1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{" src="}#{'"'}#{"https://www.google.com/jsapi"}#{'"'}#{"></script>"}"
+
+
+File.open(cname, "a+") do |c1|
+	c1.puts "#{"var options3 = {"}"								# var options3 = {	
+	c1.puts "#{"title: 'Speed of Individual Buses',"}"			# title: 'foo',
+	c1.puts "#{"legend: { position: 'none' },"}"
+	c1.puts "#{"histogram: { bucketSize: 10 }"}"
+	c1.puts "#{"};"}"
+	c1.puts "#{"var chart3 = new google.visualization.Histogram(document.getElementById('chart_div3'));"}"												# var chart2 = new google.visualization.BarChart(document.getElementById('chart_div2'));	
+	c1.puts "#{"chart3.draw(data3, options3);"}"
+	c1.puts "#{"}"}"
+	c1.puts "#{"</script>"}"
+	
+	
 	c1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{">"}"
 	c1.puts "#{"google.load("}#{'"'}#{"visualization"}#{'"'}#{", "}#{'"'}#{"1"}#{'"'}#{", {packages:["}#{'"'}#{"corechart"}#{'"'}#{"]"}#{'}'}#{");"}"
 	c1.puts "#{"google.setOnLoadCallback(drawChart);"}"
@@ -577,6 +616,7 @@ File.open(cname, "w+") do |c1|
 	c1.puts "#{"]);"}"
 	c1.puts "#{"var options = {"}"
 	c1.puts "#{"title: 'Bus Fleet Speed',"}"
+	c1.puts "#{"curveType: 'function',"}"
 	c1.puts "#{"hAxis: {showTextEvery: 3, direction: -1},"}"	#option
 	c1.puts "#{"};"}"
 	c1.puts "#{"var chart = new google.visualization.LineChart(document.getElementById('chart_div'));"}"
@@ -602,11 +642,11 @@ File.open(cname, "w+") do |c1|
 	c1.puts "#{"}"}"														# }
 	c1.puts "#{"</script>"}"												# </script>
 #/bar chart
-	c1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{"3"}#{'"'}#{">"}#{'"'}"#refresh code
 	c1.puts "#{"</head>"}"
 	c1.puts "#{"<body>"}"
 	c1.puts "#{"<div id="}#{'"'}#{"chart_div"}#{'"'}#{" style="}#{'"'}#{"width: 600px; height: 200px;"}#{'"'}#{"></div>"}"
 	c1.puts "#{"<div id="}#{'"'}#{"chart_div2"}#{'"'}#{" style="}#{'"'}#{"width: 600px; height: 200px;"}#{'"'}#{"></div>"}"
+	c1.puts "#{"<div id="}#{'"'}#{"chart_div3"}#{'"'}#{" style="}#{'"'}#{"width: 600px; height: 400px;"}#{'"'}#{"></div>"}"
 	c1.puts "#{"</body>"}"
 	c1.puts "#{"</html>"}"
 end
