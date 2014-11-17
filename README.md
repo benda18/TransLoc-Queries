@@ -27,9 +27,8 @@ TO RUN THE SCRIPT:
   * "AgencySpeed_avg {timestamp}.txt" - a csv file that shows calculated average fleet speed for each agency at each 
     point in time
   * "AgencySpeed_log {timestamp}.txt" - a txt file that simply logs what the console displays in case you want to review. 
-5. Additionally the console will display you two variable inputs, keep track of how many loops have been completed, and
-  display instant fleed average speed data by agency, as well as a calculated cumulative (or rolling average) fleet 
-  speed for the duration of the script.  
+5. The script will also output a .html file that will act as your dashboard. It tracks bus fleet speed and refreshes every few seconds. 
+6. Additionally the console will display how many iterations you have completed. 
 
 FURTHER NOTES:
 
