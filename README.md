@@ -4,9 +4,7 @@ information into local .txt files for further data analysis.
 DISCLOSURE: I'm self-taught in scripting.  This is my first time using Ruby, or 
 pretty much any language.  The script works, but I'm not always sure why.  FWIW
 
-"BusSpeed_API_Analysis.rb" is the only script that is being developed now. The
-other scripts are old and contain errors.  Additionally, these other scripts were
-individual elements that have been merged together into "ConsoleCompareAgencySpeed.rb"
+"BusSpeed_API_Analysis.rb" is the only script that is being developed now. "BusSpeed_API_Full_Log.rb" is mature.
 
 If this repository for some reason only contains a single ruby script ("ConsoleCompareAgencySpeed")
 that means that I've deleted the others.  
