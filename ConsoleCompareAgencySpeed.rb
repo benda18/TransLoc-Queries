@@ -1,4 +1,6 @@
-# A SCRIPT THAT...
+#---INTRODUCTION---
+#<description> 
+# A script that...
 #	xx1. shows instant avg fleet speed 
 #	xx2. in the console
 #	xx3. for multiple agencies
@@ -13,9 +15,8 @@
 #	xx12. add rolling average speed bar graph to console
 #	xx13. add wolfline & other agencies
 #	xx14. write html chart file. 
-
-
-#FYI "agency_id" values for specific agencies
+#	15. fix force close error - probably something to with null variable handling
+#<agency_id values for reference>
 # C-Tran/Cary 		= 367
 # DATA/Durham 		= 24
 # CHT/Chapel Hill 	= 80
@@ -23,40 +24,65 @@
 # Wolfline/NCSU 	= 16
 # TTA 				= 12
 # Raleigh/CAT 		= 20
-
-#REQUIRE STATEMENTS
+#<require statements>
 require 'unirest'
 require 'json'
-
-#WRITE TO CONSOLE
-puts "working"	#script is running
-fname = "AgencySpeed_bus #{Time.now.strftime('%Y%m%d')}.txt"		#Creates a new .txt file in directory of .rb
-gname = "AgencySpeed_avg #{Time.now.strftime('%Y%m%d')}.txt"		#Creates a new .txt file in directory of .rb
-hname = "AgencySpeed_log #{Time.now.strftime('%Y%m%d')}.txt"		#Creates a new .txt file in directory of .rb
+#<initital variable setup>
 cname = "FleetSpeedChart.html"										#Creates a line chart using google charts api for bus fleet speed
-puts 'How long to sleep (in seconds) between each loop? (typically ~5)'
-d = gets.to_i 															#delay in seconds between each repeat iteration
-puts "\e[H\e[2J"
-puts "#{d} seconds delay"
-sleep(2)
-
-#INITIAL VARIABLES
-b = 0
-c = "done"				#displayed in console to show that script is complete
+d = 0
+data_hash = 0
 e = "CAT mph = "
 f = "TTA mph = "
-w = "WLF mph = "
-
-varTcumSpd = 0
-varTcumCt = 0
-varTcum = 0	
-varCcumSpd = 0
-varCcumCt = 0
+fname = "AgencySpeed_bus #{Time.now.strftime('%Y%m%d')}.txt"		#Creates a new .txt file in directory of .rb
+gname = "Agency.Speed_avg #{Time.now.strftime('%Y%m%d')}.txt"		#Creates a new .txt file in directory of .rb
+hname = "AgencySpeed_log #{Time.now.strftime('%Y%m%d')}.txt"		#Creates a new .txt file in directory of .rb
+payload = 0
+payload2 = 0
+response = 0
+varAvg = 0
+varAvgt = 0
+varAvgw	= 0
 varCcum = 0
-varWcumSpd = 0
+varCcumCt = 0
+varCcumSpd = 0
+varCount = 0
+varCountt = 0
+varCountw = 0
+varHd = 0
+varHdt = 0
+varHdw = 0
+varI = 0
+varLat = 0
+varLatt = 0
+varLatw = 0
+varLng = 0															#variable that represents starting integer for loop count
+varLngt = 0
+varLngw = 0
+varNum = 0
+varRt = 0
+varRtt = 0
+varRtw = 0
+varSeg = 0
+varSegt = 0
+varSegw = 0
+varSpd = 0
+varSpdt = 0
+varSpdw = 0
+varSum = 0
+varSumt = 0
+varSumw = 0
+varTcum = 0
+varTcumCt = 0
+varTcumSpd = 0
+varTil = 0
+varTime = 0
+varVID = 0
+varVIDt = 0
+varVIDw = 0
+varWcum = 0
 varWcumCt = 0
-varWcum = 0	
-
+varWcumSpd = 0
+w = "WLF mph = "
 
 #variables related to line chart
 vc1 = 0
@@ -141,24 +167,16 @@ ti2 = 0
 ti1 = 0
 
 
-varI = 0				#variable that represents starting integer for loop count
-puts "\e[H\e[2J"
-puts 'How many loops to perform? (typically ~10)'
-varNum = gets.to_i         												#tracks number of repeat iterations, resets 
-																		#	value to 0 
-puts "\e[H\e[2J"
-puts "#{varNum} loops"
-sleep(2)
 
-#SOMEFILE HEADER
+
+
+#<write logfile headers>
 File.open(fname, "a+") do |f1|
 	f1.puts "time,agency,bus_id,mph,lon,lat,route,heading,segment_id"
 end
 File.open(gname, "a+") do |g7|
 	g7.puts "time,agency,count_buses,mph"
 end
-
-#WRITE TO LOG FILE
 File.open(hname, "a+") do |h2|
 	h2.puts "###CONSOLE LOG FILE###"
 	h2.puts ""
@@ -169,14 +187,28 @@ File.open(hname, "a+") do |h2|
 	h2.puts "#{varNum} loops"
 end
 
-#BEGIN FIRST ITERATION
+#---LAUNCH CONSOLE---
+#<gets prompt>
+puts 'How long to sleep (in seconds) between each loop? (typically ~5)'
+d = gets.to_i 															
+puts "\e[H\e[2J"
+puts "#{d} seconds delay"
+sleep(2)
+puts "\e[H\e[2J"
+puts 'How many loops to perform? (typically ~10)'
+varNum = gets.to_i         					#tracks number of repeat iterations
+puts "\e[H\e[2J"
+puts "#{varNum} loops"
+sleep(2)
+
+#<dashboard>
+
+#---ITERATIVE LOOP---
 begin
-# variables
+#<variables>
 varI +=1;
 varTime = "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')}"
-
 varTi1 = "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}"
-
 varCountw = 0
 varCountt = 0
 varCount = 0 								#Counts the number of buses that respond during 
@@ -185,24 +217,71 @@ varSumw = 0
 varSumt = 0											
 varSum = 0 									#The sum of the speed values for each responding 
 											#	bus during each iteration
-
 varAvgw = 0
 varAvgt = 0	
 varAvg = 0									#A value derived from varSum divided by varCount 
 											#	that equals the average speed for all responding 
 											#	buses during each iteration
 
-# the mashape call to TransLoc api
+											varSpd = 0
+varVID = 0
+varLng = 0
+varLat = 0
+varRt = 0
+varHd = 0
+varSeg = 0
+varSpdt = 0
+varVIDt = 0
+varLngt = 0
+varLatt = 0
+varRtt = 0
+varHdt = 0
+varSegt = 0
+varSpdw = 0
+varVIDw = 0
+varLngw = 0
+varLatw = 0
+varRtw = 0
+varHdw = 0
+varSegw = 0
+
+#<call the transloc api>
 response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C16%2C20&callback=call",
   headers:{
-    "X-Mashape-Key" => "niYNYS5ziAmshx3q3abZrZm2c14Hp1HmeAWjsnjzs6TmhpQdu6"
+    "X-Mashape-Key" => "<key>"
   }
-#parse the call  
+#<parse the call>
 payload2 = response.body					#sets the call response body as a variable
 payload = payload2[/{.+}/]					#removes the callback prefix and suffix from the response body
 data_hash = JSON.parse(payload)				#parses the response body and stores as a variable
 
-#loop through CAT parsed data to get the data you want
+#<console writing>
+puts "\e[H\e[2J"							#clears console
+puts "Loop delay: #{d} seconds" 			#loop delay in seconds
+puts "Iterations: #{varI} of #{varNum+1}"	#x of y count
+puts""	
+puts "(i)nstant / (a)verage Fleet Speed"									
+puts "...|----5----10---15---20---25---30mph"	#instant bar graph
+
+#<log file writing>
+File.open(hname, "a+") do |h1|
+	h1.puts ""
+	h1.puts ""
+	h1.puts "Iteration: #{varI} of #{varNum+1}"		#x of y count
+	h1.puts "Current Time: #{varTime}"				#current time
+end
+
+#<google chart writing>
+File.open(cname, "w+") do |c1|
+	c1.puts "<html>"
+	c1.puts "<head>"
+	c1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{" src="}#{'"'}#{"https://www.google.com/jsapi"}#{'"'}#{"></script>"}"
+	c1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{">"}"
+	c1.puts "#{"google.load("}#{'"'}#{"visualization"}#{'"'}#{", "}#{'"'}#{"1"}#{'"'}#{", {packages:["}#{'"'}#{"corechart"}#{'"'}#{"]"}#{'}'}#{");"}"
+	c1.puts "#{"google.setOnLoadCallback(drawChart);"}"
+end
+
+#<data loop><cat>
 data_hash["data"]["20"].each do |ary|		#for each object in the array,
 varSpd = ary["speed"] * 0.621371			#set var for "speed" (mph) value in array - api default units is kmh
 varVID = ary["vehicle_id"]					#set var for "vehicle_id" value in array,
@@ -215,7 +294,6 @@ varCount = varCount + 1						#increase repeat iterations by 1,
 varSum = varSum + varSpd					#separately, set var for sum of all "speed" values in array,
 varCcumSpd = varCcumSpd + varSpd			#cumulative speed tracking
 varCcumCt = varCcumCt + 1					#cumulative count tracking
-
 #write it to a file
 File.open(fname, "a+") do |f4|
 	f4.puts "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},CAT,#{varVID},#{varSpd.round(1)},#{varLng},#{varLat},#{varRt},#{varHd},#{varSeg}"
@@ -228,105 +306,16 @@ varRt = 0
 varHd = 0
 varSeg = 0
 end											#...end array loop
-
-#loop through TTA parsed data to get the data you want
-data_hash["data"]["12"].each do |aryt|		#for each object in the array,
-varSpdt = aryt["speed"] * 0.621371			#set var for "speed" value in array, convert to mph
-varVIDt = aryt["vehicle_id"]				#set var for "vehicle_id" value in array,
-varLngt = aryt["location"]["lng"]			#set var for longitude value in array,
-varLatt = aryt["location"]["lat"]			#set var for latitude value in array,
-varRtt = aryt["route_id"]					#set var for route_id value in array
-varHdt = aryt["heading"]						#set var for heading value in array
-varSegt = aryt["segment_id"]					#set var for segment_id value in array
-varCountt = varCountt + 1					#increase repeat iterations by 1,
-varSumt = varSumt + varSpdt			#separately, set var for sum of all "speed" values in array,
-varTcumSpd = varTcumSpd + varSpdt			#cumulative speed tracking
-varTcumCt = varTcumCt + 1					#cumulative count tracking
-File.open(fname, "a+") do |f5|
-	f5.puts "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},TTA,#{varVIDt},#{varSpdt.round(1)},#{varLngt},#{varLatt},#{varRtt},#{varHdt},#{varSegt}"
-end	
-varSpdt = 0
-varVIDt = 0
-varLngt = 0
-varLatt = 0
-varRtt = 0
-varHdt = 0
-varSegt = 0
-end											#...end array loop
-
-#loop through WLF parsed data to get the data you want
-data_hash["data"]["16"].each do |aryw|		#for each object in the array,
-varSpdw = aryw["speed"] * 0.621371			#set var for "speed" value in array, convert to mph
-varVIDw = aryw["vehicle_id"]				#set var for "vehicle_id" value in array,
-varLngw = aryw["location"]["lng"]			#set var for longitude value in array,
-varLatw = aryw["location"]["lat"]			#set var for latitude value in array,
-varRtw = aryw["route_id"]					#set var for route_id value in array
-varHdw = aryw["heading"]						#set var for heading value in array
-varSegw = aryw["segment_id"]					#set var for segment_id value in array
-varCountw = varCountw + 1					#increase repeat iterations by 1,
-varSumw = varSumw + varSpdw			#separately, set var for sum of all "speed" values in array,
-varWcumSpd = varWcumSpd + varSpdw			#cumulative speed tracking
-varWcumCt = varWcumCt + 1					#cumulative count tracking
-File.open(fname, "a+") do |f6|
-	f6.puts "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},WLF,#{varVIDw},#{varSpdw.round(1)},#{varLngw},#{varLatw},#{varRtw},#{varHdw},#{varSegw}"
-end	
-varSpdw = 0
-varVIDw = 0
-varLngw = 0
-varLatw = 0
-varRtw = 0
-varHdw = 0
-varSegw = 0
-end											#...end array loop
-
-#write the data in the console	
 varAvg = varSum / varCount					#calculate CAT instant average bus speed
-varAvgt = varSumt / varCountt				#calculate TTA instant average bus speed
-varAvgw	= varSumw / varCountw				#calculate WLF instant average bus speed
-varTcum = varTcumSpd / varTcumCt			#calculate TTA cumulative avgerage bus speed
 varCcum = varCcumSpd / varCcumCt			#calculate CAT cumulative average bus speed
-varWcum = varWcumSpd / varWcumCt			#calculate WLF cumulative average bus speed
-puts "\e[H\e[2J"							#clears console
-puts "Loop delay: #{d} seconds" 			#loop delay in seconds
-puts "Iterations: #{varI} of #{varNum+1}"	#x of y count
-puts""	
-puts "(i)nstant / (a)verage Fleet Speed"									
-puts "...|----5----10---15---20---25---30mph"	#instant bar graph
 puts "CAT|#{"i" * varAvg.round(0)}"					#instant bar graph - cat
 puts "   |#{"a" * varCcum.round(0)}"					#avg bar graph - cat
-puts "TTA|#{"i" * varAvgt.round(0)}"					#instant bar graph - TTA
-puts "   |#{"a" * varTcum.round(0)}"					#avg bar graph - TTA
-puts "WLF|#{"i" * varAvgw.round(0)}"					#instant bar graph - WLF
-puts "   |#{"a" * varWcum.round(0)}"					#avg bar graph - WLF
-puts""
-puts "Buses in Service"
-puts "...|----10---20---30---40---50---60---70---80buses"	#bus count bar graph
-puts "CAT|#{"*" * (varCount/2)}"
-puts "TTA|#{"*" * (varCountt/2)}"
-puts "WLF|#{"*" * (varCountw/2)}"
-
-#WRITE TO SOMEFILE
 File.open(gname, "a+") do |g2|
 	g2.puts "#{varTime},CAT,#{varCount},#{varAvg.round(1)}"
 end
-File.open(gname, "a+") do |g3|
-	g3.puts "#{varTime},TTA,#{varCountt},#{varAvgt.round(1)}"
-end
-File.open(gname, "a+") do |g4|
-	g4.puts "#{varTime},WLF,#{varCountw},#{varAvgw.round(1)}"
-end
-
-#writes to log file
 File.open(hname, "a+") do |h1|
-	h1.puts ""
-	h1.puts ""
-	h1.puts "Iteration: #{varI} of #{varNum+1}"		#x of y count
-	h1.puts "Current Time: #{varTime}"				#current time
-	h1.puts "#{e} #{varAvg.round(1)} (#{varCcum.round(1)} cumulative)"
-	h1.puts "#{f} #{varAvgt.round(1)} (#{varTcum.round(1)} cumulative)"
-	h1.puts "#{w} #{varAvgw.round(1)} (#{varWcum.round(1)} cumulative)"
+h1.puts "#{e} #{varAvg.round(1)} (#{varCcum.round(1)} cumulative)"
 end
-
 vc20 = vc19
 vc19 = vc18
 vc18 = vc17
@@ -347,6 +336,66 @@ vc4 = vc3
 vc3 = vc2
 vc2 = vc1
 vc1 = varAvg
+
+File.open(cname, "a+") do |c1|
+c1.puts "#{"var c1 = "}#{vc1}"
+    c1.puts "#{"var c2 = "}#{vc2}"
+    c1.puts "#{"var c3 = "}#{vc3}"
+    c1.puts "#{"var c4 = "}#{vc4}"
+    c1.puts "#{"var c5 = "}#{vc5}"
+    c1.puts "#{"var c6 = "}#{vc6}"
+    c1.puts "#{"var c7 = "}#{vc7}"
+    c1.puts "#{"var c8 = "}#{vc8}"
+    c1.puts "#{"var c9 = "}#{vc9}"
+    c1.puts "#{"var c10 = "}#{vc10}"
+    c1.puts "#{"var c11 = "}#{vc11}"
+    c1.puts "#{"var c12 = "}#{vc12}"
+    c1.puts "#{"var c13 = "}#{vc13}"
+    c1.puts "#{"var c14 = "}#{vc14}"
+    c1.puts "#{"var c15 = "}#{vc15}"
+    c1.puts "#{"var c16 = "}#{vc16}"
+    c1.puts "#{"var c17 = "}#{vc17}"
+    c1.puts "#{"var c18 = "}#{vc18}"
+    c1.puts "#{"var c19 = "}#{vc19}"
+    c1.puts "#{"var c20 = "}#{vc20}"
+end
+#</cat>
+
+
+#<data loop><tta>
+data_hash["data"]["12"].each do |aryt|		#for each object in the array,
+varSpdt = aryt["speed"] * 0.621371			#set var for "speed" value in array, convert to mph
+varVIDt = aryt["vehicle_id"]				#set var for "vehicle_id" value in array,
+varLngt = aryt["location"]["lng"]			#set var for longitude value in array,
+varLatt = aryt["location"]["lat"]			#set var for latitude value in array,
+varRtt = aryt["route_id"]					#set var for route_id value in array
+varHdt = aryt["heading"]					#set var for heading value in array
+varSegt = aryt["segment_id"]				#set var for segment_id value in array
+varCountt = varCountt + 1					#increase repeat iterations by 1,
+varSumt = varSumt + varSpdt					#separately, set var for sum of all "speed" values in array,
+varTcumSpd = varTcumSpd + varSpdt			#cumulative speed tracking
+varTcumCt = varTcumCt + 1					#cumulative count tracking
+File.open(fname, "a+") do |f5|
+	f5.puts "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},TTA,#{varVIDt},#{varSpdt.round(1)},#{varLngt},#{varLatt},#{varRtt},#{varHdt},#{varSegt}"
+end	
+varSpdt = 0
+varVIDt = 0
+varLngt = 0
+varLatt = 0
+varRtt = 0
+varHdt = 0
+varSegt = 0
+end											#...end array loop
+varAvgt = varSumt / varCountt				#calculate TTA instant average bus speed
+varTcum = varTcumSpd / varTcumCt			#calculate TTA cumulative avgerage bus speed
+puts "TTA|#{"i" * varAvgt.round(0)}"					#instant bar graph - TTA
+puts "   |#{"a" * varTcum.round(0)}"					#avg bar graph - TTA
+File.open(gname, "a+") do |g3|
+	g3.puts "#{varTime},TTA,#{varCountt},#{varAvgt.round(1)}"
+end
+File.open(hname, "a+") do |h1|
+h1.puts "#{f} #{varAvgt.round(1)} (#{varTcum.round(1)} cumulative)"
+end
 vt20 = vt19
 vt19 = vt18
 vt18 = vt17
@@ -367,6 +416,66 @@ vt4 = vt3
 vt3 = vt2
 vt2 = vt1
 vt1 = varAvgt
+
+File.open(cname, "a+") do |c1|
+	c1.puts "#{"var t1 = "}#{vt1}"
+    c1.puts "#{"var t2 = "}#{vt2}"
+    c1.puts "#{"var t3 = "}#{vt3}"
+    c1.puts "#{"var t4 = "}#{vt4}"
+	c1.puts "#{"var t5 = "}#{vt5}"
+    c1.puts "#{"var t6 = "}#{vt6}"
+    c1.puts "#{"var t7 = "}#{vt7}"
+    c1.puts "#{"var t8 = "}#{vt8}"
+    c1.puts "#{"var t9 = "}#{vt9}"
+    c1.puts "#{"var t10 = "}#{vt10}"
+    c1.puts "#{"var t11 = "}#{vt11}"
+    c1.puts "#{"var t12 = "}#{vt12}"
+    c1.puts "#{"var t13 = "}#{vt13}"
+    c1.puts "#{"var t14 = "}#{vt14}"
+	c1.puts "#{"var t15 = "}#{vt15}"
+    c1.puts "#{"var t16 = "}#{vt16}"
+    c1.puts "#{"var t17 = "}#{vt17}"
+    c1.puts "#{"var t18 = "}#{vt18}"
+    c1.puts "#{"var t19 = "}#{vt19}"
+    c1.puts "#{"var t20 = "}#{vt20}"
+end
+#</tta>
+
+
+#<data loop><wlf>
+data_hash["data"]["16"].each do |aryw|		#for each object in the array,
+varSpdw = aryw["speed"] * 0.621371			#set var for "speed" value in array, convert to mph
+varVIDw = aryw["vehicle_id"]				#set var for "vehicle_id" value in array,
+varLngw = aryw["location"]["lng"]			#set var for longitude value in array,
+varLatw = aryw["location"]["lat"]			#set var for latitude value in array,
+varRtw = aryw["route_id"]					#set var for route_id value in array
+varHdw = aryw["heading"]					#set var for heading value in array
+varSegw = aryw["segment_id"]				#set var for segment_id value in array
+varCountw = varCountw + 1					#increase repeat iterations by 1,
+varSumw = varSumw + varSpdw					#separately, set var for sum of all "speed" values in array,
+varWcumSpd = varWcumSpd + varSpdw			#cumulative speed tracking
+varWcumCt = varWcumCt + 1					#cumulative count tracking
+File.open(fname, "a+") do |f6|
+	f6.puts "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},WLF,#{varVIDw},#{varSpdw.round(1)},#{varLngw},#{varLatw},#{varRtw},#{varHdw},#{varSegw}"
+end	
+varSpdw = 0
+varVIDw = 0
+varLngw = 0
+varLatw = 0
+varRtw = 0
+varHdw = 0
+varSegw = 0
+end											#...end array loop
+varAvgw	= varSumw / varCountw				#calculate WLF instant average bus speed
+varWcum = varWcumSpd / varWcumCt			#calculate WLF cumulative average bus speed
+puts "WLF|#{"i" * varAvgw.round(0)}"					#instant bar graph - WLF
+puts "   |#{"a" * varWcum.round(0)}"					#avg bar graph - WLF
+File.open(gname, "a+") do |g4|
+	g4.puts "#{varTime},WLF,#{varCountw},#{varAvgw.round(1)}"
+end
+File.open(hname, "a+") do |h1|
+h1.puts "#{w} #{varAvgw.round(1)} (#{varWcum.round(1)} cumulative)"
+end
 vw20 = vw19
 vw19 = vw18
 vw18 = vw17
@@ -387,6 +496,41 @@ vw4 = vw3
 vw3 = vw2
 vw2 = vw1
 vw1 = varAvgw
+
+File.open(cname, "a+") do |c1|
+	c1.puts "#{"var w1 = "}#{vw1}"
+    c1.puts "#{"var w2 = "}#{vw2}"
+    c1.puts "#{"var w3 = "}#{vw3}"
+    c1.puts "#{"var w4 = "}#{vw4}"
+    c1.puts "#{"var w5 = "}#{vw5}"
+    c1.puts "#{"var w6 = "}#{vw6}"
+    c1.puts "#{"var w7 = "}#{vw7}"
+    c1.puts "#{"var w8 = "}#{vw8}"
+    c1.puts "#{"var w9 = "}#{vw9}"
+    c1.puts "#{"var w10 = "}#{vw10}"
+	c1.puts "#{"var w11 = "}#{vw11}"
+    c1.puts "#{"var w12 = "}#{vw12}"
+    c1.puts "#{"var w13 = "}#{vw13}"
+    c1.puts "#{"var w14 = "}#{vw14}"
+    c1.puts "#{"var w15 = "}#{vw15}"
+    c1.puts "#{"var w16 = "}#{vw16}"
+    c1.puts "#{"var w17 = "}#{vw17}"
+    c1.puts "#{"var w18 = "}#{vw18}"
+    c1.puts "#{"var w19 = "}#{vw19}"
+    c1.puts "#{"var w20 = "}#{vw20}"
+end
+#</wlf>
+
+#<more console writing> - had to go here - somewhat sloppy but only place it will work
+puts""
+puts "Buses in Service"
+puts "...|----10---20---30---40---50---60---70---80buses"	#bus count bar graph
+puts "CAT|#{"*" * (varCount/2)}"
+puts "TTA|#{"*" * (varCountt/2)}"
+puts "WLF|#{"*" * (varCountw/2)}"
+
+#<google line chart writing>
+#variables
 ti20 = ti19
 ti19 = ti18
 ti18 = ti17
@@ -408,74 +552,7 @@ ti3 = ti2
 ti2 = ti1
 ti1 = varTi1
 
-#writes to HTML line chart
-File.open(cname, "w+") do |c1|
-	c1.puts "<html>"
-	c1.puts "<head>"
-	c1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{" src="}#{'"'}#{"https://www.google.com/jsapi"}#{'"'}#{"></script>"}"
-	c1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{">"}"
-	c1.puts "#{"google.load("}#{'"'}#{"visualization"}#{'"'}#{", "}#{'"'}#{"1"}#{'"'}#{", {packages:["}#{'"'}#{"corechart"}#{'"'}#{"]"}#{'}'}#{");"}"
-	c1.puts "#{"google.setOnLoadCallback(drawChart);"}"
-	c1.puts "#{"var c1 = "}#{vc1}"
-    c1.puts "#{"var c2 = "}#{vc2}"
-    c1.puts "#{"var c3 = "}#{vc3}"
-    c1.puts "#{"var c4 = "}#{vc4}"
-    c1.puts "#{"var c5 = "}#{vc5}"
-    c1.puts "#{"var c6 = "}#{vc6}"
-    c1.puts "#{"var c7 = "}#{vc7}"
-    c1.puts "#{"var c8 = "}#{vc8}"
-    c1.puts "#{"var c9 = "}#{vc9}"
-    c1.puts "#{"var c10 = "}#{vc10}"
-    c1.puts "#{"var c11 = "}#{vc11}"
-    c1.puts "#{"var c12 = "}#{vc12}"
-    c1.puts "#{"var c13 = "}#{vc13}"
-    c1.puts "#{"var c14 = "}#{vc14}"
-    c1.puts "#{"var c15 = "}#{vc15}"
-    c1.puts "#{"var c16 = "}#{vc16}"
-    c1.puts "#{"var c17 = "}#{vc17}"
-    c1.puts "#{"var c18 = "}#{vc18}"
-    c1.puts "#{"var c19 = "}#{vc19}"
-    c1.puts "#{"var c20 = "}#{vc20}"
-	c1.puts "#{"var t1 = "}#{vt1}"
-    c1.puts "#{"var t2 = "}#{vt2}"
-    c1.puts "#{"var t3 = "}#{vt3}"
-    c1.puts "#{"var t4 = "}#{vt4}"
-	c1.puts "#{"var t5 = "}#{vt5}"
-    c1.puts "#{"var t6 = "}#{vt6}"
-    c1.puts "#{"var t7 = "}#{vt7}"
-    c1.puts "#{"var t8 = "}#{vt8}"
-    c1.puts "#{"var t9 = "}#{vt9}"
-    c1.puts "#{"var t10 = "}#{vt10}"
-    c1.puts "#{"var t11 = "}#{vt11}"
-    c1.puts "#{"var t12 = "}#{vt12}"
-    c1.puts "#{"var t13 = "}#{vt13}"
-    c1.puts "#{"var t14 = "}#{vt14}"
-	c1.puts "#{"var t15 = "}#{vt15}"
-    c1.puts "#{"var t16 = "}#{vt16}"
-    c1.puts "#{"var t17 = "}#{vt17}"
-    c1.puts "#{"var t18 = "}#{vt18}"
-    c1.puts "#{"var t19 = "}#{vt19}"
-    c1.puts "#{"var t20 = "}#{vt20}"
-	c1.puts "#{"var w1 = "}#{vw1}"
-    c1.puts "#{"var w2 = "}#{vw2}"
-    c1.puts "#{"var w3 = "}#{vw3}"
-    c1.puts "#{"var w4 = "}#{vw4}"
-    c1.puts "#{"var w5 = "}#{vw5}"
-    c1.puts "#{"var w6 = "}#{vw6}"
-    c1.puts "#{"var w7 = "}#{vw7}"
-    c1.puts "#{"var w8 = "}#{vw8}"
-    c1.puts "#{"var w9 = "}#{vw9}"
-    c1.puts "#{"var w10 = "}#{vw10}"
-	c1.puts "#{"var w11 = "}#{vw11}"
-    c1.puts "#{"var w12 = "}#{vw12}"
-    c1.puts "#{"var w13 = "}#{vw13}"
-    c1.puts "#{"var w14 = "}#{vw14}"
-    c1.puts "#{"var w15 = "}#{vw15}"
-    c1.puts "#{"var w16 = "}#{vw16}"
-    c1.puts "#{"var w17 = "}#{vw17}"
-    c1.puts "#{"var w18 = "}#{vw18}"
-    c1.puts "#{"var w19 = "}#{vw19}"
-    c1.puts "#{"var w20 = "}#{vw20}"
+File.open(cname, "a+") do |c1|
 	c1.puts "#{"var ti1 = "}#{"'"}#{ti1}#{"'"}"
     c1.puts "#{"var ti2 = "}#{"'"}#{ti2}#{"'"}"
     c1.puts "#{"var ti3 = "}#{"'"}#{ti3}#{"'"}"
@@ -534,13 +611,14 @@ File.open(cname, "w+") do |c1|
 	c1.puts "#{"<div id="}#{'"'}#{"chart_div"}#{'"'}#{" style="}#{'"'}#{"width: 900px; height: 500px;"}#{'"'}#{"></div>"}"
 	c1.puts "#{"</body>"}"
 	c1.puts "#{"</html>"}"
+end
 
-	end
 
 sleep(d)
 end until varI > varNum
 
-#CLEANUP
-puts c									#writes "done" to console
-sleep(2)								#waits 10 seconds before closing console
+
+#---CLEANUP---
+puts "done"
+sleep(2)
 exit
