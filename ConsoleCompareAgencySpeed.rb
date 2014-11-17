@@ -16,8 +16,8 @@
 #	xx13. add wolfline & other agencies
 #	xx14. write html chart file. 
 #	15. fix force close error - probably something to with null variable handling
-#	xx16. dashboard away from console and into google charts. 
-#	xx17.	google bar chart for bus instant and average speed
+#	16. dashboard away from console and into google charts. 
+#	17.	google bar chart for bus instant and average speed
 
 #<agency_id values for reference>
 # C-Tran/Cary 		= 367
@@ -27,6 +27,7 @@
 # Wolfline/NCSU 	= 16
 # TTA 				= 12
 # Raleigh/CAT 		= 20
+
 #<require statements>
 require 'unirest'
 require 'json'
@@ -169,10 +170,6 @@ ti3 = 0
 ti2 = 0
 ti1 = 0
 
-
-
-
-
 #<write logfile headers>
 File.open(fname, "a+") do |f1|
 	f1.puts "time,agency,bus_id,mph,lon,lat,route,heading,segment_id"
@@ -194,7 +191,7 @@ end
 #<gets prompt>
 puts 'How long to sleep (in seconds) between each loop? (typically ~5)'
 d = gets.to_i 															
-#puts "\e[H\e[2J"
+puts "\e[H\e[2J"
 puts "#{d} seconds delay"
 sleep(2)
 puts "\e[H\e[2J"
@@ -263,14 +260,6 @@ puts "\e[H\e[2J"							#clears console
 puts "Loop delay: #{d} seconds" 			#loop delay in seconds
 puts "Iterations: #{varI} of #{varNum+1}"	#x of y count
 
-=begin
-puts""	
-puts "(i)nstant / (a)verage Fleet Speed"									
-puts "...|----5----10---15---20---25---30mph"	#instant bar graph
-=end
-
-
-
 #<log file writing>
 File.open(hname, "a+") do |h1|
 	h1.puts ""
@@ -278,19 +267,6 @@ File.open(hname, "a+") do |h1|
 	h1.puts "Iteration: #{varI} of #{varNum+1}"		#x of y count
 	h1.puts "Current Time: #{varTime}"				#current time
 end
-
-#<google chart writing>
-=begin
-File.open(cname, "w+") do |c1|
-	c1.puts "<html>"
-	c1.puts "<head>"
-	c1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{" src="}#{'"'}#{"https://www.google.com/jsapi"}#{'"'}#{"></script>"}"
-	c1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{">"}"
-	c1.puts "#{"google.load("}#{'"'}#{"visualization"}#{'"'}#{", "}#{'"'}#{"1"}#{'"'}#{", {packages:["}#{'"'}#{"corechart"}#{'"'}#{"]"}#{'}'}#{");"}"
-	c1.puts "#{"google.setOnLoadCallback(drawChart);"}"
-end
-=end
-
 
 #<data loop><cat>
 data_hash["data"]["20"].each do |ary|		#for each object in the array,
@@ -319,10 +295,6 @@ varSeg = 0
 end											#...end array loop
 varAvg = varSum / varCount					#calculate CAT instant average bus speed
 varCcum = varCcumSpd / varCcumCt			#calculate CAT cumulative average bus speed
-=begin
-puts "CAT|#{"i" * varAvg.round(0)}"					#instant bar graph - cat
-puts "   |#{"a" * varCcum.round(0)}"					#avg bar graph - cat
-=end
 File.open(gname, "a+") do |g2|
 	g2.puts "#{varTime},CAT,#{varCount},#{varAvg.round(1)}"
 end
@@ -349,31 +321,6 @@ vc4 = vc3
 vc3 = vc2
 vc2 = vc1
 vc1 = varAvg
-
-=begin
-File.open(cname, "a+") do |c1|
-c1.puts "#{"var c1 = "}#{vc1}"
-    c1.puts "#{"var c2 = "}#{vc2}"
-    c1.puts "#{"var c3 = "}#{vc3}"
-    c1.puts "#{"var c4 = "}#{vc4}"
-    c1.puts "#{"var c5 = "}#{vc5}"
-    c1.puts "#{"var c6 = "}#{vc6}"
-    c1.puts "#{"var c7 = "}#{vc7}"
-    c1.puts "#{"var c8 = "}#{vc8}"
-    c1.puts "#{"var c9 = "}#{vc9}"
-    c1.puts "#{"var c10 = "}#{vc10}"
-    c1.puts "#{"var c11 = "}#{vc11}"
-    c1.puts "#{"var c12 = "}#{vc12}"
-    c1.puts "#{"var c13 = "}#{vc13}"
-    c1.puts "#{"var c14 = "}#{vc14}"
-    c1.puts "#{"var c15 = "}#{vc15}"
-    c1.puts "#{"var c16 = "}#{vc16}"
-    c1.puts "#{"var c17 = "}#{vc17}"
-    c1.puts "#{"var c18 = "}#{vc18}"
-    c1.puts "#{"var c19 = "}#{vc19}"
-    c1.puts "#{"var c20 = "}#{vc20}"
-end
-=end
 #</cat>
 
 
@@ -403,10 +350,6 @@ varSegt = 0
 end											#...end array loop
 varAvgt = varSumt / varCountt				#calculate TTA instant average bus speed
 varTcum = varTcumSpd / varTcumCt			#calculate TTA cumulative avgerage bus speed
-=begin
-puts "TTA|#{"i" * varAvgt.round(0)}"					#instant bar graph - TTA
-puts "   |#{"a" * varTcum.round(0)}"					#avg bar graph - TTA
-=end
 File.open(gname, "a+") do |g3|
 	g3.puts "#{varTime},TTA,#{varCountt},#{varAvgt.round(1)}"
 end
@@ -433,31 +376,6 @@ vt4 = vt3
 vt3 = vt2
 vt2 = vt1
 vt1 = varAvgt
-
-=begin
-File.open(cname, "a+") do |c1|
-	c1.puts "#{"var t1 = "}#{vt1}"
-    c1.puts "#{"var t2 = "}#{vt2}"
-    c1.puts "#{"var t3 = "}#{vt3}"
-    c1.puts "#{"var t4 = "}#{vt4}"
-	c1.puts "#{"var t5 = "}#{vt5}"
-    c1.puts "#{"var t6 = "}#{vt6}"
-    c1.puts "#{"var t7 = "}#{vt7}"
-    c1.puts "#{"var t8 = "}#{vt8}"
-    c1.puts "#{"var t9 = "}#{vt9}"
-    c1.puts "#{"var t10 = "}#{vt10}"
-    c1.puts "#{"var t11 = "}#{vt11}"
-    c1.puts "#{"var t12 = "}#{vt12}"
-    c1.puts "#{"var t13 = "}#{vt13}"
-    c1.puts "#{"var t14 = "}#{vt14}"
-	c1.puts "#{"var t15 = "}#{vt15}"
-    c1.puts "#{"var t16 = "}#{vt16}"
-    c1.puts "#{"var t17 = "}#{vt17}"
-    c1.puts "#{"var t18 = "}#{vt18}"
-    c1.puts "#{"var t19 = "}#{vt19}"
-    c1.puts "#{"var t20 = "}#{vt20}"
-end
-=end
 #</tta>
 
 
@@ -487,10 +405,6 @@ varSegw = 0
 end											#...end array loop
 varAvgw	= varSumw / varCountw				#calculate WLF instant average bus speed
 varWcum = varWcumSpd / varWcumCt			#calculate WLF cumulative average bus speed
-=begin
-puts "WLF|#{"i" * varAvgw.round(0)}"					#instant bar graph - WLF
-puts "   |#{"a" * varWcum.round(0)}"					#avg bar graph - WLF
-=end
 File.open(gname, "a+") do |g4|
 	g4.puts "#{varTime},WLF,#{varCountw},#{varAvgw.round(1)}"
 end
@@ -517,42 +431,7 @@ vw4 = vw3
 vw3 = vw2
 vw2 = vw1
 vw1 = varAvgw
-
-=begin
-File.open(cname, "a+") do |c1|
-	c1.puts "#{"var w1 = "}#{vw1}"
-    c1.puts "#{"var w2 = "}#{vw2}"
-    c1.puts "#{"var w3 = "}#{vw3}"
-    c1.puts "#{"var w4 = "}#{vw4}"
-    c1.puts "#{"var w5 = "}#{vw5}"
-    c1.puts "#{"var w6 = "}#{vw6}"
-    c1.puts "#{"var w7 = "}#{vw7}"
-    c1.puts "#{"var w8 = "}#{vw8}"
-    c1.puts "#{"var w9 = "}#{vw9}"
-    c1.puts "#{"var w10 = "}#{vw10}"
-	c1.puts "#{"var w11 = "}#{vw11}"
-    c1.puts "#{"var w12 = "}#{vw12}"
-    c1.puts "#{"var w13 = "}#{vw13}"
-    c1.puts "#{"var w14 = "}#{vw14}"
-    c1.puts "#{"var w15 = "}#{vw15}"
-    c1.puts "#{"var w16 = "}#{vw16}"
-    c1.puts "#{"var w17 = "}#{vw17}"
-    c1.puts "#{"var w18 = "}#{vw18}"
-    c1.puts "#{"var w19 = "}#{vw19}"
-    c1.puts "#{"var w20 = "}#{vw20}"
-end
-=end
 #</wlf>
-
-#<more console writing> - had to go here - somewhat sloppy but only place it will work
-=begin
-puts""
-puts "Buses in Service"
-puts "...|----10---20---30---40---50---60---70---80buses"	#bus count bar graph
-puts "CAT|#{"*" * (varCount/2)}"
-puts "TTA|#{"*" * (varCountt/2)}"
-puts "WLF|#{"*" * (varCountw/2)}"
-=end
 
 #<google line chart writing>
 #variables
@@ -731,7 +610,6 @@ File.open(cname, "w+") do |c1|
 	c1.puts "#{"</body>"}"
 	c1.puts "#{"</html>"}"
 end
-
 
 sleep(d)
 end until varI > varNum
