@@ -33,13 +33,14 @@
 require 'unirest'
 require 'json'
 #<initital variable setup>
-cname = "FleetSpeedChart.html"										#Creates a line chart using google charts api for bus fleet speed
+zname = "FleetSpeedChart.html"
+cname = "cache.txt"										#Creates a line chart using google charts api for bus fleet speed
 d = 0
 data_hash = 0
 e = "CAT mph = "
 f = "TTA mph = "
 fname = "AgencySpeed_bus #{Time.now.strftime('%Y%m%d')}.txt"		#Creates a new .txt file in directory of .rb
-gname = "Agency.Speed_avg #{Time.now.strftime('%Y%m%d')}.txt"		#Creates a new .txt file in directory of .rb
+gname = "AgencySpeed_avg #{Time.now.strftime('%Y%m%d')}.txt"		#Creates a new .txt file in directory of .rb
 hname = "AgencySpeed_log #{Time.now.strftime('%Y%m%d')}.txt"		#Creates a new .txt file in directory of .rb
 payload = 0
 payload2 = 0
@@ -210,7 +211,7 @@ begin
 File.open(cname, "w+") do |c1|
 	c1.puts "<html>"
 	c1.puts "<head>"
-	c1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{11}#{'"'}#{">"}#{'"'}"#refresh code
+	c1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{10}#{'"'}#{">"}#{'"'}"#refresh code
 	c1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{" src="}#{'"'}#{"https://www.google.com/jsapi"}#{'"'}#{"></script>"}"
 #historgram
 	c1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{">"}"		#<script type="text/javascript">
@@ -649,6 +650,18 @@ File.open(cname, "a+") do |c1|
 	c1.puts "#{"<div id="}#{'"'}#{"chart_div3"}#{'"'}#{" style="}#{'"'}#{"width: 600px; height: 400px;"}#{'"'}#{"></div>"}"
 	c1.puts "#{"</body>"}"
 	c1.puts "#{"</html>"}"
+end
+
+File.open(zname, "w+") do |z4|
+z4.puts ""
+end
+
+File.open(cname, "r") do |z1|
+z1.each_line do |z2|
+File.open(zname, "a+") do |z3|
+z3.puts z2
+end
+end
 end
 
 sleep(d)
