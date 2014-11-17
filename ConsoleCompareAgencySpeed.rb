@@ -195,7 +195,7 @@ varAvg = 0									#A value derived from varSum divided by varCount
 # the mashape call to TransLoc api
 response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C16%2C20&callback=call",
   headers:{
-    "X-Mashape-Key" => "<key>"
+    "X-Mashape-Key" => "niYNYS5ziAmshx3q3abZrZm2c14Hp1HmeAWjsnjzs6TmhpQdu6"
   }
 #parse the call  
 payload2 = response.body					#sets the call response body as a variable
