@@ -23,11 +23,12 @@
 #<agency_id values for reference>
 # C-Tran/Cary 		= 367
 # DATA/Durham 		= 24
-# CHT/Chapel Hill 	= 80
+# CHT/Chapel Hill 	= 8
 # DukeU 			= 176
 # Wolfline/NCSU 	= 16
 # TTA 				= 12
 # Raleigh/CAT 		= 20
+# Chicago/CTA		= 104
 
 #<require statements>
 require 'unirest'
@@ -35,9 +36,11 @@ require 'json'
 #<initital variable setup>
 
 hfull = "histogram.html"
-hfull2 = "histogram2.html"
 haname = "histogramcacheA #{Time.now.strftime('%Y%m%d')}.txt"			#header
 hbname = "histogramcacheB #{Time.now.strftime('%Y%m%d')}.txt"			#data
+File.open(hbname, "w+") do |zz2|
+zz2.puts ""
+end
 hcname = "histogramcacheC #{Time.now.strftime('%Y%m%d')}.txt"			#footer
 
 d = 0
@@ -92,7 +95,7 @@ varVIDw = 0
 varWcum = 0
 varWcumCt = 0
 varWcumSpd = 0
-w = "WLF mph = "
+w = "DAT mph = "
 
 #variables related to line chart
 vc1 = 0
@@ -179,7 +182,7 @@ ti1 = 0
 
 #<write logfile headers>
 File.open(fname, "a+") do |f1|
-	f1.puts "time,agency,bus_id,mph,lon,lat,route,heading,segment_id"
+	f1.puts "year,month,day,time,agency,bus_id,mph,lon,lat,route,heading,segment_id"
 end
 File.open(gname, "a+") do |g7|
 	g7.puts "time,agency,count_buses,mph"
@@ -270,7 +273,8 @@ varHdw = 0
 varSegw = 0
 
 #<call the transloc api>
-response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C16%2C20&callback=call",
+#response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C24%2C20&callback=call&geo_area=35.777531%2C-78.637277%7C500.0",
+response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C24%2C20&callback=call",
   headers:{
     "X-Mashape-Key" => "<key>"
   }
@@ -315,7 +319,7 @@ end
 
 #write it to a file
 File.open(fname, "a+") do |f4|
-	f4.puts "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},CAT,#{varVID},#{varSpd.round(1)},#{varLng},#{varLat},#{varRt},#{varHd},#{varSeg}"
+	f4.puts "#{Time.now.strftime('%Y')},#{Time.now.strftime('%m')},#{Time.now.strftime('%d')},#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},CAT,#{varVID},#{varSpd.round(1)},#{varLng},#{varLat},#{varRt},#{varHd},#{varSeg}"
 end
 varSpd = 0
 varVID = 0
@@ -387,7 +391,7 @@ end
 end
 
 File.open(fname, "a+") do |f5|
-	f5.puts "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},TTA,#{varVIDt},#{varSpdt.round(1)},#{varLngt},#{varLatt},#{varRtt},#{varHdt},#{varSegt}"
+	f5.puts "#{Time.now.strftime('%Y')},#{Time.now.strftime('%m')},#{Time.now.strftime('%d')},#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},TTA,#{varVIDt},#{varSpdt.round(1)},#{varLngt},#{varLatt},#{varRtt},#{varHdt},#{varSegt}"
 end	
 varSpdt = 0
 varVIDt = 0
@@ -435,8 +439,8 @@ vt1 = varAvgt
 #</tta>
 
 
-#<data loop><wlf>
-Array(data_hash["data"]["16"]).each do |aryw|		#for each object in the array,
+#<data loop><dat>
+Array(data_hash["data"]["24"]).each do |aryw|		#for each object in the array,
 varSpdw = aryw["speed"] * 0.621371			#set var for "speed" value in array, convert to mph
 varVIDw = aryw["vehicle_id"]				#set var for "vehicle_id" value in array,
 varLngw = aryw["location"]["lng"]			#set var for longitude value in array,
@@ -456,7 +460,7 @@ end
 end
 
 File.open(fname, "a+") do |f6|
-	f6.puts "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},WLF,#{varVIDw},#{varSpdw.round(1)},#{varLngw},#{varLatw},#{varRtw},#{varHdw},#{varSegw}"
+	f6.puts "#{Time.now.strftime('%Y')},#{Time.now.strftime('%m')},#{Time.now.strftime('%d')},#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},DAT,#{varVIDw},#{varSpdw.round(1)},#{varLngw},#{varLatw},#{varRtw},#{varHdw},#{varSegw}"
 end	
 varSpdw = 0
 varVIDw = 0
@@ -468,15 +472,15 @@ varSegw = 0
 end											#...end array loop
 
 if varCountw > 0
-varAvgw	= varSumw / varCountw				#calculate WLF instant average bus speed
+varAvgw	= varSumw / varCountw				#calculate DATA instant average bus speed
 end
 
 if varWcumCt > 0
-varWcum = varWcumSpd / varWcumCt			#calculate WLF cumulative average bus speed
+varWcum = varWcumSpd / varWcumCt			#calculate DATA cumulative average bus speed
 end
 
 File.open(gname, "a+") do |g4|
-	g4.puts "#{varTime},WLF,#{varCountw},#{varAvgw.round(1)}"
+	g4.puts "#{varTime},DAT,#{varCountw},#{varAvgw.round(1)}"
 end
 File.open(hname, "a+") do |h1|
 h1.puts "#{w} #{varAvgw.round(1)} (#{varWcum.round(1)} cumulative)"
@@ -501,7 +505,7 @@ vw4 = vw3
 vw3 = vw2
 vw2 = vw1
 vw1 = varAvgw
-#</wlf>
+#</dat>
 
 #<google line chart writing>
 #variables
@@ -633,7 +637,7 @@ File.open(hcname, "w+") do |hc1|
 #/bar vars
 	hc1.puts "#{"function drawChart() {"}"
 	hc1.puts "#{"var data = google.visualization.arrayToDataTable(["}"
-    hc1.puts "#{"['P',	'CAT',	'TTA',	'WLF'],"}"
+    hc1.puts "#{"['P',	'CAT',	'TTA',	'DAT'],"}"
     hc1.puts "#{"[ti1,	c1,		t1,		w1],"}"
     hc1.puts "#{"[ti2,	c2,		t2,		w2],"}"
 	hc1.puts "#{"[ti3,	c3,		t3,		w3],"}"
@@ -674,7 +678,7 @@ File.open(hcname, "w+") do |hc1|
     hc1.puts "#{"['Agency',	'Instant',	'Average'],"}"						# ['Agency', 'Instant MPH', 'Average MPH'],
     hc1.puts "#{"['CAT',		vc1,			varCcum],"}"					# ['CAT',  35,      14],
     hc1.puts "#{"['TTA',		vt1,			varTcum],"}"					# ['TTA',  55,      19],
-    hc1.puts "#{"['WLF',		vw1,			varWcum]"}"						# ['WLF',  10,       12]
+    hc1.puts "#{"['DAT',		vw1,			varWcum]"}"						# ['DATA',  10,       12]
 	hc1.puts "#{"]);"}"														# ]);
 	hc1.puts "#{"var options2 = {"}"											# var options2 = {
 	hc1.puts "#{"title: 'Bus Fleet Speed - instant vs average MPH',"}"			# title: 'Bus Fleet Speed - instant vs average',
@@ -702,18 +706,21 @@ end
 
 hafile = File.open(haname, "r")
 hacontents = hafile.read
+hafile.close
 File.open(hfull, "a+") do |ha3|
 ha3.puts hacontents
 end
 
 hbfile = File.open(hbname, "r")
 hbcontents = hbfile.read
+hbfile.close
 File.open(hfull, "a+") do |ha4|
 ha4.puts hbcontents
 end
 
 hcfile = File.open(hcname, "r")
 hccontents = hcfile.read
+hcfile.close
 File.open(hfull, "a+") do |ha5|
 ha5.puts hccontents
 end
@@ -721,6 +728,10 @@ end
 
 sleep(d)
 end until varI > varNum
+
+File.delete(haname)
+File.delete(hbname)
+File.delete(hcname)
 
 #---CLEANUP---
 puts "done"
