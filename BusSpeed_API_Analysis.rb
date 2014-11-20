@@ -313,7 +313,7 @@ varCcumCt = varCcumCt + 1					#cumulative count tracking
 #histogram
 if varSpd > 0
 File.open(hbname, "a+") do |hb1|
-	hb1.puts "#{"['"}#{varVID}#{"', "}#{varSpd}#{"],"}"
+	hb1.puts "#{"['"}#{varVID}#{"', "}#{varSpd.round(1)}#{"],"}"
 end
 end
 
@@ -386,7 +386,7 @@ varTcumCt = varTcumCt + 1					#cumulative count tracking
 
 if varSpdt > 0
 File.open(hbname, "a+") do |hb1|
-	hb1.puts "#{"['"}#{varVIDt}#{"', "}#{varSpdt}#{"],"}"
+	hb1.puts "#{"['"}#{varVIDt}#{"', "}#{varSpdt.round(1)}#{"],"}"
 end
 end
 
@@ -455,7 +455,7 @@ varWcumCt = varWcumCt + 1					#cumulative count tracking
 
 if varSpdw > 0
 File.open(hbname, "a+") do |hb1|
-	hb1.puts "#{"['"}#{varVIDw}#{"', "}#{varSpdw}#{"],"}"
+	hb1.puts "#{"['"}#{varVIDw}#{"', "}#{varSpdw.round(1)}#{"],"}"
 end
 end
 
@@ -536,7 +536,7 @@ File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"var options3 = {"}"								# var options3 = {	
 	hc1.puts "#{"title: 'Speed of Individual Buses',"}"			# title: 'foo',
 	hc1.puts "#{"legend: { position: 'none' },"}"
-	hc1.puts "#{"histogram: { bucketSize: 5 }"}"
+	hc1.puts "#{"histogram: { bucketSize: 1 }"}"
 	hc1.puts "#{"};"}"
 	hc1.puts "#{"var chart3 = new google.visualization.Histogram(document.getElementById('chart_div3'));"}"												# var chart2 = new google.visualization.BarChart(document.getElementById('chart_div2'));	
 	hc1.puts "#{"chart3.draw(data3, options3);"}"
