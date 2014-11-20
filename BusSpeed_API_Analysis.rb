@@ -176,6 +176,7 @@ ti3 = 0
 ti2 = 0
 ti1 = 0
 
+
 #<write logfile headers>
 File.open(fname, "a+") do |f1|
 	f1.puts "time,agency,bus_id,mph,lon,lat,route,heading,segment_id"
@@ -216,7 +217,7 @@ File.open(haname, "w+") do |ha1|
 	ha1.puts "<html>"
 	ha1.puts "<head>"
 	if varI < varNum
-	ha1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{5}#{'"'}#{">"}#{'"'}"#refresh code
+	ha1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{90}#{'"'}#{">"}#{'"'}"#refresh code
 	end
 	ha1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{" src="}#{'"'}#{"https://www.google.com/jsapi"}#{'"'}#{"></script>"}"
 #historgram
@@ -324,8 +325,15 @@ varRt = 0
 varHd = 0
 varSeg = 0
 end											#...end array loop
+
+if varCount > 0 
 varAvg = varSum / varCount					#calculate CAT instant average bus speed
+end
+
+if varCcumCt > 0
 varCcum = varCcumSpd / varCcumCt			#calculate CAT cumulative average bus speed
+end
+
 File.open(gname, "a+") do |g2|
 	g2.puts "#{varTime},CAT,#{varCount},#{varAvg.round(1)}"
 end
@@ -354,8 +362,10 @@ vc2 = vc1
 vc1 = varAvg
 #</cat>
 
+
+
 #<data loop><tta>
-data_hash["data"]["12"].each do |aryt|		#for each object in the array,
+Array(data_hash["data"]["12"]).each do |aryt|		#for each object in the array,
 varSpdt = aryt["speed"] * 0.621371			#set var for "speed" value in array, convert to mph
 varVIDt = aryt["vehicle_id"]				#set var for "vehicle_id" value in array,
 varLngt = aryt["location"]["lng"]			#set var for longitude value in array,
@@ -367,6 +377,8 @@ varCountt = varCountt + 1					#increase repeat iterations by 1,
 varSumt = varSumt + varSpdt					#separately, set var for sum of all "speed" values in array,
 varTcumSpd = varTcumSpd + varSpdt			#cumulative speed tracking
 varTcumCt = varTcumCt + 1					#cumulative count tracking
+
+
 
 if varSpdt > 0
 File.open(hbname, "a+") do |hb1|
@@ -385,8 +397,15 @@ varRtt = 0
 varHdt = 0
 varSegt = 0
 end											#...end array loop
+
+if varCountt > 0 
 varAvgt = varSumt / varCountt				#calculate TTA instant average bus speed
+end 
+
+if varTcumCt > 0
 varTcum = varTcumSpd / varTcumCt			#calculate TTA cumulative avgerage bus speed
+end
+
 File.open(gname, "a+") do |g3|
 	g3.puts "#{varTime},TTA,#{varCountt},#{varAvgt.round(1)}"
 end
@@ -417,7 +436,7 @@ vt1 = varAvgt
 
 
 #<data loop><wlf>
-data_hash["data"]["16"].each do |aryw|		#for each object in the array,
+Array(data_hash["data"]["16"]).each do |aryw|		#for each object in the array,
 varSpdw = aryw["speed"] * 0.621371			#set var for "speed" value in array, convert to mph
 varVIDw = aryw["vehicle_id"]				#set var for "vehicle_id" value in array,
 varLngw = aryw["location"]["lng"]			#set var for longitude value in array,
@@ -447,8 +466,15 @@ varRtw = 0
 varHdw = 0
 varSegw = 0
 end											#...end array loop
+
+if varCountw > 0
 varAvgw	= varSumw / varCountw				#calculate WLF instant average bus speed
+end
+
+if varWcumCt > 0
 varWcum = varWcumSpd / varWcumCt			#calculate WLF cumulative average bus speed
+end
+
 File.open(gname, "a+") do |g4|
 	g4.puts "#{varTime},WLF,#{varCountw},#{varAvgw.round(1)}"
 end
@@ -506,7 +532,7 @@ File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"var options3 = {"}"								# var options3 = {	
 	hc1.puts "#{"title: 'Speed of Individual Buses',"}"			# title: 'foo',
 	hc1.puts "#{"legend: { position: 'none' },"}"
-	hc1.puts "#{"histogram: { bucketSize: 10 }"}"
+	hc1.puts "#{"histogram: { bucketSize: 5 }"}"
 	hc1.puts "#{"};"}"
 	hc1.puts "#{"var chart3 = new google.visualization.Histogram(document.getElementById('chart_div3'));"}"												# var chart2 = new google.visualization.BarChart(document.getElementById('chart_div2'));	
 	hc1.puts "#{"chart3.draw(data3, options3);"}"
@@ -595,6 +621,8 @@ File.open(hcname, "w+") do |hc1|
     hc1.puts "#{"var ti18 = "}#{"'"}#{ti18}#{"'"}"
     hc1.puts "#{"var ti19 = "}#{"'"}#{ti19}#{"'"}"
     hc1.puts "#{"var ti20 = "}#{"'"}#{ti20}#{"'"}"
+
+	
 #bar chart vars here
     hc1.puts "#{"var vc1 = "}#{vc1}"
     hc1.puts "#{"var vt1 = "}#{vt1}"
@@ -631,6 +659,7 @@ File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"title: 'Bus Fleet Speed',"}"
 	hc1.puts "#{"curveType: 'function',"}"
 	hc1.puts "#{"hAxis: {showTextEvery: 3, direction: -1},"}"	#option
+	hc1.puts "#{"vAxis: {minValue: 0},"}"	#option
 	hc1.puts "#{"};"}"
 	hc1.puts "#{"var chart = new google.visualization.LineChart(document.getElementById('chart_div'));"}"
 	hc1.puts "#{"chart.draw(data, options);"}"
@@ -649,6 +678,7 @@ File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"]);"}"														# ]);
 	hc1.puts "#{"var options2 = {"}"											# var options2 = {
 	hc1.puts "#{"title: 'Bus Fleet Speed - instant vs average MPH',"}"			# title: 'Bus Fleet Speed - instant vs average',
+	hc1.puts "#{"hAxis: {minValue: 0},"}"	
 	hc1.puts "#{"};"}"														# };
 	hc1.puts "#{"var chart2 = new google.visualization.BarChart(document.getElementById('chart_div2'));"}"												# var chart2 = new google.visualization.BarChart(document.getElementById('chart_div2'));
 	hc1.puts "#{"chart2.draw(data2, options2);"}"							# chart2.draw(data2, options2);
