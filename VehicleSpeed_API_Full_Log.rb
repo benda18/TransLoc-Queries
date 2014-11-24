@@ -3,7 +3,7 @@
 require 'unirest'
 require 'json'
 #fname = "sample.txt"
-fname = "CAT #{Time.now.strftime('%Y%m%d-%H%M%S')}.txt"
+fname = "ResponseLog #{Time.now.strftime('%Y%m%d-%H%M%S')}.txt"
 somefile = File.open(fname, "w")
 
 #<call the transloc api>
