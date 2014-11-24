@@ -40,25 +40,25 @@ require 'json'
 #<initital variable setup>
 
 hfull = "VehicleSpeedDash.html"
-haname = "histogramcacheA #{Time.now.strftime('%Y%m%d')}.txt"			#header
-hbname = "histogramcacheB #{Time.now.strftime('%Y%m%d')}.txt"			#data
+haname = "dashcacheA #{Time.now.strftime('%Y%m%d')}.txt"			#header
+hbname = "dashcacheB #{Time.now.strftime('%Y%m%d')}.txt"			#data
 File.open(hbname, "w+") do |zz2|										#starts hbname over as a blank file each launch. 
 zz2.puts ""
 end
-hcname = "histogramcacheC #{Time.now.strftime('%Y%m%d')}.txt"			#footer
-hdname = "histogramcacheD #{Time.now.strftime('%Y%m%d')}.txt"			#footer
+hcname = "dashcacheC #{Time.now.strftime('%Y%m%d')}.txt"			#footer
+hdname = "dashcacheD #{Time.now.strftime('%Y%m%d')}.txt"			#footer
 File.open(hdname, "w+") do |zz3|	
 zz3.puts ""
 end
-hename = "histogramcacheE #{Time.now.strftime('%Y%m%d')}.txt"			#footer
+hename = "dashcacheE #{Time.now.strftime('%Y%m%d')}.txt"			#footer
 
 d = 0
 data_hash = 0
-e = "CAT mph = "
-f = "TTA mph = "
-fname = "AgencySpeed_bus #{Time.now.strftime('%Y%m%d')}.txt"		# a new .txt file in directory of .rb
-gname = "AgencySpeed_avg #{Time.now.strftime('%Y%m%d')}.txt"		# a new .txt file in directory of .rb
-hname = "AgencySpeed_log #{Time.now.strftime('%Y%m%d')}.txt"		# a new .txt file in directory of .rb
+#e = "CAT mph = "
+#f = "TTA mph = "
+fname = "VehicleSpeed_bus #{Time.now.strftime('%Y%m%d')}.txt"		# a new .txt file in directory of .rb
+#gname = "VehicleSpeed_avg #{Time.now.strftime('%Y%m%d')}.txt"		# a new .txt file in directory of .rb
+#hname = "VehicleSpeed_log #{Time.now.strftime('%Y%m%d')}.txt"		# a new .txt file in directory of .rb
 payload = 0
 payload2 = 0
 response = 0
@@ -104,7 +104,7 @@ varVIDw = 0
 varWcum = 0
 varWcumCt = 0
 varWcumSpd = 0
-w = "WLF mph = "
+#w = "WLF mph = "
 
 #variables related to line chart
 vc1 = 0
@@ -196,10 +196,11 @@ File.open(fname, "a+") do |f1|
 	f1.puts "year,month,day,time,agency,bus_id,mph,lon,lat,route,heading,segment_id"
 end
 end
-
+=begin
 File.open(gname, "a+") do |g7|
 	g7.puts "time,agency,count_buses,mph"
 end
+
 File.open(hname, "a+") do |h2|
 	h2.puts "###CONSOLE LOG FILE###"
 	h2.puts ""
@@ -209,6 +210,7 @@ File.open(hname, "a+") do |h2|
 	h2.puts "How many loops to perform? (typically ~10)"
 	h2.puts "#{varNum} loops"
 end
+=end
 
 #---LAUNCH CONSOLE---
 #<gets prompt>
@@ -294,7 +296,7 @@ varSegw = 0
 #response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C16%2C20&callback=call&geo_area=35.777531%2C-78.637277%7C500.0", #this is the geoboundary example
 response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C16%2C20&callback=call",
   headers:{
-    "X-Mashape-Key" => "niYNYS5ziAmshx3q3abZrZm2c14Hp1HmeAWjsnjzs6TmhpQdu6"
+    "X-Mashape-Key" => "<key>"
   }
 #<parse the call>
 payload2 = response.body					#sets the call response body as a variable
@@ -307,12 +309,14 @@ puts "Loop delay: #{d} seconds" 			#loop delay in seconds
 puts "Iterations: #{varI} of #{varNum+1}"	#x of y count
 
 #<log file writing>
+=begin
 File.open(hname, "a+") do |h1|
 	h1.puts ""
 	h1.puts ""
 	h1.puts "Iteration: #{varI} of #{varNum+1}"		#x of y count
 	h1.puts "Current Time: #{varTime}"				#current time
 end
+=end
 
 #<data loop><cat>
 data_hash["data"]["20"].each do |ary|		#for each object in the array,
@@ -362,12 +366,18 @@ if varCcumCt > 0
 varCcum = varCcumSpd / varCcumCt			#calculate CAT cumulative average bus speed
 end
 
+=begin
 File.open(gname, "a+") do |g2|
 	g2.puts "#{varTime},CAT,#{varCount},#{varAvg.round(1)}"
 end
+=end
+
+=begin
 File.open(hname, "a+") do |h1|
 h1.puts "#{e} #{varAvg.round(1)} (#{varCcum.round(1)} cumulative)"
 end
+=end
+
 vc20 = vc19
 vc19 = vc18
 vc18 = vc17
@@ -434,12 +444,16 @@ if varTcumCt > 0
 varTcum = varTcumSpd / varTcumCt			#calculate TTA cumulative avgerage bus speed
 end
 
+=begin
 File.open(gname, "a+") do |g3|
 	g3.puts "#{varTime},TTA,#{varCountt},#{varAvgt.round(1)}"
 end
+
+
 File.open(hname, "a+") do |h1|
 h1.puts "#{f} #{varAvgt.round(1)} (#{varTcum.round(1)} cumulative)"
 end
+=end
 
 vt20 = vt19
 vt19 = vt18
@@ -507,12 +521,18 @@ if varWcumCt > 0
 varWcum = varWcumSpd / varWcumCt			#calculate WLF cumulative average bus speed
 end
 
+=begin
 File.open(gname, "a+") do |g4|
 	g4.puts "#{varTime},WLF,#{varCountw},#{varAvgw.round(1)}"
 end
+
+
 File.open(hname, "a+") do |h1|
 h1.puts "#{w} #{varAvgw.round(1)} (#{varWcum.round(1)} cumulative)"
 end
+=end
+
+
 vw20 = vw19
 vw19 = vw18
 vw18 = vw17
@@ -827,6 +847,8 @@ end until varI > varNum
 File.delete(haname)
 File.delete(hbname)
 File.delete(hcname)
+File.delete(hdname)
+File.delete(hename)
 
 #---CLEANUP---
 puts "done"
