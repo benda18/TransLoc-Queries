@@ -19,6 +19,10 @@
 #	xx16. dashboard away from console and into google charts. 
 #	xx17.	google bar chart for bus instant and average speed
 # 	xx18. historgram for individual bus speed
+#	xx19. script launch checks if fname exists, writes header to new file if not, or just appends if it does exist. 
+#	xx20. gets removed and settled on 20 seconds / 10000 loops. 
+#	xx21. how to handle cache deletions. 
+#	22. see if removing "&agency_id=" query completely helps resolve some of the error issues. 
 
 #<agency_id values for reference>
 # C-Tran/Cary 		= 367
@@ -38,7 +42,7 @@ require 'json'
 hfull = "histogram.html"
 haname = "histogramcacheA #{Time.now.strftime('%Y%m%d')}.txt"			#header
 hbname = "histogramcacheB #{Time.now.strftime('%Y%m%d')}.txt"			#data
-File.open(hbname, "w+") do |zz2|
+File.open(hbname, "w+") do |zz2|										#starts hbname over as a blank file each launch. 
 zz2.puts ""
 end
 hcname = "histogramcacheC #{Time.now.strftime('%Y%m%d')}.txt"			#footer
@@ -47,9 +51,9 @@ d = 0
 data_hash = 0
 e = "CAT mph = "
 f = "TTA mph = "
-fname = "AgencySpeed_bus #{Time.now.strftime('%Y%m%d')}.txt"		#Creates a new .txt file in directory of .rb
-gname = "AgencySpeed_avg #{Time.now.strftime('%Y%m%d')}.txt"		#Creates a new .txt file in directory of .rb
-hname = "AgencySpeed_log #{Time.now.strftime('%Y%m%d')}.txt"		#Creates a new .txt file in directory of .rb
+fname = "AgencySpeed_bus #{Time.now.strftime('%Y%m%d')}.txt"		# a new .txt file in directory of .rb
+gname = "AgencySpeed_avg #{Time.now.strftime('%Y%m%d')}.txt"		# a new .txt file in directory of .rb
+hname = "AgencySpeed_log #{Time.now.strftime('%Y%m%d')}.txt"		# a new .txt file in directory of .rb
 payload = 0
 payload2 = 0
 response = 0
@@ -181,9 +185,13 @@ ti1 = 0
 
 
 #<write logfile headers>
+
+if not File.exists?(fname)						#only writes header to fname if the file doesn't already exists.  
 File.open(fname, "a+") do |f1|
 	f1.puts "year,month,day,time,agency,bus_id,mph,lon,lat,route,heading,segment_id"
 end
+end
+
 File.open(gname, "a+") do |g7|
 	g7.puts "time,agency,count_buses,mph"
 end
@@ -200,13 +208,15 @@ end
 #---LAUNCH CONSOLE---
 #<gets prompt>
 puts 'How long to sleep (in seconds) between each loop? (typically ~5)'
-d = gets.to_i 															
+#d = gets.to_i 															
+d = 30
 puts "\e[H\e[2J"
 puts "#{d} seconds delay"
 sleep(2)
 puts "\e[H\e[2J"
 puts 'How many loops to perform? (typically ~10)'
-varNum = gets.to_i         					#tracks number of repeat iterations
+#varNum = gets.to_i         					#tracks number of repeat iterations
+varNum = 10000
 puts "\e[H\e[2J"
 puts "#{varNum} loops"
 sleep(2)
@@ -273,7 +283,7 @@ varHdw = 0
 varSegw = 0
 
 #<call the transloc api>
-#response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C16%2C20&callback=call&geo_area=35.777531%2C-78.637277%7C500.0",
+#response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C16%2C20&callback=call&geo_area=35.777531%2C-78.637277%7C500.0", #this is the geoboundary example
 response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C16%2C20&callback=call",
   headers:{
     "X-Mashape-Key" => "<key>"
@@ -316,7 +326,6 @@ varCcumCt = varCcumCt + 1					#cumulative count tracking
 
 if varSpd > 0
 File.open(hbname, "a+") do |hb1|
-	#hb1.puts "#{"['"}#{varVID}#{"', "}#{varSpd.round(1)}#{"],"}"
 	hb1.puts "#{"["}#{varSpd.round(1)}#{",null,null],"}"
 end
 end
@@ -326,7 +335,6 @@ end
 File.open(fname, "a+") do |f4|
 	f4.puts "#{Time.now.strftime('%Y')},#{Time.now.strftime('%m')},#{Time.now.strftime('%d')},#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},CAT,#{varVID},#{varSpd.round(1)},#{varLng},#{varLat},#{varRt},#{varHd},#{varSeg}"
 end
-#varSpd = 0
 varVID = 0
 varLng = 0
 varLat = 0
@@ -371,8 +379,6 @@ vc2 = vc1
 vc1 = varAvg
 #</cat>
 
-
-
 #<data loop><tta>
 Array(data_hash["data"]["12"]).each do |aryt|		#for each object in the array,
 varSpdt = 0									#*
@@ -388,15 +394,11 @@ varSumt = varSumt + varSpdt					#separately, set var for sum of all "speed" valu
 varTcumSpd = varTcumSpd + varSpdt			#cumulative speed tracking
 varTcumCt = varTcumCt + 1					#cumulative count tracking
 
-
-
 if varSpdt > 0
 File.open(hbname, "a+") do |hb1|
-	#hb1.puts "#{"['"}#{varVIDt}#{"', "}#{varSpdt.round(1)}#{"],"}"
 	hb1.puts "#{"[null,"}#{varSpdt.round(1)}#{",null],"}"
 end
 end
-
 
 File.open(fname, "a+") do |f5|
 	f5.puts "#{Time.now.strftime('%Y')},#{Time.now.strftime('%m')},#{Time.now.strftime('%d')},#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},TTA,#{varVIDt},#{varSpdt.round(1)},#{varLngt},#{varLatt},#{varRtt},#{varHdt},#{varSegt}"
@@ -424,6 +426,7 @@ end
 File.open(hname, "a+") do |h1|
 h1.puts "#{f} #{varAvgt.round(1)} (#{varTcum.round(1)} cumulative)"
 end
+
 vt20 = vt19
 vt19 = vt18
 vt18 = vt17
@@ -446,7 +449,6 @@ vt2 = vt1
 vt1 = varAvgt
 #</tta>
 
-
 #<data loop><wlf>
 Array(data_hash["data"]["16"]).each do |aryw|		#for each object in the array,
 varSpdw = 0
@@ -462,14 +464,11 @@ varSumw = varSumw + varSpdw					#separately, set var for sum of all "speed" valu
 varWcumSpd = varWcumSpd + varSpdw			#cumulative speed tracking
 varWcumCt = varWcumCt + 1					#cumulative count tracking
 
-
 if varSpdw > 0
 File.open(hbname, "a+") do |hb1|
-	#hb1.puts "#{"['"}#{varVIDw}#{"', "}#{varSpdw.round(1)}#{"],"}"
 	hb1.puts "#{"[null,null,"}#{varSpdw.round(1)}#{"],"}"
 end
 end
-
 
 File.open(fname, "a+") do |f6|
 	f6.puts "#{Time.now.strftime('%Y')},#{Time.now.strftime('%m')},#{Time.now.strftime('%d')},#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},WLF,#{varVIDw},#{varSpdw.round(1)},#{varLngw},#{varLatw},#{varRtw},#{varHdw},#{varSegw}"
@@ -518,12 +517,6 @@ vw3 = vw2
 vw2 = vw1
 vw1 = varAvgw
 #</wlf>
-
-
-
-
-
-
 
 #<google line chart writing>
 #variables
@@ -703,7 +696,6 @@ File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"title: 'Bus Fleet Speed - instant vs average MPH',"}"			# title: 'Bus Fleet Speed - instant vs average',
 	hc1.puts "#{"hAxis: {minValue: 0},"}"	
 	hc1.puts "#{"legend: { position: "}#{'"'}#{"none"}#{'"'}#{" },"}"
-	#legend: { position: "none" },
 	hc1.puts "#{"};"}"														# };
 	hc1.puts "#{"var chart2 = new google.visualization.BarChart(document.getElementById('chart_div2'));"}"												# var chart2 = new google.visualization.BarChart(document.getElementById('chart_div2'));
 	hc1.puts "#{"chart2.draw(data2, options2);"}"							# chart2.draw(data2, options2);
