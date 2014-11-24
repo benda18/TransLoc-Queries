@@ -22,7 +22,7 @@
 #	xx19. script launch checks if fname exists, writes header to new file if not, or just appends if it does exist. 
 #	xx20. gets removed and settled on 20 seconds / 10000 loops. 
 #	xx21. how to handle cache deletions. 
-#	22. see if removing "&agency_id=" query completely helps resolve some of the error issues. 
+#	xx22. add x,y points chart in dashboard
 
 #<agency_id values for reference>
 # C-Tran/Cary 		= 367
@@ -46,6 +46,11 @@ File.open(hbname, "w+") do |zz2|										#starts hbname over as a blank file ea
 zz2.puts ""
 end
 hcname = "histogramcacheC #{Time.now.strftime('%Y%m%d')}.txt"			#footer
+hdname = "histogramcacheD #{Time.now.strftime('%Y%m%d')}.txt"			#footer
+File.open(hdname, "w+") do |zz3|	
+zz3.puts ""
+end
+hename = "histogramcacheE #{Time.now.strftime('%Y%m%d')}.txt"			#footer
 
 d = 0
 data_hash = 0
@@ -226,11 +231,14 @@ begin
 #HA 
 #<variables>
 varI +=1;
+File.open(hdname, "w+") do |hd2|
+	hd2.puts ""
+end
 File.open(haname, "w+") do |ha1|
 	ha1.puts "<html>"
 	ha1.puts "<head>"
 	if varI < varNum
-	ha1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{90}#{'"'}#{">"}#{'"'}"#refresh code
+	ha1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{30}#{'"'}#{">"}"#refresh code
 	end
 	ha1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{" src="}#{'"'}#{"https://www.google.com/jsapi"}#{'"'}#{"></script>"}"
 #historgram
@@ -286,7 +294,7 @@ varSegw = 0
 #response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C16%2C20&callback=call&geo_area=35.777531%2C-78.637277%7C500.0", #this is the geoboundary example
 response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C16%2C20&callback=call",
   headers:{
-    "X-Mashape-Key" => "<key>"
+    "X-Mashape-Key" => "niYNYS5ziAmshx3q3abZrZm2c14Hp1HmeAWjsnjzs6TmhpQdu6"
   }
 #<parse the call>
 payload2 = response.body					#sets the call response body as a variable
@@ -327,6 +335,9 @@ varCcumCt = varCcumCt + 1					#cumulative count tracking
 if varSpd > 0
 File.open(hbname, "a+") do |hb1|
 	hb1.puts "#{"["}#{varSpd.round(1)}#{",null,null],"}"
+end
+File.open(hdname, "a+") do |hd1|
+	hd1.puts "#{"['', "}#{varLng}#{", "}#{varLat}#{", 'CAT', "}#{varSpd}#{"],"}"
 end
 end
 
@@ -398,6 +409,9 @@ if varSpdt > 0
 File.open(hbname, "a+") do |hb1|
 	hb1.puts "#{"[null,"}#{varSpdt.round(1)}#{",null],"}"
 end
+File.open(hdname, "a+") do |hd2|
+	hd2.puts "#{"['', "}#{varLngt}#{", "}#{varLatt}#{", 'TTA', "}#{varSpdt}#{"],"}"
+end
 end
 
 File.open(fname, "a+") do |f5|
@@ -467,6 +481,9 @@ varWcumCt = varWcumCt + 1					#cumulative count tracking
 if varSpdw > 0
 File.open(hbname, "a+") do |hb1|
 	hb1.puts "#{"[null,null,"}#{varSpdw.round(1)}#{"],"}"
+end
+File.open(hdname, "a+") do |hd3|
+	hd3.puts "#{"['', "}#{varLngw}#{", "}#{varLatw}#{", 'WLF', "}#{varSpdw}#{"],"}"
 end
 end
 
@@ -701,16 +718,65 @@ File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"chart2.draw(data2, options2);"}"							# chart2.draw(data2, options2);
 	hc1.puts "#{"}"}"														# }
 	hc1.puts "#{"</script>"}"												# </script>
+	hc1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{">"}"		#<script type="text/javascript">
+	hc1.puts "#{"google.load("}#{'"'}#{"visualization"}#{'"'}#{", "}#{'"'}#{"1"}#{'"'}#{", {packages:["}#{'"'}#{"corechart"}#{'"'}#{"]"}#{'}'}#{");"}"	# google.load("visualization", "1", {packages:["corechart"]});
+	hc1.puts "#{"google.setOnLoadCallback(drawSeriesChart4);"}"					# google.setOnLoadCallback(drawSeriesChart4);
+	hc1.puts "#{"function drawSeriesChart4() {"}"									# function drawSeriesChart4() {
+	hc1.puts "#{"var data4 = google.visualization.arrayToDataTable(["}"		# var data4 = google.visualization.arrayToDataTable([
+	hc1.puts "#{"['ID', 'Longitude',	'Latitude', 'Agency',	'Speed'],"}"
+	hc1.puts "#{"['', null, null, 'CAT', 0],"}"								#ensures proper lengend setup and colors for each agency
+	hc1.puts "#{"['', null, null, 'TTA', 0],"}"								#ensures proper lengend setup and colors for each agency
+	hc1.puts "#{"['', null, null, 'WLF', 0],"}"								#ensures proper lengend setup and colors for each agency
+	
+	
 #/bar chart
-	hc1.puts "#{"</head>"}"
-	hc1.puts "#{"<body>"}"
-	hc1.puts "#{"<div id="}#{'"'}#{"chart_div"}#{'"'}#{" style="}#{'"'}#{"width: 600px; height: 200px;"}#{'"'}#{"></div>"}"
-	hc1.puts "#{"<div id="}#{'"'}#{"chart_div2"}#{'"'}#{" style="}#{'"'}#{"width: 600px; height: 250px;"}#{'"'}#{"></div>"}"
-	hc1.puts "#{"<div id="}#{'"'}#{"chart_div3"}#{'"'}#{" style="}#{'"'}#{"width: 600px; height: 250px;"}#{'"'}#{"></div>"}"
-	hc1.puts "#{"</body>"}"
-	hc1.puts "#{"</html>"}"
 end
+
+=begin
+File.open(hdname, "w+") do |hd1|
+#x,y goes here hdname
+end
+=end
+
+
+File.open(hename, "w+") do |he1|
+#new file hename
+	he1.puts "#{"]);"}"	
+	he1.puts "#{"var options4 = {"}"											# var options4 = {
+	he1.puts "#{"title: 'Instant Bus Locations & Speed',"}"			# title: 'Instant Bus Locations & Speed',
+	he1.puts "#{"hAxis: {format: '##.###', textStyle: {fontSize: 12}},"}"
+	he1.puts "#{"vAxis: {format: '##.###', textStyle: {fontSize: 12}},"}"
+	he1.puts "#{"sizeAxis: {minSize: 1, maxSize: 15},"}"
+	he1.puts "#{"explorer: {},"}"
+	he1.puts "#{"chartArea: {top: 75, left: 50},"}"
+	he1.puts "#{"bubble: {textStyle: {fontSize: 6}, opacity: 0.5}"}"
+	he1.puts "#{"};"}"
+	he1.puts "#{"var chart4 = new google.visualization.BubbleChart(document.getElementById('chart_div4'));"}"	
+	he1.puts "#{"chart4.draw(data4, options4);"}"							# chart4.draw(data4, options4);
+	he1.puts "#{"}"}"														# }
+	he1.puts "#{"</script>"}"												# </script>
+	he1.puts "#{"</head>"}"
+	he1.puts "#{"<body>"}"
+	he1.puts "#{"<style>"}"
+	he1.puts "#{"section {"}"
+	he1.puts "#{"width: 650px;"}"
+	he1.puts "#{"float: left;"}"
+	he1.puts "#{"padding: 10px"}"
+	he1.puts "#{"}"}"
+	he1.puts "#{"</style>"}"	
+	he1.puts "#{"<section>"}"
+	he1.puts "#{"<div id="}#{'"'}#{"chart_div"}#{'"'}#{" style="}#{'"'}#{"width: 600px; height: 200px;"}#{'"'}#{"></div>"}"
+	he1.puts "#{"<div id="}#{'"'}#{"chart_div2"}#{'"'}#{" style="}#{'"'}#{"width: 600px; height: 250px;"}#{'"'}#{"></div>"}"
+	he1.puts "#{"<div id="}#{'"'}#{"chart_div3"}#{'"'}#{" style="}#{'"'}#{"width: 600px; height: 250px;"}#{'"'}#{"></div>"}"
+	he1.puts "#{"</section>"}"
+	he1.puts "#{"<section>"}"
+	he1.puts "#{"<div id="}#{'"'}#{"chart_div4"}#{'"'}#{" style="}#{'"'}#{"width: 1200px; height: 1200px;"}#{'"'}#{"></div>"}"
+	he1.puts "#{"</section>"}"
+	he1.puts "#{"</body>"}"
+	he1.puts "#{"</html>"}"
 #/HC Header
+end
+
 
 #cache work
 File.open(hfull, "w+") do |zz1|
@@ -737,6 +803,22 @@ hcfile.close
 File.open(hfull, "a+") do |ha5|
 ha5.puts hccontents
 end
+
+hdfile = File.open(hdname, "r")
+hdcontents = hdfile.read
+hdfile.close
+File.open(hfull, "a+") do |ha6|
+ha6.puts hdcontents
+end
+
+hefile = File.open(hename, "r")
+hecontents = hefile.read
+hefile.close
+File.open(hfull, "a+") do |ha7|
+ha7.puts hecontents
+end
+
+
 #/cache work
 
 sleep(d)
