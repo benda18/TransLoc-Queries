@@ -33,12 +33,10 @@
 # TTA 				= 12
 # Raleigh/CAT 		= 20
 # Chicago/CTA		= 104
-
 #<require statements>
 require 'unirest'
 require 'json'
 #<initital variable setup>
-
 hfull = "VehicleSpeedDash.html"
 haname = "dashcacheA #{Time.now.strftime('%Y%m%d')}.txt"			#header
 hbname = "dashcacheB #{Time.now.strftime('%Y%m%d')}.txt"			#data
@@ -51,14 +49,9 @@ File.open(hdname, "w+") do |zz3|
 zz3.puts ""
 end
 hename = "dashcacheE #{Time.now.strftime('%Y%m%d')}.txt"			#footer
-
 d = 0
 data_hash = 0
-#e = "CAT mph = "
-#f = "TTA mph = "
 fname = "VehicleSpeed_bus #{Time.now.strftime('%Y%m%d')}.txt"		# a new .txt file in directory of .rb
-#gname = "VehicleSpeed_avg #{Time.now.strftime('%Y%m%d')}.txt"		# a new .txt file in directory of .rb
-#hname = "VehicleSpeed_log #{Time.now.strftime('%Y%m%d')}.txt"		# a new .txt file in directory of .rb
 payload = 0
 payload2 = 0
 response = 0
@@ -71,6 +64,7 @@ varCcumSpd = 0
 varCount = 0
 varCountt = 0
 varCountw = 0
+varGenTime = 0
 varHd = 0
 varHdt = 0
 varHdw = 0
@@ -104,8 +98,6 @@ varVIDw = 0
 varWcum = 0
 varWcumCt = 0
 varWcumSpd = 0
-#w = "WLF mph = "
-
 #variables related to line chart
 vc1 = 0
 vc2 = 0
@@ -187,47 +179,27 @@ ti4 = 0
 ti3 = 0
 ti2 = 0
 ti1 = 0
-
-
 #<write logfile headers>
-
 if not File.exists?(fname)						#only writes header to fname if the file doesn't already exists.  
 File.open(fname, "a+") do |f1|
-	f1.puts "year,month,day,time,agency,bus_id,mph,lon,lat,route,heading,segment_id"
+	f1.puts "gendate,agency,bus_id,mph,lon,lat,route,heading,segment_id"
 end
 end
-=begin
-File.open(gname, "a+") do |g7|
-	g7.puts "time,agency,count_buses,mph"
-end
-
-File.open(hname, "a+") do |h2|
-	h2.puts "###CONSOLE LOG FILE###"
-	h2.puts ""
-	h2.puts ""
-	h2.puts "How long to sleep (in seconds) between each loop? (typically ~5)"
-	h2.puts "#{d} seconds delay"
-	h2.puts "How many loops to perform? (typically ~10)"
-	h2.puts "#{varNum} loops"
-end
-=end
-
 #---LAUNCH CONSOLE---
 #<gets prompt>
 puts 'How long to sleep (in seconds) between each loop? (typically ~5)'
 #d = gets.to_i 															
-d = 30
+d = 1
 puts "\e[H\e[2J"
 puts "#{d} seconds delay"
 sleep(2)
 puts "\e[H\e[2J"
 puts 'How many loops to perform? (typically ~10)'
 #varNum = gets.to_i         					#tracks number of repeat iterations
-varNum = 10000
+varNum = 5
 puts "\e[H\e[2J"
 puts "#{varNum} loops"
 sleep(2)
-
 #---ITERATIVE LOOP---
 begin
 #HA 
@@ -252,7 +224,6 @@ File.open(haname, "w+") do |ha1|
 	ha1.puts "#{"['CAT', 'TTA', 'WLF'],"}"
 end
 #/HA
-
 #<variables>
 varTime = "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')}"
 varTi1 = "#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}"
@@ -269,7 +240,6 @@ varAvgt = 0
 varAvg = 0									#A value derived from varSum divided by varCount 
 											#	that equals the average speed for all responding 
 											#	buses during each iteration
-
 varSpd = 0
 varVID = 0
 varLng = 0
@@ -291,7 +261,6 @@ varLatw = 0
 varRtw = 0
 varHdw = 0
 varSegw = 0
-
 #<call the transloc api>
 #response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C16%2C20&callback=call&geo_area=35.777531%2C-78.637277%7C500.0", #this is the geoboundary example
 response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C16%2C20&callback=call",
@@ -302,22 +271,11 @@ response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?ag
 payload2 = response.body					#sets the call response body as a variable
 payload = payload2[/{.+}/]					#removes the callback prefix and suffix from the response body
 data_hash = JSON.parse(payload)				#parses the response body and stores as a variable
-
 #<console writing>
 puts "\e[H\e[2J"							#clears console
 puts "Loop delay: #{d} seconds" 			#loop delay in seconds
 puts "Iterations: #{varI} of #{varNum+1}"	#x of y count
-
-#<log file writing>
-=begin
-File.open(hname, "a+") do |h1|
-	h1.puts ""
-	h1.puts ""
-	h1.puts "Iteration: #{varI} of #{varNum+1}"		#x of y count
-	h1.puts "Current Time: #{varTime}"				#current time
-end
-=end
-
+varGenTime = data_hash["generated_on"]
 #<data loop><cat>
 data_hash["data"]["20"].each do |ary|		#for each object in the array,
 varSpd = 0									#*
@@ -332,10 +290,7 @@ varCount = varCount + 1						#increase repeat iterations by 1,
 varSum = varSum + varSpd					#separately, set var for sum of all "speed" values in array,
 varCcumSpd = varCcumSpd + varSpd			#cumulative speed tracking
 varCcumCt = varCcumCt + 1					#cumulative count tracking
-
 #histogram
-
-
 if varSpd > 0
 File.open(hbname, "a+") do |hb1|
 	hb1.puts "#{"["}#{varSpd.round(1)}#{",null,null],"}"
@@ -344,11 +299,9 @@ File.open(hdname, "a+") do |hd1|
 	hd1.puts "#{"['', "}#{varLng}#{", "}#{varLat}#{", 'CAT', "}#{varSpd}#{"],"}"
 end
 end
-
-
 #write it to a file
 File.open(fname, "a+") do |f4|
-	f4.puts "#{Time.now.strftime('%Y')},#{Time.now.strftime('%m')},#{Time.now.strftime('%d')},#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},CAT,#{varVID},#{varSpd.round(1)},#{varLng},#{varLat},#{varRt},#{varHd},#{varSeg}"
+	f4.puts "#{varGenTime},CAT,#{varVID},#{varSpd.round(1)},#{varLng},#{varLat},#{varRt},#{varHd},#{varSeg}"
 end
 varVID = 0
 varLng = 0
@@ -357,27 +310,12 @@ varRt = 0
 varHd = 0
 varSeg = 0
 end											#...end array loop
-
 if varCount > 0 
 varAvg = varSum / varCount					#calculate CAT instant average bus speed
 end
-
 if varCcumCt > 0
 varCcum = varCcumSpd / varCcumCt			#calculate CAT cumulative average bus speed
 end
-
-=begin
-File.open(gname, "a+") do |g2|
-	g2.puts "#{varTime},CAT,#{varCount},#{varAvg.round(1)}"
-end
-=end
-
-=begin
-File.open(hname, "a+") do |h1|
-h1.puts "#{e} #{varAvg.round(1)} (#{varCcum.round(1)} cumulative)"
-end
-=end
-
 vc20 = vc19
 vc19 = vc18
 vc18 = vc17
@@ -399,7 +337,6 @@ vc3 = vc2
 vc2 = vc1
 vc1 = varAvg
 #</cat>
-
 #<data loop><tta>
 Array(data_hash["data"]["12"]).each do |aryt|		#for each object in the array,
 varSpdt = 0									#*
@@ -414,20 +351,14 @@ varCountt = varCountt + 1					#increase repeat iterations by 1,
 varSumt = varSumt + varSpdt					#separately, set var for sum of all "speed" values in array,
 varTcumSpd = varTcumSpd + varSpdt			#cumulative speed tracking
 varTcumCt = varTcumCt + 1					#cumulative count tracking
-
 if varSpdt > 0
 File.open(hbname, "a+") do |hb1|
 	hb1.puts "#{"[null,"}#{varSpdt.round(1)}#{",null],"}"
 end
-File.open(hdname, "a+") do |hd2|
-	hd2.puts "#{"['', "}#{varLngt}#{", "}#{varLatt}#{", 'TTA', "}#{varSpdt}#{"],"}"
 end
-end
-
 File.open(fname, "a+") do |f5|
-	f5.puts "#{Time.now.strftime('%Y')},#{Time.now.strftime('%m')},#{Time.now.strftime('%d')},#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},TTA,#{varVIDt},#{varSpdt.round(1)},#{varLngt},#{varLatt},#{varRtt},#{varHdt},#{varSegt}"
+	f5.puts "#{varGenTime},TTA,#{varVIDt},#{varSpdt.round(1)},#{varLngt},#{varLatt},#{varRtt},#{varHdt},#{varSegt}"
 end	
-
 varVIDt = 0
 varLngt = 0
 varLatt = 0
@@ -435,26 +366,12 @@ varRtt = 0
 varHdt = 0
 varSegt = 0
 end											#...end array loop
-
 if varCountt > 0 
 varAvgt = varSumt / varCountt				#calculate TTA instant average bus speed
 end 
-
 if varTcumCt > 0
 varTcum = varTcumSpd / varTcumCt			#calculate TTA cumulative avgerage bus speed
 end
-
-=begin
-File.open(gname, "a+") do |g3|
-	g3.puts "#{varTime},TTA,#{varCountt},#{varAvgt.round(1)}"
-end
-
-
-File.open(hname, "a+") do |h1|
-h1.puts "#{f} #{varAvgt.round(1)} (#{varTcum.round(1)} cumulative)"
-end
-=end
-
 vt20 = vt19
 vt19 = vt18
 vt18 = vt17
@@ -476,7 +393,6 @@ vt3 = vt2
 vt2 = vt1
 vt1 = varAvgt
 #</tta>
-
 #<data loop><wlf>
 Array(data_hash["data"]["16"]).each do |aryw|		#for each object in the array,
 varSpdw = 0
@@ -491,20 +407,14 @@ varCountw = varCountw + 1					#increase repeat iterations by 1,
 varSumw = varSumw + varSpdw					#separately, set var for sum of all "speed" values in array,
 varWcumSpd = varWcumSpd + varSpdw			#cumulative speed tracking
 varWcumCt = varWcumCt + 1					#cumulative count tracking
-
 if varSpdw > 0
 File.open(hbname, "a+") do |hb1|
 	hb1.puts "#{"[null,null,"}#{varSpdw.round(1)}#{"],"}"
 end
-File.open(hdname, "a+") do |hd3|
-	hd3.puts "#{"['', "}#{varLngw}#{", "}#{varLatw}#{", 'WLF', "}#{varSpdw}#{"],"}"
 end
-end
-
 File.open(fname, "a+") do |f6|
-	f6.puts "#{Time.now.strftime('%Y')},#{Time.now.strftime('%m')},#{Time.now.strftime('%d')},#{Time.now.strftime('%H')}:#{Time.now.strftime('%M')}:#{Time.now.strftime('%S')},WLF,#{varVIDw},#{varSpdw.round(1)},#{varLngw},#{varLatw},#{varRtw},#{varHdw},#{varSegw}"
+	f6.puts "#{varGenTime},WLF,#{varVIDw},#{varSpdw.round(1)},#{varLngw},#{varLatw},#{varRtw},#{varHdw},#{varSegw}"
 end	
-
 varVIDw = 0
 varLngw = 0
 varLatw = 0
@@ -512,27 +422,12 @@ varRtw = 0
 varHdw = 0
 varSegw = 0
 end											#...end array loop
-
 if varCountw > 0
 varAvgw	= varSumw / varCountw				#calculate WLF instant average bus speed
 end
-
 if varWcumCt > 0
 varWcum = varWcumSpd / varWcumCt			#calculate WLF cumulative average bus speed
 end
-
-=begin
-File.open(gname, "a+") do |g4|
-	g4.puts "#{varTime},WLF,#{varCountw},#{varAvgw.round(1)}"
-end
-
-
-File.open(hname, "a+") do |h1|
-h1.puts "#{w} #{varAvgw.round(1)} (#{varWcum.round(1)} cumulative)"
-end
-=end
-
-
 vw20 = vw19
 vw19 = vw18
 vw18 = vw17
@@ -554,7 +449,6 @@ vw3 = vw2
 vw2 = vw1
 vw1 = varAvgw
 #</wlf>
-
 #<google line chart writing>
 #variables
 ti20 = ti19
@@ -577,7 +471,6 @@ ti4 = ti3
 ti3 = ti2
 ti2 = ti1
 ti1 = varTi1
-
 #HC Header
 File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"]);"}"
@@ -674,8 +567,6 @@ File.open(hcname, "w+") do |hc1|
     hc1.puts "#{"var ti18 = "}#{"'"}#{ti18}#{"'"}"
     hc1.puts "#{"var ti19 = "}#{"'"}#{ti19}#{"'"}"
     hc1.puts "#{"var ti20 = "}#{"'"}#{ti20}#{"'"}"
-
-	
 #bar chart vars here
     hc1.puts "#{"var vc1 = "}#{vc1}"
     hc1.puts "#{"var vt1 = "}#{vt1}"
@@ -746,21 +637,10 @@ File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"['ID', 'Longitude',	'Latitude', 'Agency',	'Speed'],"}"
 	hc1.puts "#{"['', null, null, 'CAT', 0],"}"								#ensures proper lengend setup and colors for each agency
 	hc1.puts "#{"['', null, null, 'TTA', 0],"}"								#ensures proper lengend setup and colors for each agency
-	hc1.puts "#{"['', null, null, 'WLF', 0],"}"								#ensures proper lengend setup and colors for each agency
-	
-	
+	hc1.puts "#{"['', null, null, 'WLF', 0],"}"								#ensures proper lengend setup and colors for each agency	
 #/bar chart
 end
-
-=begin
-File.open(hdname, "w+") do |hd1|
-#x,y goes here hdname
-end
-=end
-
-
 File.open(hename, "w+") do |he1|
-#new file hename
 	he1.puts "#{"]);"}"	
 	he1.puts "#{"var options4 = {"}"											# var options4 = {
 	he1.puts "#{"title: 'Instant Bus Locations & Speed',"}"			# title: 'Instant Bus Locations & Speed',
@@ -796,61 +676,49 @@ File.open(hename, "w+") do |he1|
 	he1.puts "#{"</html>"}"
 #/HC Header
 end
-
-
 #cache work
 File.open(hfull, "w+") do |zz1|
 zz1.puts ""
 end
-
 hafile = File.open(haname, "r")
 hacontents = hafile.read
 hafile.close
 File.open(hfull, "a+") do |ha3|
 ha3.puts hacontents
 end
-
 hbfile = File.open(hbname, "r")
 hbcontents = hbfile.read
 hbfile.close
 File.open(hfull, "a+") do |ha4|
 ha4.puts hbcontents
 end
-
 hcfile = File.open(hcname, "r")
 hccontents = hcfile.read
 hcfile.close
 File.open(hfull, "a+") do |ha5|
 ha5.puts hccontents
 end
-
 hdfile = File.open(hdname, "r")
 hdcontents = hdfile.read
 hdfile.close
 File.open(hfull, "a+") do |ha6|
 ha6.puts hdcontents
 end
-
 hefile = File.open(hename, "r")
 hecontents = hefile.read
 hefile.close
 File.open(hfull, "a+") do |ha7|
 ha7.puts hecontents
 end
-
-
 #/cache work
-
 sleep(d)
 end until varI > varNum
-
+#---CLEANUP---
 File.delete(haname)
 File.delete(hbname)
 File.delete(hcname)
 File.delete(hdname)
 File.delete(hename)
-
-#---CLEANUP---
 puts "done"
-sleep(2)
+#sleep(2)
 exit
