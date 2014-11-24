@@ -1,44 +1,58 @@
-A collection of Ruby scripts that collect and convert TransLoc real-time transit 
-information into local .txt files for further data analysis.  
+A collection of Ruby scripts that query the TransLoc API and log relevant data points as CSV data.
 
-DISCLOSURE: I'm self-taught in scripting.  This is my first time using Ruby, or 
-pretty much any language.  The script works, but I'm not always sure why.  FWIW
+LAST UPDATED: 11/24/14
 
-"BusSpeed_API_Analysis.rb" is the only script that is being developed now. "BusSpeed_API_Full_Log.rb" is mature.
+DISCLOSURE: I'm self-taught in scripting.  This is my first time using Ruby, or pretty much any 
+language.  The script works, but I'm not always sure why.  FWIW
 
-If this repository for some reason only contains a single ruby script ("ConsoleCompareAgencySpeed")
-that means that I've deleted the others.  
+SETTING UP RUBY:
+*	You will need to install a copy of Ruby (https://www.ruby-lang.org/en/)  I'm running version
+	2.0.0-p594-x64 on Windows 7 and having no issues.  
+* 	You'll need to install 2 gems: unirest and json.  Google is your friend.  
 
-TO RUN THE SCRIPT:
+ACCESSING THE API:
+*	You will need to get a key from (www.mashape.com) to get returns from the TransLoc API. An
+	account at Mashape is free and getting a key is relatively easy.  
 
-1. you will need a KEY from mashape.com. Mashape hosts the TransLoc api; create an account there
-  and insert your unique key in the .rb script where you see "key".  
-2. you'll need to install a copy of Ruby on your machine and ensure that you install the following gems:
-  * unirest - installing this gave me problems.  google is your friend. 
-  * json
-3. copy the script to a local directory on your machine and double-click to run.  The console will open and 
-  ask you to provide 2 inputs: 
-  * 'How long to sleep (in seconds) between each loop? (typically ~5)' - this variable will represent the sleep() 
-    delay between interative call loops (the begin / end until statement)
-  * 'How many loops to perform? (typically ~10)' - this variable will represent how many times the script will loop 
-    before it ends.  
-4. The output of the script will be 3 .txt files in the same directory as the .rb file: 
-  * "AgencySpeed_bus {timestamp}.txt" - a csv file that has one record for each unique bus queried and associated data
-  * "AgencySpeed_avg {timestamp}.txt" - a csv file that shows calculated average fleet speed for each agency at each 
-    point in time
-  * "AgencySpeed_log {timestamp}.txt" - a txt file that simply logs what the console displays in case you want to review. 
-5. The script will also output a .html file that will act as your dashboard. It tracks bus fleet speed and refreshes every few seconds. 
-6. Additionally the console will display how many iterations you have completed. 
+BEFORE YOU RUN ANY OF THE SCRIPTS:
+*	Paste your mashape key into each script in the line which begins "X-Mashape-Key". The result 
+	will be a line of code that looks something like this (including parens): 
+	"X-Mashape-Key" => "abc123DEF456..."
+*	Update the Unirest.get statement to reflect the agencies you wish to query.  By default, the
+	scripts query agencies 12, 16 and 20. 
+	
+BEFORE YOU RUN VehicleSpeed_API_Analysis.rb:
+* 	Update the script to reflect the transit agencies (&agencies=) you wish to query. Specifically,
+	you will want to change the 2nd bracketed number value in each of the 3 commented sections where 
+	the line begins with:	data_hash["data"]["20"].each do |ary| 
+	["20"] represents the agency_id value. 
+*	The script queries the API every 30 seconds for 10,000 cycles.  These variables can be changed
+	and are represented as variables "d" and "varNum" respectively in the script.  
+* 	Be aware that the script is written to query 3 transit agencies. It will be easiest for you to 
+	do the same, even if you are only interested in a single agency.  The way the script is coded
+	with loops, it's not obvious how to extend or reduce the number of agencies queried.  
+* 	The best way to launch VehicleSpeed_API_Analysis.rb is by using the included .bat file called
+	BatFile_VehSpd_API_An.bat (if you are using windows).  I'm having issues with the script 
+	crashing when the Unirest.get statement returns nothing.  This usually happens at night, when 
+	you would expect a null response (because most agencies don't run their fleet all throughout 
+	the night) but occasionally it will return a null value during the daytime as well for unknown
+	reasons.  This looping .bat file just re-launches the script when it closes or crashes.  
 
-FURTHER NOTES:
+WHAT THE SCRIPTS DO: 
+*	BatFile_VehSpd_API_An.bat - a windows batch file that launches VehicleSpeed_API_Analysis.rb and
+	re-starts the script after it finishes or if it crashes due to a null response. 
+* 	VehicleSpeed_API_Analysis.rb queries the API every 30 seconds, parses the response, 
+	and outputs the data to "AgencySpeed_bus {datestamp}.txt".  "AgencySpeed_log {datestamp}.txt" is
+	a log file of each query cycle and is not usually useful.  "AgencySpeed_avg {datestamp}.txt" is 
+	a log file that displays the average fleet speed for each agency queried for each cycle, and 
+	may not be that useful.  
+* 	VehicleSpeed_API_Analysis.rb also outputs 5 .txt files that cache data for use in a dashboard.  
+* 	VehicleSpeed_API_Analysis.rb outputs "VehicleSpeedDash.html" that live-tracks some of the data
+	in a dashboard format.  The html file refreshes automatically every 30 seconds and can be viewed
+	live during the period of query or after it's completed.  
+* 	VehicleSpeed_API_Full_Log.rb outputs "ResponseLog {datestamp}{timestamp}.txt" which contains the 
+	un-parsed API call.  May be useful if you want to review the response from a single call. This
+	script is not a necessary component of any of the other scripts. 
 
-1. The script is written to call the TransLoc "Vehicles" api and query certain data on vehicle speed, location, 
-  bearing, route and segment.  You can tweak this to call more or less data by referencing the api at Mashape. 
-2. The script is writen to query only 2 agencies - Triangle Transit and Capital Area Transit in North Carolina.  
-  The agency_id for these two are 12 and 20, respectively.  You may want to query different agencies.  If so, 
-  you'll need to figure out the agency_ids for those - you can do this at mashape - and update the script
-3. The script is written to query 2 and only 2 agencies. if you want to query only 1 agency you'll need to tweak 
-  the script.  Same if you want to query 3 or more.  This is relatively straight-forward: 
-  * for each agency there is 1 ".each do / end" loop statement just make sure the script has one of these loops
-    for each agency, and update the code to ensure that the outputs are written to the associated .txt files.  
-4. I've tried to comment the script as best as possible to keep track of what it's doing.  
+OTHER NOTES: 
+*	I've not done a great job commenting the code to explain what is happening.  That will change. 
