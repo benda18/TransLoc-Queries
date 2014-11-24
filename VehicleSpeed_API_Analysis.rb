@@ -39,7 +39,7 @@ require 'unirest'
 require 'json'
 #<initital variable setup>
 
-hfull = "histogram.html"
+hfull = "VehicleSpeedDash.html"
 haname = "histogramcacheA #{Time.now.strftime('%Y%m%d')}.txt"			#header
 hbname = "histogramcacheB #{Time.now.strftime('%Y%m%d')}.txt"			#data
 File.open(hbname, "w+") do |zz2|										#starts hbname over as a blank file each launch. 
