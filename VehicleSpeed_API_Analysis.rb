@@ -189,14 +189,14 @@ end
 #<gets prompt>
 puts 'How long to sleep (in seconds) between each loop? (typically ~5)'
 #d = gets.to_i 															
-d = 1
+d = 15
 puts "\e[H\e[2J"
 puts "#{d} seconds delay"
 sleep(2)
 puts "\e[H\e[2J"
 puts 'How many loops to perform? (typically ~10)'
 #varNum = gets.to_i         					#tracks number of repeat iterations
-varNum = 5
+varNum = 1000
 puts "\e[H\e[2J"
 puts "#{varNum} loops"
 sleep(2)
