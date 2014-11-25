@@ -221,7 +221,7 @@ File.open(haname, "w+") do |ha1|
 	ha1.puts "#{"google.setOnLoadCallback(drawChart3);"}"					# google.setOnLoadCallback(drawChart3);
 	ha1.puts "#{"function drawChart3() {"}"									# function drawChart3() {
 	ha1.puts "#{"var data3 = google.visualization.arrayToDataTable(["}"		# var data3 = google.visualization.arrayToDataTable([	
-	ha1.puts "#{"['CAT', 'TTA', 'WLF'],"}"
+	ha1.puts "#{"['CAT', 'TTA', 'CHT'],"}"
 end
 #/HA
 #<variables>
@@ -263,7 +263,7 @@ varHdw = 0
 varSegw = 0
 #<call the transloc api>
 #response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C16%2C20&callback=call&geo_area=35.777531%2C-78.637277%7C500.0", #this is the geoboundary example
-response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C16%2C20&callback=call",
+response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C8%2C20&callback=call",
   headers:{
     "X-Mashape-Key" => "<key>"
   }
@@ -393,8 +393,9 @@ vt3 = vt2
 vt2 = vt1
 vt1 = varAvgt
 #</tta>
-#<data loop><wlf>
-Array(data_hash["data"]["16"]).each do |aryw|		#for each object in the array,
+#<data loop><CHT>
+Array(data_hash["data"]["8"]).each do |aryw|		#for each object in the array,
+#data_hash["data"]["16"].each do |aryw|		#for each object in the array,
 varSpdw = 0
 varSpdw = aryw["speed"] * 0.621371			#set var for "speed" value in array, convert to mph
 varVIDw = aryw["vehicle_id"]				#set var for "vehicle_id" value in array,
@@ -413,7 +414,7 @@ File.open(hbname, "a+") do |hb1|
 end
 end
 File.open(fname, "a+") do |f6|
-	f6.puts "#{varGenTime},WLF,#{varVIDw},#{varSpdw.round(1)},#{varLngw},#{varLatw},#{varRtw},#{varHdw},#{varSegw}"
+	f6.puts "#{varGenTime},CHT,#{varVIDw},#{varSpdw.round(1)},#{varLngw},#{varLatw},#{varRtw},#{varHdw},#{varSegw}"
 end	
 varVIDw = 0
 varLngw = 0
@@ -423,10 +424,10 @@ varHdw = 0
 varSegw = 0
 end											#...end array loop
 if varCountw > 0
-varAvgw	= varSumw / varCountw				#calculate WLF instant average bus speed
+varAvgw	= varSumw / varCountw				#calculate CHT instant average bus speed
 end
 if varWcumCt > 0
-varWcum = varWcumSpd / varWcumCt			#calculate WLF cumulative average bus speed
+varWcum = varWcumSpd / varWcumCt			#calculate CHT cumulative average bus speed
 end
 vw20 = vw19
 vw19 = vw18
@@ -448,7 +449,7 @@ vw4 = vw3
 vw3 = vw2
 vw2 = vw1
 vw1 = varAvgw
-#</wlf>
+#</CHT>
 #<google line chart writing>
 #variables
 ti20 = ti19
@@ -577,7 +578,7 @@ File.open(hcname, "w+") do |hc1|
 #/bar vars
 	hc1.puts "#{"function drawChart() {"}"
 	hc1.puts "#{"var data = google.visualization.arrayToDataTable(["}"
-    hc1.puts "#{"['P',	'CAT',	'TTA',	'WLF'],"}"
+    hc1.puts "#{"['P',	'CAT',	'TTA',	'CHT'],"}"
     hc1.puts "#{"[ti1,	c1,		t1,		w1],"}"
     hc1.puts "#{"[ti2,	c2,		t2,		w2],"}"
 	hc1.puts "#{"[ti3,	c3,		t3,		w3],"}"
@@ -618,7 +619,7 @@ File.open(hcname, "w+") do |hc1|
     hc1.puts "#{"['Agency',	'Instant',{ role: 'style'},	'Average',{ role: 'style'},],"}"						# ['Agency', 'Instant MPH', 'Average MPH'],
     hc1.puts "#{"['CAT',vc1,'blue',varCcum,'#CCE5FF'],"}"					# ['CAT',  35,      14],
     hc1.puts "#{"['TTA',vt1,'red',varTcum,'#FFCCCC'],"}"					# ['TTA',  55,      19],
-    hc1.puts "#{"['WLF',vw1,'orange',varWcum,'#FFE5CC']"}"						# ['WLF',  10,       12]
+    hc1.puts "#{"['CHT',vw1,'orange',varWcum,'#FFE5CC']"}"						# ['CHT',  10,       12]
 	hc1.puts "#{"]);"}"														# ]);
 	hc1.puts "#{"var options2 = {"}"											# var options2 = {
 	hc1.puts "#{"title: 'Bus Fleet Speed - instant vs average MPH',"}"			# title: 'Bus Fleet Speed - instant vs average',
@@ -637,7 +638,7 @@ File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"['ID', 'Longitude',	'Latitude', 'Agency',	'Speed'],"}"
 	hc1.puts "#{"['', null, null, 'CAT', 0],"}"								#ensures proper lengend setup and colors for each agency
 	hc1.puts "#{"['', null, null, 'TTA', 0],"}"								#ensures proper lengend setup and colors for each agency
-	hc1.puts "#{"['', null, null, 'WLF', 0],"}"								#ensures proper lengend setup and colors for each agency	
+	hc1.puts "#{"['', null, null, 'CHT', 0],"}"								#ensures proper lengend setup and colors for each agency	
 #/bar chart
 end
 File.open(hename, "w+") do |he1|
