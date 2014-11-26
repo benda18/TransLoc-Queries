@@ -5,6 +5,11 @@ require 'date'
 
 puts "\e[H\e[2J"
 
+cacheA = "cacheA.txt" 
+cacheB = "cacheB.txt"
+cacheC = "cacheC.txt"
+dash = "WaitDash.html"
+
 aname = "R-LineAvgStopWait #{Time.now.strftime('%Y%m%d')}.txt"
 #somefile = File.open(aname, "w+")
 payload = 0
@@ -22,7 +27,42 @@ varGenTime = 0
 varWaitMins = 0
 varI = 0
 varNum = 120								#loop iterations
-d = 60										#loop delay seconds
+d = 30										#loop delay seconds
+
+File.open(cacheA, "w") do |a1|
+	a1.puts "<html>"
+	a1.puts "<head>"
+	a1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{" src="}#{'"'}#{"https://www.google.com/jsapi"}#{'"'}#{"></script>"}"
+	a1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{">"}"
+	a1.puts "#{"google.load("}#{'"'}#{"visualization"}#{'"'}#{", "}#{'"'}#{"1"}#{'"'}#{", {packages:["}#{'"'}#{"corechart"}#{'"'}#{"]"}#{'}'}#{");"}"
+	a1.puts "google.setOnLoadCallback(drawChart3);"
+	a1.puts "function drawChart3() {"
+	a1.puts "var data3 = google.visualization.arrayToDataTable(["
+	a1.puts "['Route','Wait in Minutes'],"
+end
+
+File.open(cacheC, "w") do |b1|
+	b1.puts "]);"
+	b1.puts "var options3 = {"
+	b1.puts "title: 'Distribution of R-Line Waiting Times',"
+	b1.puts "legend: { position: 'right' },"
+	b1.puts "histogram: { bucketSize: 1 },"
+	b1.puts "isStacked: ['True']"
+	b1.puts "};"
+	b1.puts "var chart3 = new google.visualization.Histogram(document.getElementById('chart_div3'));"
+	b1.puts "chart3.draw(data3, options3);"
+	b1.puts "}"
+	b1.puts "</script>"
+	b1.puts "</head>"
+	b1.puts "<body>"
+	b1.puts "<style>"
+	b1.puts "</style>"
+	b1.puts "<section>"
+	b1.puts "#{"<div id="}#{'"'}#{"chart_div3"}#{'"'}#{" style="}#{'"'}#{"width: 600px; height: 250px;"}#{'"'}#{"></div>"}"
+	b1.puts "</section>"
+	b1.puts "</body>"
+	b1.puts "</html>"
+end
 
 if not File.exists?(aname)						#only writes header to fname if the file doesn't already exists.  
 File.open(aname, "a+") do |f1|
@@ -60,10 +100,39 @@ puts "#{varGenTime},#{varAgc},#{varRid},#{varSid},#{varWaitMins.round(1)}}"
 File.open(aname, "a+") do |f2|
 	f2.puts "#{varGenTime},#{varAgc},#{varRid},#{varSid},#{varWaitMins}"
 end
+
+File.open(cacheB, "a+") do |b1|
+	b1.puts "['R-Line',#{varWaitMins}],"
 end
 
+end
+
+File.open(dash, "w+") do |zz1|
+zz1.puts ""
+end
+
+hafile = File.open(cacheA, "r")
+hacontents = hafile.read
+hafile.close
+File.open(dash, "a+") do |ha3|
+ha3.puts hacontents
+end
+hbfile = File.open(cacheB, "r")
+hbcontents = hbfile.read
+hbfile.close
+File.open(dash, "a+") do |ha4|
+ha4.puts hbcontents
+end
+hcfile = File.open(cacheC, "r")
+hccontents = hcfile.read
+hcfile.close
+File.open(dash, "a+") do |ha5|
+ha5.puts hccontents
+end 
 sleep(d)
 end until varI > varNum
 
-
+File.delete(cacheA)
+File.delete(cacheB)
+File.delete(cacheC)
 puts "done"
