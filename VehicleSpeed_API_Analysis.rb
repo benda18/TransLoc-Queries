@@ -196,7 +196,7 @@ sleep(2)
 puts "\e[H\e[2J"
 puts 'How many loops to perform? (typically ~10)'
 #varNum = gets.to_i         					#tracks number of repeat iterations
-varNum = 1200
+varNum = 120
 puts "\e[H\e[2J"
 puts "#{varNum} loops"
 sleep(2)
@@ -645,6 +645,12 @@ File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"['', null, null, 'CAT', 0],"}"								#ensures proper lengend setup and colors for each agency
 	hc1.puts "#{"['', null, null, 'TTA', 0],"}"								#ensures proper lengend setup and colors for each agency
 	hc1.puts "#{"['', null, null, 'CHT', 0],"}"								#ensures proper lengend setup and colors for each agency	
+	
+	hc1.puts "#{"['DtR', -78.637277, 35.777531, 'MooreSquare', 0],"}"
+	hc1.puts "#{"['RDU', -78.786726, 35.880965, 'RDU', 0],"}"
+	hc1.puts "#{"['DtCH', -79.055354, 35.913336, 'DtChapelHill', 0],"}"
+	hc1.puts "#{"['DtD', -78.905849, 35.995957, 'DurhamStation', 0],"}"
+	
 #/bar chart
 end
 File.open(hename, "w+") do |he1|
@@ -656,7 +662,12 @@ File.open(hename, "w+") do |he1|
 	he1.puts "#{"sizeAxis: {minSize: 1, maxSize: 15},"}"
 	he1.puts "#{"explorer: {},"}"
 	he1.puts "#{"chartArea: {top: 75, left: 50},"}"
-	he1.puts "#{"bubble: {textStyle: {fontSize: 6}, opacity: 0.5}"}"
+	he1.puts "#{"series: {MooreSquare:{visibleInLegend: false},"}"
+	he1.puts "#{"RDU:{visibleInLegend: false},"}"
+	he1.puts "#{"DtChapelHill:{visibleInLegend: false},"}"
+	he1.puts "#{"DurhamStation:{visibleInLegend: false}"}"
+	he1.puts "#{"},"}"
+	he1.puts "#{"bubble: {textStyle: {fontSize: 12}, opacity: 0.5}"}"
 	he1.puts "#{"};"}"
 	he1.puts "#{"var chart4 = new google.visualization.BubbleChart(document.getElementById('chart_div4'));"}"	
 	he1.puts "#{"chart4.draw(data4, options4);"}"							# chart4.draw(data4, options4);
