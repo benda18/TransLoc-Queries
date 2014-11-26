@@ -38,17 +38,17 @@ require 'unirest'
 require 'json'
 #<initital variable setup>
 hfull = "VehicleSpeedDash.html"
-haname = "dashcacheA #{Time.now.strftime('%Y%m%d')}.txt"			#header
-hbname = "dashcacheB #{Time.now.strftime('%Y%m%d')}.txt"			#data
+haname = "dashcacheA.txt"			#header
+hbname = "dashcacheB.txt"			#data
 File.open(hbname, "w+") do |zz2|										#starts hbname over as a blank file each launch. 
 zz2.puts ""
 end
-hcname = "dashcacheC #{Time.now.strftime('%Y%m%d')}.txt"			#footer
-hdname = "dashcacheD #{Time.now.strftime('%Y%m%d')}.txt"			#footer
+hcname = "dashcacheC.txt"			#footer
+hdname = "dashcacheD.txt"			#footer
 File.open(hdname, "w+") do |zz3|	
 zz3.puts ""
 end
-hename = "dashcacheE #{Time.now.strftime('%Y%m%d')}.txt"			#footer
+hename = "dashcacheE.txt"			#footer
 d = 0
 data_hash = 0
 fname = "VehicleSpeed_bus #{Time.now.strftime('%Y%m%d')}.txt"		# a new .txt file in directory of .rb
@@ -189,14 +189,14 @@ end
 #<gets prompt>
 puts 'How long to sleep (in seconds) between each loop? (typically ~5)'
 #d = gets.to_i 															
-d = 15
+d = 30
 puts "\e[H\e[2J"
 puts "#{d} seconds delay"
 sleep(2)
 puts "\e[H\e[2J"
 puts 'How many loops to perform? (typically ~10)'
 #varNum = gets.to_i         					#tracks number of repeat iterations
-varNum = 1000
+varNum = 1200
 puts "\e[H\e[2J"
 puts "#{varNum} loops"
 sleep(2)
@@ -355,6 +355,9 @@ if varSpdt > 0
 File.open(hbname, "a+") do |hb1|
 	hb1.puts "#{"[null,"}#{varSpdt.round(1)}#{",null],"}"
 end
+File.open(hdname, "a+") do |hd2|
+	hd2.puts "#{"['', "}#{varLngt}#{", "}#{varLatt}#{", 'TTA', "}#{varSpdt}#{"],"}"
+end
 end
 File.open(fname, "a+") do |f5|
 	f5.puts "#{varGenTime},TTA,#{varVIDt},#{varSpdt.round(1)},#{varLngt},#{varLatt},#{varRtt},#{varHdt},#{varSegt}"
@@ -411,6 +414,9 @@ varWcumCt = varWcumCt + 1					#cumulative count tracking
 if varSpdw > 0
 File.open(hbname, "a+") do |hb1|
 	hb1.puts "#{"[null,null,"}#{varSpdw.round(1)}#{"],"}"
+end
+File.open(hdname, "a+") do |hd3|
+	hd3.puts "#{"['', "}#{varLngw}#{", "}#{varLatw}#{", 'CHT', "}#{varSpdw}#{"],"}"
 end
 end
 File.open(fname, "a+") do |f6|
