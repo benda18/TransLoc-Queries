@@ -70,6 +70,7 @@ File.open(aname, "a+") do |f1|
 end
 end
 
+begin
 # These code snippets use an open-source library. http://unirest.io/ruby
 #response = Unirest.get "https://transloc-api-1-2.p.mashape.com/arrival-estimates.jsonp?agencies=20&callback=call&routes=4000032&stops=4105778",
 response = Unirest.get "https://transloc-api-1-2.p.mashape.com/arrival-estimates.jsonp?agencies=20&callback=call&routes=4000032",
@@ -81,7 +82,7 @@ payload2 = response.body					#sets the call response body as a variable
 payload = payload2[/{.+}/]					#removes the callback prefix and suffix from the response body
 data_hash = JSON.parse(payload)				#parses the response body and stores as a variable
 
-begin
+
 varI +=1;
 puts "\e[H\e[2J"
 puts "#{varI} of #{varNum}"
