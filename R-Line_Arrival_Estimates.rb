@@ -32,6 +32,7 @@ d = 30										#loop delay seconds
 File.open(cacheA, "w") do |a1|
 	a1.puts "<html>"
 	a1.puts "<head>"
+	a1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{30}#{'"'}#{">"}"#refresh code
 	a1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{" src="}#{'"'}#{"https://www.google.com/jsapi"}#{'"'}#{"></script>"}"
 	a1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{">"}"
 	a1.puts "#{"google.load("}#{'"'}#{"visualization"}#{'"'}#{", "}#{'"'}#{"1"}#{'"'}#{", {packages:["}#{'"'}#{"corechart"}#{'"'}#{"]"}#{'}'}#{");"}"
