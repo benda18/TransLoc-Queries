@@ -26,8 +26,10 @@ varArr = 0
 varGenTime = 0
 varWaitMins = 0
 varI = 0
-varNum = 120								#loop iterations
+varNum = 900								#loop iterations
 d = 30										#loop delay seconds
+varWaitCum = 0
+varWaitCount = 0
 
 File.open(cacheA, "w") do |a1|
 	a1.puts "<html>"
@@ -42,28 +44,7 @@ File.open(cacheA, "w") do |a1|
 	a1.puts "['Route','Wait in Minutes'],"
 end
 
-File.open(cacheC, "w") do |b1|
-	b1.puts "]);"
-	b1.puts "var options3 = {"
-	b1.puts "title: 'Distribution of R-Line Waiting Times',"
-	b1.puts "legend: { position: 'right' },"
-	b1.puts "histogram: { bucketSize: 1 },"
-	b1.puts "isStacked: ['True']"
-	b1.puts "};"
-	b1.puts "var chart3 = new google.visualization.Histogram(document.getElementById('chart_div3'));"
-	b1.puts "chart3.draw(data3, options3);"
-	b1.puts "}"
-	b1.puts "</script>"
-	b1.puts "</head>"
-	b1.puts "<body>"
-	b1.puts "<style>"
-	b1.puts "</style>"
-	b1.puts "<section>"
-	b1.puts "#{"<div id="}#{'"'}#{"chart_div3"}#{'"'}#{" style="}#{'"'}#{"width: 600px; height: 250px;"}#{'"'}#{"></div>"}"
-	b1.puts "</section>"
-	b1.puts "</body>"
-	b1.puts "</html>"
-end
+
 
 if not File.exists?(aname)						#only writes header to fname if the file doesn't already exists.  
 File.open(aname, "a+") do |f1|
@@ -83,19 +64,49 @@ payload2 = response.body					#sets the call response body as a variable
 payload = payload2[/{.+}/]					#removes the callback prefix and suffix from the response body
 data_hash = JSON.parse(payload)				#parses the response body and stores as a variable
 
-
 varI +=1;
 puts "\e[H\e[2J"
 puts "#{varI} of #{varNum}"
 puts ""
 puts "#{d} second delay"
 varGenTime = data_hash["generated_on"]
+
+
 Array(data_hash["data"]).each do |ary3|
 varAgc = ary3.fetch("agency_id")
 varSid = ary3.fetch("stop_id")
 varArr = ary3.fetch("arrivals").first.fetch("arrival_at")
 varRid = ary3.fetch("arrivals").first.fetch("route_id")
 varWaitMins = (Time.parse(varArr) - Time.parse(varGenTime))/60
+
+varWaitCum = varWaitCum + varWaitMins
+varWaitCount +=1;
+varRtAvgWait = varWaitCum / varWaitCount
+
+File.open(cacheC, "w") do |b1|
+	b1.puts "]);"
+	b1.puts "var options3 = {"
+	b1.puts "title: 'Distribution of Estimated Wait Time for Next Bus Arrival Across All R-Line Stops',"
+	b1.puts "legend: { position: 'right' },"
+	b1.puts "histogram: { bucketSize: 1 },"
+	b1.puts "isStacked: ['True']"
+	b1.puts "};"
+	b1.puts "var chart3 = new google.visualization.Histogram(document.getElementById('chart_div3'));"
+	b1.puts "chart3.draw(data3, options3);"
+	b1.puts "}"
+	b1.puts "</script>"
+	b1.puts "</head>"
+	b1.puts "<body>"
+	b1.puts "<style>"
+	b1.puts "</style>"
+	b1.puts "<section>"
+	b1.puts "#{"<div id="}#{'"'}#{"chart_div3"}#{'"'}#{" style="}#{'"'}#{"width: 600px; height: 250px;"}#{'"'}#{"></div>"}"
+	b1.puts "</section>"
+	b1.puts "</body>"
+	b1.puts "</html>"
+	b1.puts "Average Wait: #{varRtAvgWait.round(1)} mins"
+end
+
 
 puts "#{varGenTime},#{varAgc},#{varRid},#{varSid},#{varWaitMins.round(1)}}"
 
