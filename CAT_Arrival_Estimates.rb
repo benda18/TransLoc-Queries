@@ -12,7 +12,8 @@ puts "\e[H\e[2J"
 
 #routesCACHE
 # get route_id, short_name, long_name
-RCname = "routesCache.txt"
+RCname = "routesCache#{Time.now.strftime('%Y%m%d')}.txt"
+if not File.exists?(RCname)						#only calls this api if the routes haven't already been cached
 data_hashR = 0
 payloadR = 0
 payload2R = 0
@@ -20,6 +21,7 @@ varRIDr = 0
 varSNMr = 0
 varLNMr = 0
 responseR = 0
+
 # These code snippets use an open-source library. http://unirest.io/ruby
 sleep(10)
 responseR = Unirest.get "https://transloc-api-1-2.p.mashape.com/routes.jsonp?agencies=20&callback=call",
@@ -48,9 +50,13 @@ varRIDr = 0
 varSNMr = 0
 varLNMr = 0
 #/routesCACHE
+end
+
 
 #stopsCACHE
-stname = "stopsCache.txt"
+stname = "stopsCache#{Time.now.strftime('%Y%m%d')}.txt"
+
+if not File.exists?(stname)						#only calls this api if the stops haven't already been cached
 data_hashs = 0
 payloads = 0
 payload2s = 0
@@ -89,6 +95,7 @@ varSIDs = 0
 varLNGs = 0
 varLATs = 0
 varNAMs = 0
+end
 #/stopsCACHE
 
 cacheA = "cacheA.txt" 
@@ -231,7 +238,6 @@ varRidRCsn = 0
 varRidRCln = 0
 varLng = 0
 varLat = 0
-#varName = 0
 end
 
 File.open(dash, "w+") do |zz1|
@@ -262,7 +268,7 @@ end until varI > varNum
 File.delete(cacheA)
 File.delete(cacheB)
 File.delete(cacheC)
-File.delete(stname)
-File.delete(RCname)
+#File.delete(stname)
+#File.delete(RCname)
 
 puts "done"
