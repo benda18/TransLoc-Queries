@@ -9,7 +9,9 @@ require 'date'
 #require 'DateTime'
 
 puts "\e[H\e[2J"
-puts "Started: #{Time.now}"
+varSt = Time.now 
+puts "Started: #{varSt}" 
+puts ""
 
 #vars/defs
 #SAfile = "CATAvgStopWait 20141202.txt"
@@ -20,22 +22,15 @@ puts "Started: #{Time.now}"
 #SETUP
 #---month---/
 
+#---hour---/
+vLow = 6		# begin of time-of-day span in 24-hr clockface hours --> 6=6:00am-6:59am, 13=1:00pm-1:59pm, etc.
+vHig = 8		# end   of time-of-day span in 24-hr clockface hours
 #/SETUP
 
 
-=begin
-Dir.glob('CATAvgStopWait*.txt') do |foo|
-puts "foo"
-sleep(1)
-end
 
-
-arr1 = []	#am peak	7-8:59
-arr2 = []	#mid-day	9-3:59
-arr3 = []	#pm peak	4-5:59
-arr4 = []	#late		6-12:59
-arr5 = []	#All Day	0-24:59
-=end
+#HEADERS
+puts "Hours between #{vLow}:00 and #{vHig}:59"
 
 arr10 = []
 arr11 = []
@@ -115,8 +110,143 @@ varAgc = 0
 #varRtQuery = "r-line" 	#INPUTS
 varMins = 0
 
+varct10 = 0
+varct11 = 0
+varct11L = 0
+varct12 = 0
+varct13 = 0
+varct15 = 0
+varct15L = 0
+varct16 = 0
+varct18 = 0
+varct2 = 0
+varct21 = 0
+varct23L = 0
+varct24L = 0
+varct25L = 0
+varct40X = 0
+varct6 = 0
+varct7 = 0
+#varct70X = 0
+varct8 = 0
+varct22 = 0
+varct3 = 0
+varct55X = 0
+varct5 = 0
+varctrline = 0
+varct4 = 0
+varct7L = 0
+#varctwfl = 0
+varct31 = 0
+varct1 = 0
+varct19 = 0
+varct54L = 0
+#varct900 = 0
+
 Dir.glob('CATAvgStopWait*.txt') do |foo|
 
+list1 =CSV.foreach(foo, :headers => true, :return_headers => false) do |row1|
+varRtnam = 0
+varRtnam = row1["route_number"]#.to_a
+
+
+if varRtnam == var10
+varct10 +=1;
+end
+if varRtnam == var11
+varct11 +=1;
+end
+if varRtnam == var11L
+varct11L +=1;
+end
+if varRtnam == var12
+varct12 +=1;
+end
+if varRtnam == var13
+varct13 +=1;
+end
+if varRtnam == var15
+varct15 +=1;
+end
+if varRtnam == var15L
+varct15L +=1;
+end
+if varRtnam == var16
+varct16 +=1;
+end
+if varRtnam == var18
+varct18 +=1;
+end
+if varRtnam == var2
+varct2 +=1;
+end
+if varRtnam == var21
+varct21 +=1;
+end
+if varRtnam == var23L
+varct23L +=1;
+end
+if varRtnam == var24L
+varct24L +=1;
+end
+if varRtnam == var25L
+varct25L +=1;
+end
+if varRtnam == var40X
+varct40X +=1;
+end
+if varRtnam == var6
+varct6 +=1;
+end
+if varRtnam == var7
+varct7 +=1;
+end
+# if varRtnam == var70X
+# varct70X +=1;
+# end
+if varRtnam == var8
+varct8 +=1;
+end
+if varRtnam == var22
+varct22 +=1;
+end
+if varRtnam == var3
+varct3 +=1;
+end
+if varRtnam == var55X
+varct55X +=1;
+end
+if varRtnam == var5
+varct5 +=1;
+end
+if varRtnam == varrline
+varctrline +=1;
+end
+if varRtnam == var4
+varct4 +=1;
+end
+if varRtnam == var7L
+varct7L +=1;
+end
+# if varRtnam == varwfl
+# varctwfl +=1;
+# end
+if varRtnam == var31
+varct31 +=1;
+end
+if varRtnam == var1
+varct1 +=1;
+end
+if varRtnam == var19
+varct19 +=1;
+end
+if varRtnam == var54L
+varct54L +=1;
+end
+# if varRtnam == var900
+# varct900 +=1;
+# end
+end
 
 
 list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
@@ -134,11 +264,17 @@ list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
 	varMins = row["MinsToArriv"].to_f
 	if varMins > 0
 	varRtnam = row["route_number"]#.to_a
+	
+
+
+
+	
+	
 #=begin
 #	varAgc = row["agency"]
 #	varSid = row["stop_id"]
 #=end
-	if varRtnam == var1					#query dependencies 
+
 	#PARSE TIME
 	varDate = row["gendate"]
 	varDate = DateTime.parse(varDate)
@@ -147,1121 +283,152 @@ list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
 #	varYer = varDate.year
 #	varMon = varDate.month
 #	varDay = varDate.day
-#	varHr = varDate.hour.to_f
+	varHr = varDate.hour.to_f
+	if varHr.between?(vLow, vHig)
 #	varMin = varDate.minute
 	#/PARSE TIME
-	arr1 << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var2					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
-	arr2 << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var3					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
-	arr3 << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var4					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
-	arr4 << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var5					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
-	arr5 << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var6					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
-	arr6 << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var7					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
-	arr7 << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var7L					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
-	arr7L << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var8					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
-	arr8 << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
+	
+	#puts row["route_number"].inspect()
+	#sleep(100)
+	
 	if varRtnam == var10					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
 	arr10 << row[6].to_f
 	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var11					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
+	if varRtnam == var11
 	arr11 << row[6].to_f
 	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var11L					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
+	if varRtnam == var11L
 	arr11L << row[6].to_f
 	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var12					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
+	if varRtnam == var12
 	arr12 << row[6].to_f
 	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var13					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
+	if varRtnam == var13
 	arr13 << row[6].to_f
 	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var15					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
+	if varRtnam == var15
 	arr15 << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var15L					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
+	end	
+	if varRtnam == var15L
 	arr15L << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var16					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
+	end	
+	if varRtnam == var16
 	arr16 << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var18					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
+	end	
+	if varRtnam == var18
 	arr18 << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var19					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
-	arr19 << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var21					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
+	end	
+	if varRtnam == var2
+	arr2 << row[6].to_f
+	end	
+	if varRtnam == var21
 	arr21 << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var22					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
-	arr22 << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var23L					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
+	end	
+	if varRtnam == var23L
 	arr23L << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var24L					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
+	end		
+	if varRtnam == var24L
 	arr24L << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var25L					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
+	end	
+	if varRtnam == var25L
 	arr25L << row[6].to_f
-	end
-end
-end
-
-=begin
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var31					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
-	arr31 << row[6].to_f
-	end
-end
-end
-=end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var40X					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
+	end	
+	if varRtnam == var40X
 	arr40X << row[6].to_f
+	end	
+	if varRtnam == var6
+	arr6 << row[6].to_f
 	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var54L					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
-	arr54L << row[6].to_f
+	if varRtnam == var7
+	arr7 << row[6].to_f
 	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var55X					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
-	arr55X << row[6].to_f
-	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == var70X					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
+	if varRtnam == var70X
 	arr70X << row[6].to_f
 	end
-end
-end
-
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
-#=begin
-	varDate=0
-	varYer = 0
-	varMon = 0
-	varDay = 0
-	varHr = 0
-	varMin = 0
-	varRtnam = 0
-	varAgc = 0
-	varMins = 0
-#=end
-	varMins = row["MinsToArriv"].to_f
-	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
-#=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
-#=end
-	if varRtnam == varrline					#query dependencies 
-	#PARSE TIME
-	varDate = row["gendate"]
-	varDate = DateTime.parse(varDate)
-	varDate = varDate.to_time.iso8601
-	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-#	varYer = varDate.year
-#	varMon = varDate.month
-#	varDay = varDate.day
-#	varHr = varDate.hour.to_f
-#	varMin = varDate.minute
-	#/PARSE TIME
+	if varRtnam == var8
+	arr8 << row[6].to_f
+	end
+	if varRtnam == var22
+	arr22 << row[6].to_f
+	end
+	if varRtnam == var3
+	arr3 << row[6].to_f
+	end
+	if varRtnam == var55X
+	arr55X << row[6].to_f
+	end
+	if varRtnam == var5
+	arr5 << row[6].to_f
+	end
+	if varRtnam == varrline
 	arrrline << row[6].to_f
 	end
+	if varRtnam == var4
+	arr4 << row[6].to_f
+	end
+	if varRtnam == var7L
+	arr7L << row[6].to_f
+	end
+	# if varRtnam == varwfl
+	# arrwfl << row[6].to_f
+	# end
+	if varRtnam == var31
+	arr31 << row[6].to_f
+	end
+	if varRtnam == var1
+	arr1 << row[6].to_f
+	end
+	if varRtnam == var19
+	arr19 << row[6].to_f
+	end
+	if varRtnam == var54L
+	arr54L << row[6].to_f
+	end
+	# if varRtnam == var900
+	# arr900 << row[6].to_f
+	# end
 end
 end
-
 end
-#puts arr1
+end
 puts "Average minutes to next bus arrival by route..."
-#puts "##{varRtQuery}	#{arr5.mean}"
-puts "##{var1}	#{arr1.mean}"
-puts "##{var2}	#{arr2.mean}"
-puts "##{var3}	#{arr3.mean}"
-puts "##{var4}	#{arr4.mean}"
-puts "##{var5}	#{arr5.mean}"
-puts "##{var6}	#{arr6.mean}"
-puts "##{var7}	#{arr7.mean}"
-puts "##{var7L}	#{arr7L.mean}"
-puts "##{var8}	#{arr8.mean}"
-puts "##{var10}	#{arr10.mean}"
-puts "##{var11}	#{arr11.mean}"
-puts "##{var11L}	#{arr11L.mean}"
-puts "##{var12}	#{arr12.mean}"
-puts "##{var13}	#{arr13.mean}"
-puts "##{var15}	#{arr15.mean}"
-puts "##{var15L}	#{arr15L.mean}"
-puts "##{var16}	#{arr16.mean}"
-puts "##{var18}	#{arr18.mean}"
-puts "##{var19}	#{arr19.mean}"
-puts "##{var21}	#{arr21.mean}"
-puts "##{var22}	#{arr22.mean}"
-puts "##{var23L}	#{arr23L.mean}"
-puts "##{var24L}	#{arr24L.mean}"
-puts "##{var25L}	#{arr25L.mean}"
-#puts "##{var31}	#{arr31.mean}"
-puts "##{var40X}	#{arr40X.mean}"
-puts "##{var54L}	#{arr54L.mean}"
-puts "##{var55X}	#{arr55X.mean}"
-puts "##{var70X}	#{arr70X.mean}"
-#puts "##{var900}	#{arr900.mean}"
-puts "##{varrline}	#{arrrline.mean}"
-#puts "##{varwfl}	#{arrwfl.mean}"
+puts "##{var1}	#{arr1.mean.round(0)}" unless varct1==0
+puts "##{var2}	#{arr2.mean.round(0)}" unless varct2==0
+puts "##{var3}	#{arr3.mean.round(0)}" unless varct3==0
+puts "##{var4}	#{arr4.mean.round(0)}" unless varct4==0
+puts "##{var5}	#{arr5.mean.round(0)}" unless varct5==0
+puts "##{var6}	#{arr6.mean.round(0)}" unless varct6==0
+puts "##{var7}	#{arr7.mean.round(0)}" unless varct7==0
+puts "##{var7L}	#{arr7L.mean.round(0)}" unless varct7L==0
+puts "##{var8}	#{arr8.mean.round(0)}" unless varct8==0
+puts "##{var10}	#{arr10.mean.round(0)}" unless varct10==0
+puts "##{var11}	#{arr11.mean.round(0)}" unless varct11==0
+puts "##{var11L}	#{arr11L.mean.round(0)}" unless varct11L==0
+puts "##{var12}	#{arr12.mean.round(0)}" unless varct12==0
+puts "##{var13}	#{arr13.mean.round(0)}" unless varct13==0
+puts "##{var15}	#{arr15.mean.round(0)}" unless varct15==0
+puts "##{var15L}	#{arr15L.mean.round(0)}" unless varct15L==0
+puts "##{var16}	#{arr16.mean.round(0)}" unless varct16==0
+puts "##{var18}	#{arr18.mean.round(0)}" unless varct18==0
+puts "##{var19}	#{arr19.mean.round(0)}" unless varct19==0
+puts "##{var21}	#{arr21.mean.round(0)}" unless varct21==0
+puts "##{var22}	#{arr22.mean.round(0)}" unless varct22==0
+puts "##{var23L}	#{arr23L.mean.round(0)}" unless varct23L==0
+puts "##{var24L}	#{arr24L.mean.round(0)}" unless varct24L==0
+puts "##{var25L}	#{arr25L.mean.round(0)}" unless varct25L==0
+#puts "##{var31}	#{arr31.mean.round(0)}" unless varct31==0
+puts "##{var40X}	#{arr40X.mean.round(0)}" unless varct40X==0
+puts "##{var54L}	#{arr54L.mean.round(0)}" unless varct54L==0
+puts "##{var55X}	#{arr55X.mean.round(0)}" unless varct55X==0
+#puts "##{var70X}	#{arr70X.mean.round(0)}" unless varct70X==0
+#puts "##{var900}	#{arr900.mean.round(0)}" unless varct900==0
+puts "##{varrline}	#{arrrline.mean.round(0)}" unless varctrline==0
+#puts "##{varwfl}	#{arrwfl.mean.round(0)}" unless varctwfl==0
 
-
-#puts "% of Next Bus Arrivals in..."
-# puts "AM Peak: #{arr1.mean} mins"
-# puts "Mid-day: #{arr2.mean} mins"
-# puts "PM Peak: #{arr3.mean} mins"
-# puts "Evening: #{arr4.mean} mins"
-#puts "..............24h..AMp..Mid..PMp..Eve...................."
-#puts "<  2 minutes: #{arr5.percentile_rank(2).round(0)}%  #{arr1.percentile_rank(2).round(0)}%  #{arr2.percentile_rank(2).round(0)}%  #{arr3.percentile_rank(2).round(0)}%  #{arr4.percentile_rank(2).round(0)}%"
-# puts "<  4 minutes: #{arr5.percentile_rank(4).round(0)}%  #{arr1.percentile_rank(4).round(0)}%  #{arr2.percentile_rank(4).round(0)}%  #{arr3.percentile_rank(4).round(0)}%  #{arr4.percentile_rank(4).round(0)}%"
-# puts "<  6 minutes: #{arr5.percentile_rank(6).round(0)}%  #{arr1.percentile_rank(6).round(0)}%  #{arr2.percentile_rank(6).round(0)}%  #{arr3.percentile_rank(6).round(0)}%  #{arr4.percentile_rank(6).round(0)}%"
-# puts "<  8 minutes: #{arr5.percentile_rank(8).round(0)}%  #{arr1.percentile_rank(8).round(0)}%  #{arr2.percentile_rank(8).round(0)}%  #{arr3.percentile_rank(8).round(0)}%  #{arr4.percentile_rank(8).round(0)}%"
-# puts "< 10 minutes: #{arr5.percentile_rank(10).round(0)}%  #{arr1.percentile_rank(10).round(0)}%  #{arr2.percentile_rank(10).round(0)}%  #{arr3.percentile_rank(10).round(0)}%  #{arr4.percentile_rank(10).round(0)}%"
-# puts "< 12 minutes: #{arr5.percentile_rank(12).round(0)}%  #{arr1.percentile_rank(12).round(0)}%  #{arr2.percentile_rank(12).round(0)}%  #{arr3.percentile_rank(12).round(0)}%  #{arr4.percentile_rank(12).round(0)}%"
-# puts "< 14 minutes: #{arr5.percentile_rank(14).round(0)}%  #{arr1.percentile_rank(14).round(0)}%  #{arr2.percentile_rank(14).round(0)}%  #{arr3.percentile_rank(14).round(0)}%  #{arr4.percentile_rank(14).round(0)}%"
-# puts "< 16 minutes: #{arr5.percentile_rank(16).round(0)}%  #{arr1.percentile_rank(16).round(0)}%  #{arr2.percentile_rank(16).round(0)}%  #{arr3.percentile_rank(16).round(0)}%  #{arr4.percentile_rank(16).round(0)}%"
-# puts "< 18 minutes: #{arr5.percentile_rank(18).round(0)}%  #{arr1.percentile_rank(18).round(0)}%  #{arr2.percentile_rank(18).round(0)}%"
-# puts "< 20 minutes: #{arr5.percentile_rank(20).round(0)}%  #{arr1.percentile_rank(20).round(0)}%  #{arr2.percentile_rank(20).round(0)}%"
-# puts "< 22 minutes: #{arr5.percentile_rank(22).round(0)}%  #{arr1.percentile_rank(22).round(0)}%  #{arr2.percentile_rank(22).round(0)}%"
-# puts "< 24 minutes: #{arr5.percentile_rank(24).round(0)}%  #{arr1.percentile_rank(24).round(0)}%  #{arr2.percentile_rank(24).round(0)}%"
-# puts "< 26 minutes: #{arr5.percentile_rank(26).round(0)}%  #{arr1.percentile_rank(26).round(0)}%  #{arr2.percentile_rank(26).round(0)}%"
-# puts "< 28 minutes: #{arr5.percentile_rank(28).round(0)}%  #{arr1.percentile_rank(28).round(0)}%  #{arr2.percentile_rank(28).round(0)}%"
-# puts "< 30 minutes: #{arr5.percentile_rank(30).round(0)}%  #{arr1.percentile_rank(30).round(0)}%  #{arr2.percentile_rank(30).round(0)}%"
-
-puts "Ended: #{Time.now}"
+varEn = Time.now
+varDur = varEn - varSt	#seconds
+varDur = varDur / 60	#minutes
+puts ""
+puts "Duration: #{varDur.round(1)} minutes"
 
 exit
-
