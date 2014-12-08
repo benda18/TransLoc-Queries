@@ -12,46 +12,47 @@ puts ""
 #vars/defs
 #SAfile = "CATAvgStopWait 20141202.txt"
 #SAfile = Dir["CATAvgStopWait*.txt"]
+cacheRand = "cacheRand.txt"
 #SETUP
 #---month---/
 #---hour---/
 vLow = 7		# begin of time-of-day span in 24-hr clockface hours --> 6=6:00am, 13=1:00pm, etc.
-vHig = 7		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 13=1:59pm, etc.
+vHig = 19		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 13=1:59pm, etc.
 #/SETUP
 #HEADERS
 puts "Hours between #{vLow}:00 and #{vHig}:59"
-arr10 = []
-arr11 = []
-arr11L = []
-arr12 = []
-arr13 = []
-arr15 = []
-arr15L = []
-arr16 = []
-arr18 = []
-arr2 = []
-arr21 = []
-arr23L = []
-arr24L = []
-arr25L = []
-arr40X = []
-arr6 = []
-arr7 = []
-arr70X = []
-arr8 = []
-arr22 = []
-arr3 = []
-#arr55X = []
-arr5 = []
-arrrline = []
-arr4 = []
-arr7L = []
-#arrwfl = []
-arr31 = []
-arr1 = []
-arr19 = []
-arr54L = []
-#arr900 = []
+arr10 = [0]
+arr11 = [0]
+arr11L = [0]
+arr12 = [0]
+arr13 = [0]
+arr15 = [0]
+arr15L = [0]
+arr16 = [0]
+arr18 = [0]
+arr2 = [0]
+arr21 = [0]
+arr23L = [0]
+arr24L = [0]
+arr25L = [0]
+arr40X = [0]
+arr6 = [0]
+arr7 = [0]
+arr70X = [0]
+arr8 = [0]
+arr22 = [0]
+arr3 = [0]
+#arr55X = [0]
+arr5 = [0]
+arrrline = [0]
+arr4 = [0]
+arr7L = [0]
+#arrwfl = [0]
+arr31 = [0]
+arr1 = [0]
+arr19 = [0]
+arr54L = [0]
+#arr900 = [0]
 var10 = "10"
 var11 = "11"
 var11L = "11L"
@@ -231,7 +232,42 @@ Dir.glob('CATAvgStopWait*.txt') do |foo|
 # # end
 # end
 
-list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
+
+randfile = File.open(cacheRand, "a+")
+	
+File.foreach(foo).with_index { |line, line_num|
+#vars
+varRnd = 0
+varRnd = rand(1..100)
+if varRnd == 1
+#puts "#{line_num}: #{line}"
+randfile.puts line
+#else 
+#puts "false"
+end
+#sleep(1)
+}
+randfile.close
+
+
+
+list = CSV.foreach(randfile) do |row|			#****
+
+
+
+
+# Headers
+# [0]..gendate
+# [1]..agency
+# [2]..route_id
+# [3]..route_number
+# [4]..route_name
+# [5]..stop_id
+# [6]..MinToArriv
+# [7]..lon
+# [8]..lat
+
+
 #=begin
 	varDate=0
 	varYer = 0
@@ -242,30 +278,40 @@ list =CSV.foreach(foo, :headers => true, :return_headers => false) do |row|
 	varRtnam = 0
 	varAgc = 0
 	varMins = 0
+	
 #=end
-	varMins = row["MinsToArriv"].to_f
+
+#if varRnd = 1 
+
+	varMins = row[6].to_f
 	if varMins > 0
-	varRtnam = row["route_number"]#.to_a
+	#if row[6].to_f > 0
+	varRtnam = row[3]#.to_a
 
 
 
 
 
 #=begin
-#	varAgc = row["agency"]
-#	varSid = row["stop_id"]
+#	varAgc = row[1]
+#	varSid = row[5]
 #=end
 	#PARSE TIME
-	varDate = row["gendate"]
+	varDate = row[0]
 	varDate = DateTime.parse(varDate)
 	varDate = varDate.to_time.iso8601
 	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
 #	varYer = varDate.year
 #	varMon = varDate.month
 #	varDay = varDate.day
+#puts varDate								#****
 	varHr = varDate.hour.to_f
+#puts varHr									#****
 	if varHr.between?(vLow, vHig)
-=begin	
+#puts "true"								#****
+#puts "Route: #{varRtnam}"					#****
+#sleep(20)									#****
+#=begin	
 if varRtnam == var10
 varct10 +=1;
 end
@@ -359,11 +405,11 @@ end
 if varRtnam == var54L
 varct54L +=1;
 end	
-=end
+#=end
 	
 #	varMin = varDate.minute
 	#/PARSE TIME
-	#puts row["route_number"].inspect()
+	#puts row[3].inspect()
 	#sleep(100)
 	if varRtnam == var10					#query dependencies 
 	arr10 << row[6].to_f
@@ -461,9 +507,12 @@ end
 	# if varRtnam == var900
 	# arr900 << row[6].to_f
 	# end
-end
-end
-end
+#else puts "false"					#****
+#sleep(0.05)							#****
+	end
+end 
+end						#****z
+#end #
 end
 puts "Average minutes to next bus arrival by route..."
 puts "##{var1}	#{arr1.mean.round(0)}" unless arr1==nil
@@ -503,4 +552,5 @@ varDur = varEn - varSt	#seconds
 varDur = varDur / 60	#minutes
 puts ""
 puts "Duration: #{varDur.round(1)} minutes"
+File.delete(cacheRand)
 exit
