@@ -13,14 +13,29 @@ puts ""
 #SAfile = "CATAvgStopWait 20141202.txt"
 #SAfile = Dir["CATAvgStopWait*.txt"]
 cacheRand = "cacheRand.txt"
+
+
 #SETUP
-#---month---/
-#---hour---/
-vLow = 7		# begin of time-of-day span in 24-hr clockface hours --> 6=6:00am, 13=1:00pm, etc.
-vHig = 19		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 13=1:59pm, etc.
+#---month---------------/
+#---hour----------------/
+vLow = 0		# begin of time-of-day span in 24-hr clockface hours --> 6=6:00am, 13=1:00pm, etc.
+vHig = 23 		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 13=1:59pm, etc.
+#---day-of-week---------/
+varWDs = 1				# START DAY RANGE; 	0 = Sun, 1 = Mon, etc..
+varWDe = 5				# END DAY RANGE;	0 = Sun, 1 = Mon, etc..
+#---sample-percentage---/
+vSp = 1000		# where vsp = "1/{vsp}" means 1/nth of all lines from all files will be queried
 #/SETUP
+
+
+
+
+
 #HEADERS
 puts "Hours between #{vLow}:00 and #{vHig}:59"
+puts "Days of Week: #{varWDs}-#{varWDe} (where 0 = Sun, 1 = Mon, etc...)"
+puts "Sampled 1/#{vSp} records"
+puts ""
 arr10 = [0]
 arr11 = [0]
 arr11L = [0]
@@ -238,7 +253,7 @@ randfile = File.open(cacheRand, "a+")
 File.foreach(foo).with_index { |line, line_num|
 #vars
 varRnd = 0
-varRnd = rand(1..100)
+varRnd = rand(1..vSp)						#INPUT sampling percentage
 if varRnd == 1
 #puts "#{line_num}: #{line}"
 randfile.puts line
@@ -278,6 +293,7 @@ list = CSV.foreach(randfile) do |row|			#****
 	varRtnam = 0
 	varAgc = 0
 	varMins = 0
+	varWday = 0
 	
 #=end
 
@@ -304,6 +320,8 @@ list = CSV.foreach(randfile) do |row|			#****
 #	varYer = varDate.year
 #	varMon = varDate.month
 #	varDay = varDate.day
+	varWday = varDate.wday
+	if varWday.between?(varWDs, varWDe)
 #puts varDate								#****
 	varHr = varDate.hour.to_f
 #puts varHr									#****
@@ -510,47 +528,54 @@ end
 #else puts "false"					#****
 #sleep(0.05)							#****
 	end
+	end
 end 
 end						#****z
 #end #
 end
 puts "Average minutes to next bus arrival by route..."
-puts "##{var1}	#{arr1.mean.round(0)}" unless arr1==nil
-puts "##{var2}	#{arr2.mean.round(0)}" unless arr2==nil
-puts "##{var3}	#{arr3.mean.round(0)}" unless arr3==nil
-puts "##{var4}	#{arr4.mean.round(0)}" unless arr4==nil
-puts "##{var5}	#{arr5.mean.round(0)}" unless arr5==nil
-puts "##{var6}	#{arr6.mean.round(0)}" unless arr6==nil
-puts "##{var7}	#{arr7.mean.round(0)}" unless arr7==nil
-puts "##{var7L}	#{arr7L.mean.round(0)}" unless arr7L==nil
-puts "##{var8}	#{arr8.mean.round(0)}" unless arr8==nil
-puts "##{var10}	#{arr10.mean.round(0)}" unless arr10==nil
-puts "##{var11}	#{arr11.mean.round(0)}" unless arr11==nil
-puts "##{var11L}	#{arr11L.mean.round(0)}" unless arr11L==nil
-puts "##{var12}	#{arr12.mean.round(0)}" unless arr12==nil
-puts "##{var13}	#{arr13.mean.round(0)}" unless arr13==nil
-puts "##{var15}	#{arr15.mean.round(0)}" unless arr15==nil
-puts "##{var15L}	#{arr15L.mean.round(0)}" unless arr15L==nil
-puts "##{var16}	#{arr16.mean.round(0)}" unless arr16==nil
-puts "##{var18}	#{arr18.mean.round(0)}" unless arr18==nil
-puts "##{var19}	#{arr19.mean.round(0)}" unless arr19==nil
-puts "##{var21}	#{arr21.mean.round(0)}" unless arr21==nil
-puts "##{var22}	#{arr22.mean.round(0)}" unless arr22==nil
-puts "##{var23L}	#{arr23L.mean.round(0)}" unless arr23L==nil
-puts "##{var24L}	#{arr24L.mean.round(0)}" unless arr24L==nil
-puts "##{var25L}	#{arr25L.mean.round(0)}" unless arr25L==nil
-#puts "##{var31}	#{arr31.mean.round(0)}" unless arr31==nil
-puts "##{var40X}	#{arr40X.mean.round(0)}" unless arr40X==nil
-puts "##{var54L}	#{arr54L.mean.round(0)}" unless arr54L==nil
-#puts "##{var55X}	#{arr55X.mean.round(0)}" unless arr55X==nil
-#puts "##{var70X}	#{arr70X.mean.round(0)}" unless arr70X==nil
-#puts "##{var900}	#{arr900.mean.round(0)}" unless arr900==nil
-puts "##{varrline}	#{arrrline.mean.round(0)}" unless arrrline==nil
-#puts "##{varwfl}	#{arrwfl.mean.round(0)}" unless arrwfl==nil
+puts ""
+puts "Route	Mean	StDev	Count"
+puts "##{var1}	#{arr1.mean.round(1)}	#{arr1.standard_deviation.round(1)}	#{arr1.number.round(0)}" unless arr1==nil
+puts "##{var2}	#{arr2.mean.round(1)}	#{arr2.standard_deviation.round(1)}	#{arr2.number.round(0)}" unless arr2==nil
+puts "##{var3}	#{arr3.mean.round(1)}	#{arr3.standard_deviation.round(1)}	#{arr3.number.round(0)}" unless arr3==nil
+puts "##{var4}	#{arr4.mean.round(1)}	#{arr4.standard_deviation.round(1)}	#{arr4.number.round(0)}" unless arr4==nil
+puts "##{var5}	#{arr5.mean.round(1)}	#{arr5.standard_deviation.round(1)}	#{arr5.number.round(0)}" unless arr5==nil
+puts "##{var6}	#{arr6.mean.round(1)}	#{arr6.standard_deviation.round(1)}	#{arr6.number.round(0)}" unless arr6==nil
+puts "##{var7}	#{arr7.mean.round(1)}	#{arr7.standard_deviation.round(1)}	#{arr7.number.round(0)}" unless arr7==nil
+puts "##{var7L}	#{arr7L.mean.round(1)}	#{arr7L.standard_deviation.round(1)}	#{arr7L.number.round(0)}" unless arr7L==nil
+puts "##{var8}	#{arr8.mean.round(1)}	#{arr8.standard_deviation.round(1)}	#{arr8.number.round(0)}" unless arr8==nil
+puts "##{var10}	#{arr10.mean.round(1)}	#{arr10.standard_deviation.round(1)}	#{arr10.number.round(0)}" unless arr10==nil
+puts "##{var11}	#{arr11.mean.round(1)}	#{arr11.standard_deviation.round(1)}	#{arr11.number.round(0)}" unless arr11==nil
+puts "##{var11L}	#{arr11L.mean.round(1)}	#{arr11L.standard_deviation.round(1)}	#{arr11L.number.round(0)}" unless arr11L==nil
+puts "##{var12}	#{arr12.mean.round(1)}	#{arr12.standard_deviation.round(1)}	#{arr12.number.round(0)}" unless arr12==nil
+puts "##{var13}	#{arr13.mean.round(1)}	#{arr13.standard_deviation.round(1)}	#{arr13.number.round(0)}" unless arr13==nil
+puts "##{var15}	#{arr15.mean.round(1)}	#{arr15.standard_deviation.round(1)}	#{arr15.number.round(0)}" unless arr15==nil
+puts "##{var15L}	#{arr15L.mean.round(1)}	#{arr15L.standard_deviation.round(1)}	#{arr15L.number.round(0)}" unless arr15L==nil
+puts "##{var16}	#{arr16.mean.round(1)}	#{arr16.standard_deviation.round(1)}	#{arr16.number.round(0)}" unless arr16==nil
+puts "##{var18}	#{arr18.mean.round(1)}	#{arr18.standard_deviation.round(1)}	#{arr18.number.round(0)}" unless arr18==nil
+puts "##{var19}	#{arr19.mean.round(1)}	#{arr19.standard_deviation.round(1)}	#{arr19.number.round(0)}" unless arr19==nil
+puts "##{var21}	#{arr21.mean.round(1)}	#{arr21.standard_deviation.round(1)}	#{arr21.number.round(0)}" unless arr21==nil
+puts "##{var22}	#{arr22.mean.round(1)}	#{arr22.standard_deviation.round(1)}	#{arr22.number.round(0)}" unless arr22==nil
+puts "##{var23L}	#{arr23L.mean.round(1)}	#{arr23L.standard_deviation.round(1)}	#{arr23L.number.round(0)}" unless arr23L==nil
+puts "##{var24L}	#{arr24L.mean.round(1)}	#{arr24L.standard_deviation.round(1)}	#{arr24L.number.round(0)}" unless arr24L==nil
+puts "##{var25L}	#{arr25L.mean.round(1)}	#{arr25L.standard_deviation.round(1)}	#{arr25L.number.round(0)}" unless arr25L==nil
+#puts "##{var31}	#{arr31.mean.round(1)}	#{arr31.standard_deviation.round(1)}	#{arr31.number.round(0)}" unless arr31==nil
+puts "##{var40X}	#{arr40X.mean.round(1)}	#{arr40X.standard_deviation.round(1)}	#{arr40X.number.round(0)}" unless arr40X==nil
+puts "##{var54L}	#{arr54L.mean.round(1)}	#{arr54L.standard_deviation.round(1)}	#{arr54L.number.round(0)}" unless arr54L==nil
+#puts "##{var55X}	#{arr55X.mean.round(1)}	#{arr55X.standard_deviation.round(1)}	#{arr55X.number.round(0)}" unless arr55X==nil
+#puts "##{var70X}	#{arr70X.mean.round(1)}	#{arr70X.standard_deviation.round(1)}	#{arr70X.number.round(0)}" unless arr70X==nil
+#puts "##{var900}	#{arr900.mean.round(1)}	#{arr900.standard_deviation.round(1)}	#{arr900.number.round(0)}" unless arr900==nil
+puts "##{varrline}	#{arrrline.mean.round(1)}	#{arrrline.standard_deviation.round(1)}	#{arrrline.number.round(0)}" unless arrrline==nil
+#puts "##{varwfl}	#{arrrwfl.mean.round(1)}	#{arrrwfl.standard_deviation.round(1)}	#{arrrwfl.number.round(0)}" unless arrrwfl==nil
 varEn = Time.now
 varDur = varEn - varSt	#seconds
 varDur = varDur / 60	#minutes
 puts ""
 puts "Duration: #{varDur.round(1)} minutes"
+fileCR=File.open(cacheRand,"r")
+puts ""
+puts "#{fileCR.readlines.size} lines queried"
+fileCR.close
 File.delete(cacheRand)
 exit
