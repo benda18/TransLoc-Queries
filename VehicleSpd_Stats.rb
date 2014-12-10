@@ -25,24 +25,32 @@ end
 #puts varLNC
 #sleep(100)
 #/Count total lines in all .txt files
-
+vPCT = 0	#percentage of records sampled
 
 
 #SETUP
 #---month---------------/
 #---hour----------------/
-vLow = 0		# begin of time-of-day span in 24-hr clockface hours --> 6=6:00am, 13=1:00pm, etc.
-vHig = 23 		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 13=1:59pm, etc.
+vLow = 10		# begin of time-of-day span in 24-hr clockface hours --> 6=6:00am, 13=1:00pm, etc.
+vHig = 12 		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 13=1:59pm, etc.
 #---day-of-week---------/
 varWDs = 0				# START DAY RANGE; 	0 = Sun, 1 = Mon, etc..
 varWDe = 6				# END DAY RANGE;	0 = Sun, 1 = Mon, etc..
 #---sample-size---------/
-vSS = 100				#desired sample size
+vSS = 1000				#desired sample size
 #/SETUP
 
 
 #OTHER SETUP
 vSp = varLNC / vSS		#this is the random high value
+#puts varLNC
+#sleep(3)
+vPCT = (vSS.to_f / varLNC.to_f)
+#puts vPCT
+vPCT = vPCT * 100
+#puts vPCT
+vPCT = vPCT.round(1)
+#puts vPCT
 #/OTHER SETUP
 
 
@@ -50,8 +58,10 @@ vSp = varLNC / vSS		#this is the random high value
 puts "**************"
 puts "Hours between #{vLow}:00 and #{vHig}:59"
 puts "Days of Week: #{varWDs}-#{varWDe} (where 0 = Sun, 1 = Mon, etc...)"
+puts "Population Size: #{varLNC}"
 puts "Desired Sample Size: #{vSS}"
-puts "Sampling 1 of every #{vSp} records"
+puts "Desired Sample: #{vPCT}% of population"
+puts "Rand Between 1 and #{vSp}"
 puts "**************"
 puts ""
 arr10 = [0]
@@ -165,7 +175,7 @@ varct54L = 0
 Dir.glob('VehicleSpeed_bus*.txt') do |foo|
 
 
-puts "168"	#&&&&&&&&&&&&&&&&&&&
+#puts "168"	#&&&&&&&&&&&&&&&&&&&
 
 randfile = File.open(cacheRand, "a+")
 	
@@ -183,7 +193,7 @@ end
 }
 randfile.close
 
-puts "186"	#&&&&&&&&&&&&&&&&&&&
+#puts "186"	#&&&&&&&&&&&&&&&&&&&
 
 list = CSV.foreach(randfile) do |row|			#****
 
@@ -223,7 +233,7 @@ list = CSV.foreach(randfile) do |row|			#****
 	#if row[6].to_f > 0
 	varRtnam = row[9]#.to_a
 
-	puts "226"	#&&&&&&&&&&&&&&&&&&&
+#	puts "226"	#&&&&&&&&&&&&&&&&&&&
 
 #=begin
 #	varAgc = row[1]
@@ -342,7 +352,7 @@ varct54L +=1;
 end	
 #=end
 	
-puts "345"	#&&&&&&&&&&&&&&&&&&&	
+#puts "345"	#&&&&&&&&&&&&&&&&&&&	
 	
 #	varMin = varDate.minute
 	#/PARSE TIME
@@ -453,9 +463,9 @@ end						#****z
 #end #
 end
 
-puts "456"	#&&&&&&&&&&&&&&&&&&&
+#puts "456"	#&&&&&&&&&&&&&&&&&&&
 
-puts "Average minutes to next bus arrival by route..."
+puts "Average vehicle speed by route..."
 puts ""
 puts "Route	Mean	StDev	Count"
 puts "##{var1}	#{arr1.mean.round(1)}	#{arr1.standard_deviation.round(1)}	#{arr1.number.round(0)}" unless arr1==nil
@@ -497,9 +507,7 @@ puts ""
 puts "Duration: #{varDur.round(1)} minutes"
 fileCR=File.open(cacheRand,"r")
 puts ""
-puts "#{fileCR.readlines.size} lines queried"
+puts "Actual Sample Size: #{fileCR.readlines.size}"
 fileCR.close
 File.delete(cacheRand)
 exit
-
-puts "505"	#&&&&&&&&&&&&&&&&&&&
