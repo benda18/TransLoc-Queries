@@ -13,28 +13,45 @@ puts ""
 #SAfile = "CATAvgStopWait 20141202.txt"
 #SAfile = Dir["CATAvgStopWait*.txt"]
 cacheRand = "cacheRand.txt"
+varLNC = 0		#count of line numbers in all .txt files
+
+#Count total lines in all .txt files
+Dir.glob('CATAvgStopWait*.txt') do |cl1|
+File.foreach(cl1).with_index { |line, line_num|
+varLNC += 1;
+}
+end
+#puts varLNC
+#sleep(100)
+#/Count total lines in all .txt files
+
 
 
 #SETUP
 #---month---------------/
 #---hour----------------/
-vLow = 0		# begin of time-of-day span in 24-hr clockface hours --> 6=6:00am, 13=1:00pm, etc.
-vHig = 23 		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 13=1:59pm, etc.
+vLow = 10		# begin of time-of-day span in 24-hr clockface hours --> 6=6:00am, 13=1:00pm, etc.
+vHig = 15 		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 13=1:59pm, etc.
 #---day-of-week---------/
 varWDs = 1				# START DAY RANGE; 	0 = Sun, 1 = Mon, etc..
 varWDe = 5				# END DAY RANGE;	0 = Sun, 1 = Mon, etc..
-#---sample-percentage---/
-vSp = 1000		# where vsp = "1/{vsp}" means 1/nth of all lines from all files will be queried
+#---sample-size---------/
+vSS = 30000				#desired sample size
 #/SETUP
 
 
-
+#OTHER SETUP
+vSp = varLNC / vSS		#this is the random high value
+#/OTHER SETUP
 
 
 #HEADERS
+puts "**************"
 puts "Hours between #{vLow}:00 and #{vHig}:59"
 puts "Days of Week: #{varWDs}-#{varWDe} (where 0 = Sun, 1 = Mon, etc...)"
-puts "Sampled 1/#{vSp} records"
+puts "Desired Sample Size: #{vSS}"
+puts "Sampling 1 of every #{vSp} records"
+puts "**************"
 puts ""
 arr10 = [0]
 arr11 = [0]
