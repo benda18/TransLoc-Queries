@@ -30,27 +30,34 @@ end
 #SETUP
 #---month---------------/
 #---hour----------------/
-vLow = 10		# begin of time-of-day span in 24-hr clockface hours --> 6=6:00am, 13=1:00pm, etc.
-vHig = 15 		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 13=1:59pm, etc.
+vLow = 12		# begin of time-of-day span in 24-hr clockface hours --> 6=6:00am, 13=1:00pm, etc.
+vHig = 12 		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 13=1:59pm, etc.
 #---day-of-week---------/
 varWDs = 1				# START DAY RANGE; 	0 = Sun, 1 = Mon, etc..
 varWDe = 5				# END DAY RANGE;	0 = Sun, 1 = Mon, etc..
 #---sample-size---------/
-vSS = 30000				#desired sample size
+vSS = 10000				#desired sample size
 #/SETUP
 
 
 #OTHER SETUP
 vSp = varLNC / vSS		#this is the random high value
 #/OTHER SETUP
-
+vPCT = (vSS.to_f / varLNC.to_f)
+#puts vPCT
+vPCT = vPCT * 100
+#puts vPCT
+vPCT = vPCT.round(1)
+#puts vPCT
 
 #HEADERS
 puts "**************"
 puts "Hours between #{vLow}:00 and #{vHig}:59"
 puts "Days of Week: #{varWDs}-#{varWDe} (where 0 = Sun, 1 = Mon, etc...)"
+puts "Population Size: #{varLNC}"
 puts "Desired Sample Size: #{vSS}"
-puts "Sampling 1 of every #{vSp} records"
+puts "Desired Sample: #{vPCT}% of population"
+puts "Rand Between 1 and #{vSp}"
 puts "**************"
 puts ""
 arr10 = [0]
