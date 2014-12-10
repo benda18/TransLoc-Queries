@@ -189,14 +189,14 @@ end
 #<gets prompt>
 puts 'How long to sleep (in seconds) between each loop? (typically ~5)'
 #d = gets.to_i 															
-d = 30
+d = 60
 puts "\e[H\e[2J"
 puts "#{d} seconds delay"
 sleep(2)
 puts "\e[H\e[2J"
 puts 'How many loops to perform? (typically ~10)'
 #varNum = gets.to_i         					#tracks number of repeat iterations
-varNum = 120
+varNum = 900
 puts "\e[H\e[2J"
 puts "#{varNum} loops"
 sleep(2)
@@ -277,7 +277,7 @@ puts "Loop delay: #{d} seconds" 			#loop delay in seconds
 puts "Iterations: #{varI} of #{varNum+1}"	#x of y count
 varGenTime = data_hash["generated_on"]
 #<data loop><cat>
-Array(data_hash["data"]["20"]).each do |ary|		#for each object in the array,
+data_hash["data"]["20"].each do |ary|		#for each object in the array,
 varSpd = 0									#*
 varSpd = ary["speed"] * 0.621371			#set var for "speed" (mph) value in array - api default units is kmh
 varVID = ary["vehicle_id"]					#set var for "vehicle_id" value in array,
