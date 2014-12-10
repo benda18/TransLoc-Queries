@@ -6,6 +6,7 @@ require 'time'
 require 'date'
 #require 'DateTime'
 puts "\e[H\e[2J"
+puts "VEHICLE SPEED STATS"
 varSt = Time.now 
 puts "Started: #{varSt}" 
 puts ""
@@ -31,13 +32,13 @@ vPCT = 0	#percentage of records sampled
 #SETUP
 #---month---------------/
 #---hour----------------/
-vLow = 10		# begin of time-of-day span in 24-hr clockface hours --> 6=6:00am, 13=1:00pm, etc.
-vHig = 12 		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 13=1:59pm, etc.
+vLow = 0		# begin of time-of-day span in 24-hr clockface hours --> 6=6:00am, 13=1:00pm, etc.
+vHig = 23 		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 13=1:59pm, etc.
 #---day-of-week---------/
 varWDs = 0				# START DAY RANGE; 	0 = Sun, 1 = Mon, etc..
 varWDe = 6				# END DAY RANGE;	0 = Sun, 1 = Mon, etc..
 #---sample-size---------/
-vSS = 1000				#desired sample size
+vSS = 7000				#desired sample size
 #/SETUP
 
 
