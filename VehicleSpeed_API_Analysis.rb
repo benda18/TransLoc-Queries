@@ -36,6 +36,54 @@
 #<require statements>
 require 'unirest'
 require 'json'
+require 'CSV'
+
+#routesCACHE
+# get route_id, short_name, long_name
+RCname = "routesCache#{Time.now.strftime('%Y%m%d')}.txt"
+if not File.exists?(RCname)						#only calls this api if the routes haven't already been cached
+data_hashR = 0
+payloadR = 0
+payload2R = 0
+varRIDr = 0
+varSNMr = 0
+varLNMr = 0
+responseR = 0
+
+# These code snippets use an open-source library. http://unirest.io/ruby
+sleep(10)
+responseR = Unirest.get "https://transloc-api-1-2.p.mashape.com/routes.jsonp?agencies=20&callback=call",
+  headers:{
+    "X-Mashape-Key" => "<key>"
+  }
+payload2R = responseR.body					#sets the call response body as a variable
+payloadR = payload2R[/{.+}/]					#removes the callback prefix and suffix from the response body
+data_hashR = JSON.parse(payloadR)				#parses the response body and stores as a variable
+routesfile = File.open(RCname, "w")
+routesfile.puts "route_id,short_name,long_name"	#header
+Array(data_hashR["data"]["20"]).each do |aryR|
+varRIDr = 0
+varSNMr = 0
+varLNMr = 0
+varRIDr = aryR["route_id"]
+varSNMr = aryR["short_name"]
+varLNMr = aryR["long_name"]
+routesfile.puts "#{varRIDr},#{varSNMr},#{varLNMr}"
+end
+routesfile.close
+data_hashR = 0
+payloadR = 0
+payload2R = 0
+varRIDr = 0
+varSNMr = 0
+varLNMr = 0
+end
+#/routesCACHE
+
+
+
+
+
 #<initital variable setup>
 hfull = "VehicleSpeedDash.html"
 haname = "dashcacheA.txt"			#header
@@ -182,7 +230,7 @@ ti1 = 0
 #<write logfile headers>
 if not File.exists?(fname)						#only writes header to fname if the file doesn't already exists.  
 File.open(fname, "a+") do |f1|
-	f1.puts "gendate,agency,bus_id,mph,lon,lat,route,heading,segment_id"
+	f1.puts "gendate,agency,bus_id,mph,lon,lat,route_id,heading,segment_id,rt_short_name,rt_long_name"
 end
 end
 #---LAUNCH CONSOLE---
@@ -196,7 +244,7 @@ sleep(2)
 puts "\e[H\e[2J"
 puts 'How many loops to perform? (typically ~10)'
 #varNum = gets.to_i         					#tracks number of repeat iterations
-varNum = 900
+varNum = 120
 puts "\e[H\e[2J"
 puts "#{varNum} loops"
 sleep(2)
@@ -263,7 +311,7 @@ varHdw = 0
 varSegw = 0
 #<call the transloc api>
 #response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C16%2C20&callback=call&geo_area=35.777531%2C-78.637277%7C500.0", #this is the geoboundary example
-response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C8%2C20&callback=call",
+response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=20&callback=call",
   headers:{
     "X-Mashape-Key" => "<key>"
   }
@@ -284,6 +332,24 @@ varVID = ary["vehicle_id"]					#set var for "vehicle_id" value in array,
 varLng = ary["location"]["lng"]				#set var for longitude value in array,
 varLat = ary["location"]["lat"]				#set var for latitude value in array,
 varRt = ary["route_id"]						#set var for route_id value in array
+
+
+#PARSE CSV routesCACHE
+varRidRCsn = 0
+varRidRCln = 0
+varRidRC = 0
+CSV.foreach(RCname, :headers => true) do |aryRC|
+varRidRC = aryRC["route_id"]
+if varRidRC == varRt 
+varRidRCsn = aryRC["short_name"]
+varRidRCln = aryRC["long_name"]
+end
+end
+#/PARSE CSV routesCACHE
+
+
+
+
 varHd = ary["heading"]						#set var for heading value in array
 varSeg = ary["segment_id"]					#set var for segment_id value in array
 varCount = varCount + 1						#increase repeat iterations by 1,
@@ -301,7 +367,7 @@ end
 end
 #write it to a file
 File.open(fname, "a+") do |f4|
-	f4.puts "#{varGenTime},CAT,#{varVID},#{varSpd.round(1)},#{varLng},#{varLat},#{varRt},#{varHd},#{varSeg}"
+	f4.puts "#{varGenTime},CAT,#{varVID},#{varSpd.round(1)},#{varLng},#{varLat},#{varRt},#{varHd},#{varSeg},#{varRidRCsn},#{varRidRCln}"
 end
 varVID = 0
 varLng = 0
@@ -337,6 +403,8 @@ vc3 = vc2
 vc2 = vc1
 vc1 = varAvg
 #</cat>
+
+#=begin
 #<data loop><tta>
 Array(data_hash["data"]["12"]).each do |aryt|		#for each object in the array,
 varSpdt = 0									#*
@@ -359,9 +427,11 @@ File.open(hdname, "a+") do |hd2|
 	hd2.puts "#{"['', "}#{varLngt}#{", "}#{varLatt}#{", 'TTA', "}#{varSpdt}#{"],"}"
 end
 end
+=begin
 File.open(fname, "a+") do |f5|
 	f5.puts "#{varGenTime},TTA,#{varVIDt},#{varSpdt.round(1)},#{varLngt},#{varLatt},#{varRtt},#{varHdt},#{varSegt}"
 end	
+=end
 varVIDt = 0
 varLngt = 0
 varLatt = 0
@@ -396,6 +466,9 @@ vt3 = vt2
 vt2 = vt1
 vt1 = varAvgt
 #</tta>
+#=end
+
+#=begin
 #<data loop><CHT>
 Array(data_hash["data"]["8"]).each do |aryw|		#for each object in the array,
 #data_hash["data"]["16"].each do |aryw|		#for each object in the array,
@@ -419,9 +492,11 @@ File.open(hdname, "a+") do |hd3|
 	hd3.puts "#{"['', "}#{varLngw}#{", "}#{varLatw}#{", 'CHT', "}#{varSpdw}#{"],"}"
 end
 end
+=begin
 File.open(fname, "a+") do |f6|
 	f6.puts "#{varGenTime},CHT,#{varVIDw},#{varSpdw.round(1)},#{varLngw},#{varLatw},#{varRtw},#{varHdw},#{varSegw}"
 end	
+=end
 varVIDw = 0
 varLngw = 0
 varLatw = 0
@@ -456,6 +531,9 @@ vw3 = vw2
 vw2 = vw1
 vw1 = varAvgw
 #</CHT>
+#=end
+
+
 #<google line chart writing>
 #variables
 ti20 = ti19
