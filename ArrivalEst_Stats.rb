@@ -6,6 +6,7 @@ require 'time'
 require 'date'
 #require 'DateTime'
 puts "\e[H\e[2J"
+puts "ARRIVAL ESTIMATES STATS"
 varSt = Time.now 
 puts "Started: #{varSt}" 
 puts ""
@@ -30,13 +31,13 @@ end
 #SETUP
 #---month---------------/
 #---hour----------------/
-vLow = 12		# begin of time-of-day span in 24-hr clockface hours --> 6=6:00am, 13=1:00pm, etc.
-vHig = 12 		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 13=1:59pm, etc.
+vLow = 0		# begin of time-of-day span in 24-hr clockface hours --> 6=6:00am, 13=1:00pm, etc.
+vHig = 23 		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 13=1:59pm, etc.
 #---day-of-week---------/
 varWDs = 1				# START DAY RANGE; 	0 = Sun, 1 = Mon, etc..
 varWDe = 5				# END DAY RANGE;	0 = Sun, 1 = Mon, etc..
 #---sample-size---------/
-vSS = 10000				#desired sample size
+vSS = 300				#desired sample size
 #/SETUP
 
 
