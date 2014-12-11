@@ -38,7 +38,7 @@ vHig = 23 		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 1
 varWDs = 0				# START DAY RANGE; 	0 = Sun, 1 = Mon, etc..
 varWDe = 6				# END DAY RANGE;	0 = Sun, 1 = Mon, etc..
 #---sample-size---------/
-vSS = 30000				#desired sample size
+vSS = 7000				#desired sample size
 #/SETUP
 
 
@@ -53,34 +53,6 @@ vPCT = vPCT * 100
 vPCT = vPCT.round(1)
 #puts vPCT
 #/OTHER SETUP
-
-
-
-
-#HISTOGRAM HTML
-cacheA = "cachevsA.txt"
-cacheB = "cachevsB.txt"
-cacheC = "cachevsC.txt"
-dash = "VehicleSpd_Stats.html"
-
-File.open(cacheA, "w") do |vsa1|
-	vsa1.puts "<html>"
-	vsa1.puts "<head>"
-	vsa1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{30}#{'"'}#{">"}"#refresh code
-	vsa1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{" src="}#{'"'}#{"https://www.google.com/jsapi"}#{'"'}#{"></script>"}"
-	vsa1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{">"}"
-	vsa1.puts "#{"google.load("}#{'"'}#{"visualization"}#{'"'}#{", "}#{'"'}#{"1"}#{'"'}#{", {packages:["}#{'"'}#{"corechart"}#{'"'}#{"]"}#{'}'}#{");"}"
-	vsa1.puts "google.setOnLoadCallback(drawChart3);"
-	vsa1.puts "function drawChart3() {"
-	vsa1.puts "var data3 = google.visualization.arrayToDataTable(["
-	vsa1.puts "['Route','Wait in Minutes'],"
-end
-
-#/HISTOGRAM HTML
-
-
-
-
 
 
 #HEADERS
@@ -285,7 +257,7 @@ list = CSV.foreach(randfile) do |row|			#****
 #puts "true"								#****
 #puts "Route: #{varRtnam}"					#****
 #sleep(20)									#****
-=begin	
+#=begin	
 if varRtnam == var10
 varct10 +=1;
 end
@@ -379,11 +351,9 @@ end
 if varRtnam == var54L
 varct54L +=1;
 end	
-=end
+#=end
 	
-
-	
-File.open(cacheB, "a+") do |vsb1|
+#puts "345"	#&&&&&&&&&&&&&&&&&&&	
 	
 #	varMin = varDate.minute
 	#/PARSE TIME
@@ -391,199 +361,102 @@ File.open(cacheB, "a+") do |vsb1|
 	#sleep(100)
 	if varRtnam == var10					#query dependencies 
 	arr10 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var10}',#{row[3].to_f}],"
-	end
 	end
 	if varRtnam == var11
 	arr11 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var11}',#{row[3].to_f}],"
-	end
 	end
 	if varRtnam == var11L
 	arr11L << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var11L}',#{row[3].to_f}],"
-	end
 	end
 	if varRtnam == var12
 	arr12 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var12}',#{row[3].to_f}],"
-	end
 	end
 	if varRtnam == var13
 	arr13 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var13}',#{row[3].to_f}],"
-	end
 	end
 	if varRtnam == var15
 	arr15 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var15}',#{row[3].to_f}],"
-	end
 	end	
 	if varRtnam == var15L
 	arr15L << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var15L}',#{row[3].to_f}],"
-	end
 	end	
 	if varRtnam == var16
 	arr16 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var16}',#{row[3].to_f}],"
-	end
 	end	
 	if varRtnam == var18
 	arr18 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var18}',#{row[3].to_f}],"
-	end
 	end	
 	if varRtnam == var2
 	arr2 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var2}',#{row[3].to_f}],"
-	end
 	end	
 	if varRtnam == var21
 	arr21 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var21}',#{row[3].to_f}],"
-	end
 	end	
 	if varRtnam == var23L
 	arr23L << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var3}',#{row[3].to_f}],"
-	end
 	end		
 	if varRtnam == var24L
 	arr24L << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var24L}',#{row[3].to_f}],"
-	end
 	end	
 	if varRtnam == var25L
 	arr25L << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var3}',#{row[3].to_f}],"
-	end
 	end	
 	if varRtnam == var40X
 	arr40X << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var40X}',#{row[3].to_f}],"
-	end
 	end	
 	if varRtnam == var6
 	arr6 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var6}',#{row[3].to_f}],"
-	end
 	end
 	if varRtnam == var7
 	arr7 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var7}',#{row[3].to_f}],"
-	end
 	end
 	if varRtnam == var70X
 	arr70X << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var70X}',#{row[3].to_f}],"
-	end
 	end
 	if varRtnam == var8
 	arr8 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var8}',#{row[3].to_f}],"
-	end
 	end
 	if varRtnam == var22
 	arr22 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var22}',#{row[3].to_f}],"
-	end
 	end
 	if varRtnam == var3
 	arr3 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var3}',#{row[3].to_f}],"
-	end
 	end
 	# if varRtnam == var55X
 	# arr55X << row[3].to_f
-	#if row[3].to_f > 0
-	#vsb1.puts "['#{var55X}',#{row[3].to_f}],"
-	#end
 	# end
 	if varRtnam == var5
 	arr5 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var5}',#{row[3].to_f}],"
-	end
 	end
 	if varRtnam == varrline
 	arrrline << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{varrline}',#{row[3].to_f}],"
-	end
 	end
 	if varRtnam == var4
 	arr4 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var4}',#{row[3].to_f}],"
-	end
 	end
 	if varRtnam == var7L
 	arr7L << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var7L}',#{row[3].to_f}],"
-	end
 	end
 	# if varRtnam == varwfl
 	# arrwfl << row[3].to_f
-	#if row[3].to_f > 0
-	#vsb1.puts "['#{varwfl}',#{row[3].to_f}],"
-	#end
 	# end
 	if varRtnam == var31
 	arr31 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var31}',#{row[3].to_f}],"
-	end
 	end
 	if varRtnam == var1
 	arr1 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var1}',#{row[3].to_f}],"
-	end
 	end
 	if varRtnam == var19
 	arr19 << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var19}',#{row[3].to_f}],"
-	end
 	end
 	if varRtnam == var54L
 	arr54L << row[3].to_f
-	if row[3].to_f > 0
-	vsb1.puts "['#{var54L}',#{row[3].to_f}],"
-	end
 	end
 	# if varRtnam == var900
 	# arr900 << row[3].to_f
-	#if row[3].to_f > 0
-	#vsb1.puts "['#{var900}',#{row[3].to_f}],"
-	#end
 	# end
 #else puts "false"					#****
-#sleep(0.05)	
-end						#****
+#sleep(0.05)							#****
 	end
 	end
 end 
@@ -628,66 +501,14 @@ puts "##{var54L}	#{arr54L.mean.round(1)}	#{arr54L.standard_deviation.round(1)}	#
 #puts "##{var900}	#{arr900.mean.round(1)}	#{arr900.standard_deviation.round(1)}	#{arr900.number.round(0)}" unless arr900==nil
 puts "##{varrline}	#{arrrline.mean.round(1)}	#{arrrline.standard_deviation.round(1)}	#{arrrline.number.round(0)}" unless arrrline==nil
 #puts "##{varwfl}	#{arrrwfl.mean.round(1)}	#{arrrwfl.standard_deviation.round(1)}	#{arrrwfl.number.round(0)}" unless arrrwfl==nil
+varEn = Time.now
+varDur = varEn - varSt	#seconds
+varDur = varDur / 60	#minutes
+puts ""
+puts "Duration: #{varDur.round(1)} minutes"
 fileCR=File.open(cacheRand,"r")
 puts ""
 puts "Actual Sample Size: #{fileCR.readlines.size}"
-varEn = Time.now
-varDur = varEn - varSt	#seconds
-#varDur = varDur / 60	#minutes
-puts ""
-puts "Duration: #{varDur.round(1)} seconds"
 fileCR.close
 File.delete(cacheRand)
-
-#HISTOGRAM HTML
-File.open(cacheC, "w") do |vsb1|
-	vsb1.puts "]);"
-	vsb1.puts "var options3 = {"
-	vsb1.puts "title: 'Distribution of Estimated Wait Time for Next Bus Arrival Across Queried Bus Stops',"
-	vsb1.puts "legend: { position: 'right' },"
-	vsb1.puts "histogram: { bucketSize: 1 },"
-	vsb1.puts "isStacked: ['True']"
-	vsb1.puts "};"
-	vsb1.puts "var chart3 = new google.visualization.Histogram(document.getElementById('chart_div3'));"
-	vsb1.puts "chart3.draw(data3, options3);"
-	vsb1.puts "}"
-	vsb1.puts "</script>"
-	vsb1.puts "</head>"
-	vsb1.puts "<body>"
-	vsb1.puts "<style>"
-	vsb1.puts "</style>"
-	vsb1.puts "<section>"
-	vsb1.puts "#{"<div id="}#{'"'}#{"chart_div3"}#{'"'}#{" style="}#{'"'}#{"width: 900px; height: 300px;"}#{'"'}#{"></div>"}"
-	vsb1.puts "</section>"
-	vsb1.puts "</body>"
-	vsb1.puts "</html>"
-end
-File.open(dash, "w+") do |zz1|
-zz1.puts ""
-end
-hafile = File.open(cacheA, "r")
-hacontents = hafile.read
-hafile.close
-File.open(dash, "a+") do |ha3|
-ha3.puts hacontents
-end
-hbfile = File.open(cacheB, "r")
-hbcontents = hbfile.read
-hbfile.close
-File.open(dash, "a+") do |ha4|
-ha4.puts hbcontents
-end
-hcfile = File.open(cacheC, "r")
-hccontents = hcfile.read
-hcfile.close
-File.open(dash, "a+") do |ha5|
-ha5.puts hccontents
-end
-File.delete(cacheA)
-File.delete(cacheB)
-File.delete(cacheC)
-#/HISTOGRAM HTML
-
-
-
 exit
