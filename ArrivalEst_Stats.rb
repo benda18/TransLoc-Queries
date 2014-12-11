@@ -11,6 +11,9 @@ puts "Started: #{varSt}"
 puts ""
 #vars/defs
 cacheRand = "cacheRand.txt"
+if File.exists?(cacheRand)	
+File.delete(cacheRand)
+end
 varLNC = 0		#count of line numbers in all .txt files
 
 #Count total lines in all .txt files
@@ -23,7 +26,7 @@ end
 
 
 
-#SETUP
+#INPUTS
 #---year----------------/
 #---month---------------/
 #---hour----------------/
@@ -33,16 +36,21 @@ vHig = 23 		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 1
 varWDs = 1				# START DAY RANGE; 	0 = Sun, 1 = Mon, etc..
 varWDe = 5				# END DAY RANGE;	0 = Sun, 1 = Mon, etc..
 #---sample-size---------/
-vSS = 3000				#desired sample size
-#/SETUP
+vSS = 30000				#desired sample size
+#/INPUTS
 
 
 #OTHER SETUP
 vSp = varLNC / vSS		#this is the random high value
-#/OTHER SETUP
 vPCT = (vSS.to_f / varLNC.to_f)
 vPCT = vPCT * 100
 vPCT = vPCT.round(1)
+arrTemp = "ArrivalEst_Stats_temparray.txt"
+if File.exists?(arrTemp)	
+File.delete(arrTemp)
+end
+#/OTHER SETUP
+
 
 #HEADERS
 puts "**************"
@@ -381,6 +389,9 @@ end
 	end
 	if varRtnam == varrline
 	arrrline << row[6].to_f
+	File.open(arrTemp, "a+") do |at1|
+	at1.puts row[3].to_f
+	end
 	end
 	if varRtnam == var4
 	arr4 << row[6].to_f
