@@ -12,8 +12,6 @@ puts "Started: #{varSt}"
 puts ""
 
 #vars/defs
-#SAfile = "CATAvgStopWait 20141202.txt"
-#SAfile = Dir["CATAvgStopWait*.txt"]
 cacheRand = "cacheRand2.txt"
 varLNC = 0		#count of line numbers in all .txt files
 
@@ -23,8 +21,7 @@ File.foreach(cl1).with_index { |line, line_num|
 varLNC += 1;
 }
 end
-#puts varLNC
-#sleep(100)
+
 #/Count total lines in all .txt files
 vPCT = 0	#percentage of records sampled
 
@@ -38,20 +35,15 @@ vHig = 23 		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 1
 varWDs = 0				# START DAY RANGE; 	0 = Sun, 1 = Mon, etc..
 varWDe = 6				# END DAY RANGE;	0 = Sun, 1 = Mon, etc..
 #---sample-size---------/
-vSS = 7000				#desired sample size
+vSS = 3000				#desired sample size
 #/SETUP
 
 
 #OTHER SETUP
 vSp = varLNC / vSS		#this is the random high value
-#puts varLNC
-#sleep(3)
 vPCT = (vSS.to_f / varLNC.to_f)
-#puts vPCT
 vPCT = vPCT * 100
-#puts vPCT
 vPCT = vPCT.round(1)
-#puts vPCT
 #/OTHER SETUP
 
 
@@ -174,30 +166,18 @@ varct54L = 0
 #varct900 = 0
 
 Dir.glob('VehicleSpeed_bus*.txt') do |foo|
-
-
-#puts "168"	#&&&&&&&&&&&&&&&&&&&
-
 randfile = File.open(cacheRand, "a+")
-	
 File.foreach(foo).with_index { |line, line_num|
+
 #vars
 varRnd = 0
 varRnd = rand(1..vSp)						#INPUT sampling percentage
 if varRnd == 1
-#puts "#{line_num}: #{line}"
 randfile.puts line
-#else 
-#puts "false"
 end
-#sleep(1)
 }
 randfile.close
-
-#puts "186"	#&&&&&&&&&&&&&&&&&&&
-
 list = CSV.foreach(randfile) do |row|			#****
-
 # Headers
 # [0]..gendate
 # [1]..agency
@@ -211,10 +191,6 @@ list = CSV.foreach(randfile) do |row|			#****
 # [9]..rt_short_name
 # [10]..rt_long_name
 
-
-
-
-#=begin
 	varDate=0
 	varYer = 0
 	varMon = 0
@@ -226,20 +202,11 @@ list = CSV.foreach(randfile) do |row|			#****
 	varSeg = 0
 	varWday = 0
 	
-#=end
-
 #FILTER OUT NULL SEGMENT_ID VALUES
 	varSeg = row[8].to_f
 	if varSeg > 0
-	#if row[6].to_f > 0
-	varRtnam = row[9]#.to_a
+	varRtnam = row[9]
 
-#	puts "226"	#&&&&&&&&&&&&&&&&&&&
-
-#=begin
-#	varAgc = row[1]
-#	varSid = row[5]
-#=end
 	#PARSE TIME
 	varDate = row[0]
 	varDate = DateTime.parse(varDate)
@@ -250,115 +217,8 @@ list = CSV.foreach(randfile) do |row|			#****
 #	varDay = varDate.day
 	varWday = varDate.wday
 	if varWday.between?(varWDs, varWDe)
-#puts varDate								#****
 	varHr = varDate.hour.to_f
-#puts varHr									#****
 	if varHr.between?(vLow, vHig)
-#puts "true"								#****
-#puts "Route: #{varRtnam}"					#****
-#sleep(20)									#****
-#=begin	
-if varRtnam == var10
-varct10 +=1;
-end
-if varRtnam == var11
-varct11 +=1;
-end
-if varRtnam == var11L
-varct11L +=1;
-end
-if varRtnam == var12
-varct12 +=1;
-end
-if varRtnam == var13
-varct13 +=1;
-end
-if varRtnam == var15
-varct15 +=1;
-end
-if varRtnam == var15L
-varct15L +=1;
-end
-if varRtnam == var16
-varct16 +=1;
-end
-if varRtnam == var18
-varct18 +=1;
-end
-if varRtnam == var2
-varct2 +=1;
-end
-if varRtnam == var21
-varct21 +=1;
-end
-if varRtnam == var23L
-varct23L +=1;
-end
-if varRtnam == var24L
-varct24L +=1;
-end
-if varRtnam == var25L
-varct25L +=1;
-end
-if varRtnam == var40X
-varct40X +=1;
-end
-if varRtnam == var6
-varct6 +=1;
-end
-if varRtnam == var7
-varct7 +=1;
-end
-# if varRtnam == var70X
-# varct70X +=1;
-# end
-if varRtnam == var8
-varct8 +=1;
-end
-if varRtnam == var22
-varct22 +=1;
-end
-if varRtnam == var3
-varct3 +=1;
-end
-# if varRtnam == var55X
-# varct55X +=1;
-# end
-if varRtnam == var5
-varct5 +=1;
-end
-if varRtnam == varrline
-varctrline +=1;
-end
-if varRtnam == var4
-varct4 +=1;
-end
-if varRtnam == var7L
-varct7L +=1;
-end
-# if varRtnam == varwfl
-# varctwfl +=1;
-# end
-if varRtnam == var31
-varct31 +=1;
-end
-if varRtnam == var1
-varct1 +=1;
-end
-if varRtnam == var19
-varct19 +=1;
-end
-if varRtnam == var54L
-varct54L +=1;
-end	
-#=end
-	
-#puts "345"	#&&&&&&&&&&&&&&&&&&&	
-	
-#	varMin = varDate.minute
-	#/PARSE TIME
-	#puts row[3].inspect()
-	#sleep(100)
 	if varRtnam == var10					#query dependencies 
 	arr10 << row[3].to_f
 	end
@@ -455,16 +315,11 @@ end
 	# if varRtnam == var900
 	# arr900 << row[3].to_f
 	# end
-#else puts "false"					#****
-#sleep(0.05)							#****
 	end
 	end
 end 
-end						#****z
-#end #
+end						
 end
-
-#puts "456"	#&&&&&&&&&&&&&&&&&&&
 
 puts "Average vehicle speed by route..."
 puts ""
@@ -503,9 +358,8 @@ puts "##{varrline}	#{arrrline.mean.round(1)}	#{arrrline.standard_deviation.round
 #puts "##{varwfl}	#{arrrwfl.mean.round(1)}	#{arrrwfl.standard_deviation.round(1)}	#{arrrwfl.number.round(0)}" unless arrrwfl==nil
 varEn = Time.now
 varDur = varEn - varSt	#seconds
-varDur = varDur / 60	#minutes
 puts ""
-puts "Duration: #{varDur.round(1)} minutes"
+puts "Duration: #{varDur.round(1)} seconds"
 fileCR=File.open(cacheRand,"r")
 puts ""
 puts "Actual Sample Size: #{fileCR.readlines.size}"
