@@ -13,6 +13,9 @@ puts ""
 
 #vars/defs
 cacheRand = "cacheRand2.txt"
+if File.exists?(cacheRand)	
+File.delete(cacheRand)
+end
 varLNC = 0		#count of line numbers in all .txt files
 
 #Count total lines in all .txt files
@@ -25,8 +28,7 @@ end
 #/Count total lines in all .txt files
 vPCT = 0	#percentage of records sampled
 
-
-#SETUP
+#INPUTS
 #---month---------------/
 #---hour----------------/
 vLow = 0		# begin of time-of-day span in 24-hr clockface hours --> 6=6:00am, 13=1:00pm, etc.
@@ -35,8 +37,8 @@ vHig = 23 		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 1
 varWDs = 0				# START DAY RANGE; 	0 = Sun, 1 = Mon, etc..
 varWDe = 6				# END DAY RANGE;	0 = Sun, 1 = Mon, etc..
 #---sample-size---------/
-vSS = 3000				#desired sample size
-#/SETUP
+vSS = 30000				#desired sample size
+#/INPUTS
 
 
 #OTHER SETUP
@@ -44,6 +46,11 @@ vSp = varLNC / vSS		#this is the random high value
 vPCT = (vSS.to_f / varLNC.to_f)
 vPCT = vPCT * 100
 vPCT = vPCT.round(1)
+
+arrTemp = "VehicleSpd_Stats_temparray.txt"
+if File.exists?(arrTemp)	
+File.delete(arrTemp)
+end
 #/OTHER SETUP
 
 
@@ -201,6 +208,7 @@ list = CSV.foreach(randfile) do |row|			#****
 	varAgc = 0
 	varSeg = 0
 	varWday = 0
+	varMPH = 0
 	
 #FILTER OUT NULL SEGMENT_ID VALUES
 	varSeg = row[8].to_f
@@ -215,6 +223,7 @@ list = CSV.foreach(randfile) do |row|			#****
 #	varYer = varDate.year
 #	varMon = varDate.month
 #	varDay = varDate.day
+	varMin = varDate.minute.to_f
 	varWday = varDate.wday
 	if varWday.between?(varWDs, varWDe)
 	varHr = varDate.hour.to_f
@@ -290,6 +299,9 @@ list = CSV.foreach(randfile) do |row|			#****
 	end
 	if varRtnam == varrline
 	arrrline << row[3].to_f
+	File.open(arrTemp, "a+") do |at1|
+	at1.puts row[3].to_f
+	end
 	end
 	if varRtnam == var4
 	arr4 << row[3].to_f
