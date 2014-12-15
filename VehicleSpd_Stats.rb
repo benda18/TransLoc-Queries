@@ -12,7 +12,7 @@ puts "Started: #{varSt}"
 puts ""
 
 #vars/defs
-cacheRand = "cacheRand2.txt"
+cacheRand = "cacheRandVS.txt"
 if File.exists?(cacheRand)	
 File.delete(cacheRand)
 end
@@ -34,10 +34,10 @@ vPCT = 0	#percentage of records sampled
 vLow = 0		# begin of time-of-day span in 24-hr clockface hours --> 6=6:00am, 13=1:00pm, etc.
 vHig = 23 		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 13=1:59pm, etc.
 #---day-of-week---------/
-varWDs = 0				# START DAY RANGE; 	0 = Sun, 1 = Mon, etc..
-varWDe = 6				# END DAY RANGE;	0 = Sun, 1 = Mon, etc..
+varWDs = 1				# START DAY RANGE; 	0 = Sun, 1 = Mon, etc..
+varWDe = 5				# END DAY RANGE;	0 = Sun, 1 = Mon, etc..
 #---sample-size---------/
-vSS = 30000				#desired sample size
+vSS = 120000				#desired sample size
 #/INPUTS
 
 
@@ -46,11 +46,11 @@ vSp = varLNC / vSS		#this is the random high value
 vPCT = (vSS.to_f / varLNC.to_f)
 vPCT = vPCT * 100
 vPCT = vPCT.round(1)
-
 arrTemp = "VehicleSpd_Stats_temparray.txt"
 if File.exists?(arrTemp)	
 File.delete(arrTemp)
 end
+
 #/OTHER SETUP
 
 
@@ -299,9 +299,9 @@ list = CSV.foreach(randfile) do |row|			#****
 	end
 	if varRtnam == varrline
 	arrrline << row[3].to_f
-	File.open(arrTemp, "a+") do |at1|
-	at1.puts row[3].to_f
-	end
+	#File.open(arrTemp, "a+") do |at1|
+	#at1.puts row[3].to_f
+	#end
 	end
 	if varRtnam == var4
 	arr4 << row[3].to_f
@@ -376,5 +376,5 @@ fileCR=File.open(cacheRand,"r")
 puts ""
 puts "Actual Sample Size: #{fileCR.readlines.size}"
 fileCR.close
-File.delete(cacheRand)
+#File.delete(cacheRand)
 exit
