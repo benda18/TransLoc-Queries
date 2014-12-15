@@ -10,7 +10,7 @@ varSt = Time.now
 puts "Started: #{varSt}" 
 puts ""
 #vars/defs
-cacheRand = "cacheRand.txt"
+cacheRand = "cacheRandAE.txt"
 if File.exists?(cacheRand)	
 File.delete(cacheRand)
 end
@@ -36,7 +36,7 @@ vHig = 23 		# end   of time-of-day span in 24-hr clockface hours --> 6=6:59am, 1
 varWDs = 1				# START DAY RANGE; 	0 = Sun, 1 = Mon, etc..
 varWDe = 5				# END DAY RANGE;	0 = Sun, 1 = Mon, etc..
 #---sample-size---------/
-vSS = 30000				#desired sample size
+vSS = 120000				#desired sample size
 #/INPUTS
 
 
@@ -49,6 +49,9 @@ arrTemp = "ArrivalEst_Stats_temparray.txt"
 if File.exists?(arrTemp)	
 File.delete(arrTemp)
 end
+#File.open(arrTemp, "a+") do |at1|
+#at1.puts "day,hour,minute,stop_id,route,MinToArriv"
+#end
 #/OTHER SETUP
 
 
@@ -218,10 +221,12 @@ list = CSV.foreach(randfile) do |row|			#****
 #	varYer = varDate.year
 #	varMon = varDate.month
 #	varDay = varDate.day
+	varMin = varDate.minute.to_f
 	varWday = varDate.wday
 	if varWday.between?(varWDs, varWDe)
 	varHr = varDate.hour.to_f
 	if varHr.between?(vLow, vHig)
+	
 if varRtnam == var10
 varct10 +=1;
 end
@@ -389,9 +394,9 @@ end
 	end
 	if varRtnam == varrline
 	arrrline << row[6].to_f
-	File.open(arrTemp, "a+") do |at1|
-	at1.puts row[3].to_f
-	end
+	#File.open(arrTemp, "a+") do |at1|
+	#at1.puts "#{row[5].to_f},#{row[6].to_f}"
+	#end
 	end
 	if varRtnam == var4
 	arr4 << row[6].to_f
@@ -461,7 +466,7 @@ fileCR=File.open(cacheRand,"r")
 puts ""
 puts "#{fileCR.readlines.size} lines queried"
 fileCR.close
-File.delete(cacheRand)
+#File.delete(cacheRand)
 varEn = Time.now
 varDur = varEn - varSt	#seconds
 puts ""
