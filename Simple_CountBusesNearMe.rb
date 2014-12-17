@@ -19,9 +19,10 @@
 require 'unirest'
 require 'json'
 require 'socket'
-puts "\e[H\e[2J"
+#puts "\e[H\e[2J"
 #
 #--VARIABLES--
+fileBus = "BusesNearMe.html"
 #
 #--MY-IP-ADDRESS--
 #
@@ -43,5 +44,14 @@ varVct = 0
 Array(data_hash["data"]["20"]).each do |block|
 varVct += 1
 end
-puts "#{varVct} buses within 1/4 mile of me right now"
+File.open(fileBus, "w+") do |fb1|										#starts hbname over as a blank file each launch. 
+fb1.puts "<html>"
+fb1.puts "<body>"
+fb1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{30}#{'"'}#{">"}"#refresh code
+fb1.puts "<font size=#{'"'}30#{'"'} color=#{'"'}red#{'"'}><b>#{varVct}</b></font><br>"
+fb1.puts "buses within 1/4 mile"
+fb1.puts "</body>"
+fb1.puts "</html>"
+end
+#puts "#{varVct} buses within 1/4 mile of me right now"
 #  
