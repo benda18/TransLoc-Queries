@@ -25,6 +25,7 @@ hbname = "dashcacheB100.txt"			#data
 hcname = "dashcacheC100.txt"			#data
 File.open(haname, "w+") do |ha1|
 	ha1.puts "<html>"
+	ha1.puts Time.now
 	ha1.puts "<head>"
 	#if varI < varNum
 	ha1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{30}#{'"'}#{">"}"#refresh code
@@ -85,7 +86,7 @@ File.open(hbname, "a+") do |hb1|
 	hb1.puts "#{"["}#{d}#{"],"}"
 end
 end
-if d < 0.2501
+if d < 0.250
 varVct += 1
 end
 #
@@ -96,7 +97,7 @@ File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"var options = {"}"								# var options3 = {	
 	hc1.puts "#{"title: 'Distribution of Buses Near Me in Miles',"}"			# title: 'foo',
 	hc1.puts "#{"legend: { position: 'right' },"}"
-	#hc1.puts "#{"histogram: { bucketSize: 0.25 },"}"
+	hc1.puts "#{"histogram: { bucketSize: 0.25 },"}"
 	#hc1.puts "#{"isStacked: ['True']"}"
 	hc1.puts "#{"};"}"
 	hc1.puts "#{"var chart = new google.visualization.Histogram(document.getElementById('chart_div'));"}"												# var chart2 = new google.visualization.BarChart(document.getElementById('chart_div2'));	
@@ -105,7 +106,7 @@ File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"</script>"}"
 	hc1.puts "#{"</head>"}"
 	hc1.puts "#{"<body>"}"
-	hc1.puts "#{"<div id="}#{'"'}#{"chart_div"}#{'"'}#{" style="}#{'"'}#{"width: 900px; height: 300px;"}#{'"'}#{"></div>"}"
+	hc1.puts "#{"<div id="}#{'"'}#{"chart_div"}#{'"'}#{" style="}#{'"'}#{"width: 600px; height: 300px;"}#{'"'}#{"></div>"}"
 	hc1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{30}#{'"'}#{">"}"#refresh code
 	hc1.puts "<font size=#{'"'}30#{'"'} color=#{'"'}red#{'"'}><b>#{varVct}</b></font><br>"
 	hc1.puts "buses within 1/4 mile"
