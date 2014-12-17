@@ -41,24 +41,7 @@ end
 File.open(hbname, "w+") do |zz2|										#starts hbname over as a blank file each launch. 
 zz2.puts ""
 end
-File.open(hcname, "w+") do |hc1|
-	hc1.puts "#{"]);"}"
-	hc1.puts "#{"var options = {"}"								# var options3 = {	
-	hc1.puts "#{"title: 'Distribution of Buses Near Me in Miles',"}"			# title: 'foo',
-	hc1.puts "#{"legend: { position: 'right' },"}"
-	hc1.puts "#{"histogram: { bucketSize: 0.25 },"}"
-	#hc1.puts "#{"isStacked: ['True']"}"
-	hc1.puts "#{"};"}"
-	hc1.puts "#{"var chart = new google.visualization.Histogram(document.getElementById('chart_div'));"}"												# var chart2 = new google.visualization.BarChart(document.getElementById('chart_div2'));	
-	hc1.puts "#{"chart.draw(data, options);"}"
-	hc1.puts "#{"}"}"
-	hc1.puts "#{"</script>"}"
-	hc1.puts "#{"</head>"}"
-	hc1.puts "#{"<body>"}"
-	hc1.puts "#{"<div id="}#{'"'}#{"chart_div"}#{'"'}#{" style="}#{'"'}#{"width: 900px; height: 300px;"}#{'"'}#{"></div>"}"
-	hc1.puts "#{"</body>"}"
-	hc1.puts "#{"</html>"}"
-end
+
 puts "\e[H\e[2J"
 def power(num, pow)
 num ** pow
@@ -77,9 +60,8 @@ response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?ag
 payload2 = response.body
 payload = payload2[/{.+}/]
 data_hash = JSON.parse(payload)
-#varVct = 0
+varVct = 0
 Array(data_hash["data"]["20"]).each do |block|
-#varVct += 1
 varLat = 0
 varLng = 0
 varLat = block["location"]["lat"]
@@ -103,8 +85,34 @@ File.open(hbname, "a+") do |hb1|
 	hb1.puts "#{"["}#{d}#{"],"}"
 end
 end
+if d < 0.2501
+varVct += 1
+end
 #
 end
+
+File.open(hcname, "w+") do |hc1|
+	hc1.puts "#{"]);"}"
+	hc1.puts "#{"var options = {"}"								# var options3 = {	
+	hc1.puts "#{"title: 'Distribution of Buses Near Me in Miles',"}"			# title: 'foo',
+	hc1.puts "#{"legend: { position: 'right' },"}"
+	#hc1.puts "#{"histogram: { bucketSize: 0.25 },"}"
+	#hc1.puts "#{"isStacked: ['True']"}"
+	hc1.puts "#{"};"}"
+	hc1.puts "#{"var chart = new google.visualization.Histogram(document.getElementById('chart_div'));"}"												# var chart2 = new google.visualization.BarChart(document.getElementById('chart_div2'));	
+	hc1.puts "#{"chart.draw(data, options);"}"
+	hc1.puts "#{"}"}"
+	hc1.puts "#{"</script>"}"
+	hc1.puts "#{"</head>"}"
+	hc1.puts "#{"<body>"}"
+	hc1.puts "#{"<div id="}#{'"'}#{"chart_div"}#{'"'}#{" style="}#{'"'}#{"width: 900px; height: 300px;"}#{'"'}#{"></div>"}"
+	hc1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{30}#{'"'}#{">"}"#refresh code
+	hc1.puts "<font size=#{'"'}30#{'"'} color=#{'"'}red#{'"'}><b>#{varVct}</b></font><br>"
+	hc1.puts "buses within 1/4 mile"
+	hc1.puts "#{"</body>"}"
+	hc1.puts "#{"</html>"}"
+end
+
 #--CACHE-WORK--
 File.open(hfull, "w+") do |zz1|
 zz1.puts ""
