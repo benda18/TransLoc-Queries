@@ -47,22 +47,30 @@ File.open(haname, "w+") do |ha1|
 	ha1.puts "#{"google.setOnLoadCallback(drawChart);"}"					# google.setOnLoadCallback(drawChart3);
 	ha1.puts "#{"function drawChart() {"}"									# function drawChart3() {
 	ha1.puts "#{"var data = google.visualization.arrayToDataTable(["}"		# var data3 = google.visualization.arrayToDataTable([	
-	ha1.puts "#{"['ID', 'Time', 'Miles', 'Color', 'Count'],"}"										# "['#{varXTime}', '#{d}'],"
+	ha1.puts "#{"['ID', 'Time', 'Miles', 'Color', 'Buses w/in 1/4 mile'],"}"										# "['#{varXTime}', '#{d}'],"
 end
-=begin
-File.open(hbname, "w+") do |zz2|										#starts hbname over as a blank file each launch. 
-zz2.puts ""
-end
-=end
-
 puts "\e[H\e[2J"
 def power(num, pow)
 num ** pow
 end
 #
 #--MY-LOCATION--
-varmyLng = -78.637277
-varmyLat = 35.777531
+=begin
+varmyLng = -78.637277	#moore square
+varmyLat = 35.777531	#moore square
+#
+varmyLng = -78.645741	#5 points
+varmyLat = 35.804011	#5 points
+#
+varmyLng = -78.64883	#boylan @ johnson
+varmyLat = 35.787388	#boylan @ johnson
+#
+varmyLng = -78.677987	#crabtree valley mall
+varmyLat = 35.838014	#crabtree valley mall
+=end
+#
+varmyLng = -78.640713	#raleigh convention center
+varmyLat = 35.774087	#raleigh convention center
 #
 #--VEHICLE-QUERY--
 response = 0
@@ -105,10 +113,7 @@ dCache = d 						#temp cache distance for "nearest" calcs
 if dCache < dNearest
 dNearest = dCache					#record nearest bus
 end
-#puts d.round(2)
-#puts dNearest
 #
-
 if d < 0.250
 varVct += 1
 end
