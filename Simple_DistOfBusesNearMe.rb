@@ -30,9 +30,14 @@ varDate = 0
 varHour = 0
 varMin = 0
 varXTime = 0							#time value for x axis in scatter chart
-dNearest = 9999							#record nearest bus - SET HIGH up front and reduce
-dCache = 0
-d = 0
+dNearestA = 9999							#record nearest bus - SET HIGH up front and reduce
+dNearestB = 9999							#record nearest bus - SET HIGH up front and reduce
+dCacheA = 0
+dCacheB = 0
+dA = 0
+dB = 0
+varVctA = 0
+varVctB = 0
 File.open(haname, "w+") do |ha1|
 	ha1.puts "<html>"
 	ha1.puts Time.now
@@ -67,10 +72,20 @@ varmyLat = 35.787388	#boylan @ johnson
 #
 varmyLng = -78.677987	#crabtree valley mall
 varmyLat = 35.838014	#crabtree valley mall
-=end
+varName = "Crabtree Valley Mall"
 #
 varmyLng = -78.640713	#raleigh convention center
 varmyLat = 35.774087	#raleigh convention center
+varName = "Raleigh Convention Center"
+=end
+#
+varmyLngA = -78.640713	#raleigh convention center
+varmyLatA = 35.774087	#raleigh convention center
+varNameA = "Raleigh Convention Center"
+#
+varmyLngB = -78.677987	#crabtree valley mall
+varmyLatB = 35.838014	#crabtree valley mall
+varNameB = "Crabtree Valley Mall"
 #
 #--VEHICLE-QUERY--
 response = 0
@@ -81,7 +96,7 @@ response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?ag
 payload2 = response.body
 payload = payload2[/{.+}/]
 data_hash = JSON.parse(payload)
-varVct = 0
+
 varGenTime = data_hash["generated_on"]
 varDate = DateTime.parse(varGenTime)
 varDate = varDate.to_time.iso8601
@@ -89,39 +104,74 @@ varDate = DateTime.parse(varDate)
 varHour = varDate.hour.to_f
 varMin = varDate.minute.to_f
 varXTime = varHour + (varMin / 60)
-Array(data_hash["data"]["20"]).each do |block|
-varLat = 0
-varLng = 0
-varLat = block["location"]["lat"]
-varLng = block["location"]["lng"]
+#--BLOCK-A--
+Array(data_hash["data"]["20"]).each do |blockA|
+varLatA = 0
+varLngA = 0
+varLatA = blockA["location"]["lat"]
+varLngA = blockA["location"]["lng"]
 #
 #--calc-distance--
-dtor = Math::PI/180
+dtorA = Math::PI/180
 r = 3959
-rlat1 = varmyLat * dtor 
-rlong1 = varmyLng * dtor 
-rlat2 = varLat * dtor 
-rlong2 = varLng * dtor 
-dlon = rlong1 - rlong2
-dlat = rlat1 - rlat2
-a = power(Math::sin(dlat/2), 2) + Math::cos(rlat1) * Math::cos(rlat2) * power(Math::sin(dlon/2), 2)
-c = 2 * Math::atan2(Math::sqrt(a), Math::sqrt(1-a))
-d = r * c
+rlat1A = varmyLatA * dtorA 
+rlong1A = varmyLngA * dtorA 
+rlat2A = varLatA * dtorA
+rlong2A = varLngA * dtorA
+dlonA = rlong1A - rlong2A
+dlatA = rlat1A - rlat2A
+aA = power(Math::sin(dlatA/2), 2) + Math::cos(rlat1A) * Math::cos(rlat2A) * power(Math::sin(dlonA/2), 2)
+cA = 2 * Math::atan2(Math::sqrt(aA), Math::sqrt(1-aA))
+dA = r * cA
 #
 #--STORE-NEAREST-BUS--
-dCache = d 						#temp cache distance for "nearest" calcs
-if dCache < dNearest
-dNearest = dCache					#record nearest bus
+dCacheA = dA						#temp cache distance for "nearest" calcs
+if dCacheA < dNearestA
+dNearestA = dCacheA					#record nearest bus
 end
 #
-if d < 0.250
-varVct += 1
+if dA < 0.250
+varVctA += 1
 end
 end
 File.open(hbname, "a+") do |hb1|
-	hb1.puts "#{"['',"}#{varXTime}, #{dNearest}, 'foo', #{varVct}#{"],"}"				#[time,distance] ---> # "[#{varXTime}, #{dNearest}],"
+	hb1.puts "#{"['',"}#{varXTime}, #{dNearestA}, '#{varNameA}', #{varVctA}#{"],"}"				#[time,distance] ---> # "[#{varXTime}, #{dNearest}],"
 end
-
+#
+#--BLOCK-B--
+Array(data_hash["data"]["20"]).each do |blockB|
+varLatB = 0
+varLngB = 0
+varLatB = blockB["location"]["lat"]
+varLngB = blockB["location"]["lng"]
+#
+#--calc-distance--
+dtorB = Math::PI/180
+r = 3959
+rlat1B = varmyLatB * dtorB 
+rlong1B = varmyLngB * dtorB 
+rlat2B = varLatB * dtorB
+rlong2B = varLngB * dtorB
+dlonB = rlong1B - rlong2B
+dlatB = rlat1B - rlat2B
+aB = power(Math::sin(dlatB/2), 2) + Math::cos(rlat1B) * Math::cos(rlat2B) * power(Math::sin(dlonB/2), 2)
+cB = 2 * Math::atan2(Math::sqrt(aB), Math::sqrt(1-aB))
+dB = r * cB
+#
+#--STORE-NEAREST-BUS--
+dCacheB = dB						#temp cache distance for "nearest" calcs
+if dCacheB < dNearestB
+dNearestB = dCacheB					#record nearest bus
+end
+#
+if dB < 0.250
+varVctB += 1
+end
+end
+File.open(hbname, "a+") do |hb1|
+	hb1.puts "#{"['',"}#{varXTime}, #{dNearestB}, '#{varNameB}', #{varVctB}#{"],"}"				#[time,distance] ---> # "[#{varXTime}, #{dNearest}],"
+end
+#
 File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"]);"}"
 	hc1.puts "#{"var options = {"}"								# var options3 = {	
@@ -140,8 +190,11 @@ File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"<body>"}"
 	hc1.puts "#{"<div id="}#{'"'}#{"series_chart_div"}#{'"'}#{" style="}#{'"'}#{"width: 1800px; height: 800px;"}#{'"'}#{"></div>"}"
 	hc1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{30}#{'"'}#{">"}"#refresh code
-	hc1.puts "<font size=#{'"'}30#{'"'} color=#{'"'}red#{'"'}><b>#{varVct}</b></font><br>"
-	hc1.puts "buses within 1/4 mile"
+	hc1.puts "<font size=#{'"'}30#{'"'} color=#{'"'}red#{'"'}><b>#{varVctA}</b></font><br>"
+	hc1.puts "buses within 1/4 mile of #{varNameA}"
+	hc1.puts "<br>"
+	hc1.puts "<font size=#{'"'}30#{'"'} color=#{'"'}red#{'"'}><b>#{varVctB}</b></font><br>"
+	hc1.puts "buses within 1/4 mile of #{varNameB}"
 	hc1.puts "#{"</body>"}"
 	hc1.puts "#{"</html>"}"
 end
