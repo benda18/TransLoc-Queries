@@ -21,7 +21,7 @@ require 'date'
 #require 'socket'
 #
 #--VARS--
-hfull = "DistributionOfBusesNearMe.html"
+hfull = "BusesNearMe.html"
 haname = "dashcacheA100.txt"			#data
 hbname = "dashcacheB100.txt"			#data
 hcname = "dashcacheC100.txt"			#data
@@ -63,12 +63,15 @@ end
 =begin
 varmyLng = -78.637277	#moore square
 varmyLat = 35.777531	#moore square
+varName = "Moore Square Station"
 #
 varmyLng = -78.645741	#5 points
 varmyLat = 35.804011	#5 points
+varName = "Five Points"
 #
 varmyLng = -78.64883	#boylan @ johnson
 varmyLat = 35.787388	#boylan @ johnson
+varName = "Boylan at Johnson"
 #
 varmyLng = -78.677987	#crabtree valley mall
 varmyLat = 35.838014	#crabtree valley mall
@@ -77,19 +80,27 @@ varName = "Crabtree Valley Mall"
 varmyLng = -78.640713	#raleigh convention center
 varmyLat = 35.774087	#raleigh convention center
 varName = "Raleigh Convention Center"
+#
+varmyLng = -78.662871	#Cameron Village
+varmyLat = 35.790878	#Cameron Village
+varName = "Cameron Village"
+#
+varmyLng = -78.677987	#crabtree valley mall
+varmyLat = 35.838014	#crabtree valley mall
+varName = "Crabtree Valley Mall"
 =end
 #
-varmyLngA = -78.640713	#raleigh convention center
-varmyLatA = 35.774087	#raleigh convention center
-varNameA = "Raleigh Convention Center"
+varmyLngA = -78.637277	#moore square
+varmyLatA = 35.777531	#moore square
+varNameA = "Moore Square Station"
 #
-varmyLngB = -78.677987	#crabtree valley mall
-varmyLatB = 35.838014	#crabtree valley mall
-varNameB = "Crabtree Valley Mall"
+varmyLngB = -78.646095	#Raleigh Union Station
+varmyLatB = 35.777135	#Raleigh Union Station
+varNameB = "Raleigh Union Station"
 #
 #--VEHICLE-QUERY--
 response = 0
-response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=20&callback=GET",
+response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=20%2C12%2C16&callback=GET",
   headers:{
     "X-Mashape-Key" => "<key>"
   }
@@ -134,12 +145,128 @@ if dA < 0.250
 varVctA += 1
 end
 end
+Array(data_hash["data"]["12"]).each do |blockA|
+varLatA = 0
+varLngA = 0
+varLatA = blockA["location"]["lat"]
+varLngA = blockA["location"]["lng"]
+#
+#--calc-distance--
+dtorA = Math::PI/180
+r = 3959
+rlat1A = varmyLatA * dtorA 
+rlong1A = varmyLngA * dtorA 
+rlat2A = varLatA * dtorA
+rlong2A = varLngA * dtorA
+dlonA = rlong1A - rlong2A
+dlatA = rlat1A - rlat2A
+aA = power(Math::sin(dlatA/2), 2) + Math::cos(rlat1A) * Math::cos(rlat2A) * power(Math::sin(dlonA/2), 2)
+cA = 2 * Math::atan2(Math::sqrt(aA), Math::sqrt(1-aA))
+dA = r * cA
+#
+#--STORE-NEAREST-BUS--
+dCacheA = dA						#temp cache distance for "nearest" calcs
+if dCacheA < dNearestA
+dNearestA = dCacheA					#record nearest bus
+end
+#
+if dA < 0.250
+varVctA += 1
+end
+end
+Array(data_hash["data"]["16"]).each do |blockA|
+varLatA = 0
+varLngA = 0
+varLatA = blockA["location"]["lat"]
+varLngA = blockA["location"]["lng"]
+#
+#--calc-distance--
+dtorA = Math::PI/180
+r = 3959
+rlat1A = varmyLatA * dtorA 
+rlong1A = varmyLngA * dtorA 
+rlat2A = varLatA * dtorA
+rlong2A = varLngA * dtorA
+dlonA = rlong1A - rlong2A
+dlatA = rlat1A - rlat2A
+aA = power(Math::sin(dlatA/2), 2) + Math::cos(rlat1A) * Math::cos(rlat2A) * power(Math::sin(dlonA/2), 2)
+cA = 2 * Math::atan2(Math::sqrt(aA), Math::sqrt(1-aA))
+dA = r * cA
+#
+#--STORE-NEAREST-BUS--
+dCacheA = dA						#temp cache distance for "nearest" calcs
+if dCacheA < dNearestA
+dNearestA = dCacheA					#record nearest bus
+end
+#
+if dA < 0.250
+varVctA += 1
+end
+end
 File.open(hbname, "a+") do |hb1|
 	hb1.puts "#{"['',"}#{varXTime}, #{dNearestA}, '#{varNameA}', #{varVctA}#{"],"}"				#[time,distance] ---> # "[#{varXTime}, #{dNearest}],"
 end
 #
 #--BLOCK-B--
 Array(data_hash["data"]["20"]).each do |blockB|
+varLatB = 0
+varLngB = 0
+varLatB = blockB["location"]["lat"]
+varLngB = blockB["location"]["lng"]
+#
+#--calc-distance--
+dtorB = Math::PI/180
+r = 3959
+rlat1B = varmyLatB * dtorB 
+rlong1B = varmyLngB * dtorB 
+rlat2B = varLatB * dtorB
+rlong2B = varLngB * dtorB
+dlonB = rlong1B - rlong2B
+dlatB = rlat1B - rlat2B
+aB = power(Math::sin(dlatB/2), 2) + Math::cos(rlat1B) * Math::cos(rlat2B) * power(Math::sin(dlonB/2), 2)
+cB = 2 * Math::atan2(Math::sqrt(aB), Math::sqrt(1-aB))
+dB = r * cB
+#
+#--STORE-NEAREST-BUS--
+dCacheB = dB						#temp cache distance for "nearest" calcs
+if dCacheB < dNearestB
+dNearestB = dCacheB					#record nearest bus
+end
+#
+if dB < 0.250
+varVctB += 1
+end
+end
+Array(data_hash["data"]["12"]).each do |blockB|
+varLatB = 0
+varLngB = 0
+varLatB = blockB["location"]["lat"]
+varLngB = blockB["location"]["lng"]
+#
+#--calc-distance--
+dtorB = Math::PI/180
+r = 3959
+rlat1B = varmyLatB * dtorB 
+rlong1B = varmyLngB * dtorB 
+rlat2B = varLatB * dtorB
+rlong2B = varLngB * dtorB
+dlonB = rlong1B - rlong2B
+dlatB = rlat1B - rlat2B
+aB = power(Math::sin(dlatB/2), 2) + Math::cos(rlat1B) * Math::cos(rlat2B) * power(Math::sin(dlonB/2), 2)
+cB = 2 * Math::atan2(Math::sqrt(aB), Math::sqrt(1-aB))
+dB = r * cB
+#
+#--STORE-NEAREST-BUS--
+dCacheB = dB						#temp cache distance for "nearest" calcs
+if dCacheB < dNearestB
+dNearestB = dCacheB					#record nearest bus
+end
+#
+if dB < 0.250
+varVctB += 1
+end
+end
+Array(data_hash["data"]["16"]).each do |blockB|
 varLatB = 0
 varLngB = 0
 varLatB = blockB["location"]["lat"]
