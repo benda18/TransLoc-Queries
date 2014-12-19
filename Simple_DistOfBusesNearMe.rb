@@ -52,6 +52,24 @@ varSNMr = aryR["short_name"]
 varLNMr = aryR["long_name"]
 routesfile.puts "#{varRIDr},#{varSNMr},#{varLNMr}"
 end
+Array(data_hashR["data"]["12"]).each do |aryR|
+varRIDr = 0
+varSNMr = 0
+varLNMr = 0
+varRIDr = aryR["route_id"]
+varSNMr = aryR["short_name"]
+varLNMr = aryR["long_name"]
+routesfile.puts "#{varRIDr},#{varSNMr},#{varLNMr}"
+end
+Array(data_hashR["data"]["16"]).each do |aryR|
+varRIDr = 0
+varSNMr = 0
+varLNMr = 0
+varRIDr = aryR["route_id"]
+varSNMr = aryR["short_name"]
+varLNMr = aryR["long_name"]
+routesfile.puts "#{varRIDr},#{varSNMr},#{varLNMr}"
+end
 routesfile.close
 data_hashR = 0
 payloadR = 0
@@ -131,11 +149,19 @@ varName = "Cameron Village"
 varmyLng = -78.677987	#crabtree valley mall
 varmyLat = 35.838014	#crabtree valley mall
 varName = "Crabtree Valley Mall"
+#
+varmyLng = -78.792668	#RDU
+varmyLat = 35.876590	#RDU
+varName = "RDU Terminal 2"
+#
+varmyLng = -78.646095	#Raleigh Union Station
+varmyLat = 35.777135	#Raleigh Union Station
+varName = "Raleigh Union Station"
 =end
 #
-varmyLngA = -78.662871	#Cameron Village
-varmyLatA = 35.790878	#Cameron Village
-varNameA = "Cameron Village"
+varmyLngA = -78.792668	#RDU
+varmyLatA = 35.876590	#RDU
+varNameA = "RDU Terminal 2"
 #
 varmyLngB = -78.646095	#Raleigh Union Station
 varmyLatB = 35.777135	#Raleigh Union Station
@@ -165,10 +191,6 @@ varLngA = 0
 varLatA = blockA["location"]["lat"]
 varLngA = blockA["location"]["lng"]
 #
-#
-#
-#
-#****
 varRtA = blockA["route_id"]
 #--PARSE-CSV-ROUTES-CACHE--
 varRidRCsnA = 0
@@ -181,9 +203,6 @@ varRidRCsnA = aryRC["short_name"]
 varRidRClnA = aryRC["long_name"]
 end
 end
-#****
-#
-#
 #
 #--calc-distance--
 dtorA = Math::PI/180
@@ -200,17 +219,10 @@ dA = r * cA
 #
 #--STORE-NEAREST-BUS-INFO--
 dCacheA = dA						#temp cache distance for "nearest" calcs
+rCacheA = varRidRCsnA				#temp cache distance for "nearest" calcs
 if dCacheA < dNearestA
 dNearestA = dCacheA					#record nearest bus
-#
-#
-#
-#****
-rNearestA = varRidRCsnA             #record route # of nearest bus
-#****
-#
-#
-#
+rNearestA = rCacheA             	#record route short_name of nearest bus
 end
 #
 if dA < 0.250
@@ -223,10 +235,6 @@ varLngA = 0
 varLatA = blockA["location"]["lat"]
 varLngA = blockA["location"]["lng"]
 #
-#
-#
-#
-#****
 varRtA = blockA["route_id"]
 #--PARSE-CSV-ROUTES-CACHE--
 varRidRCsnA = 0
@@ -239,9 +247,6 @@ varRidRCsnA = aryRC["short_name"]
 varRidRClnA = aryRC["long_name"]
 end
 end
-#****
-#
-#
 #
 #--calc-distance--
 dtorA = Math::PI/180
@@ -256,19 +261,12 @@ aA = power(Math::sin(dlatA/2), 2) + Math::cos(rlat1A) * Math::cos(rlat2A) * powe
 cA = 2 * Math::atan2(Math::sqrt(aA), Math::sqrt(1-aA))
 dA = r * cA
 #
-#--STORE-NEAREST-BUS--
+#--STORE-NEAREST-BUS-INFO--
 dCacheA = dA						#temp cache distance for "nearest" calcs
+rCacheA = varRidRCsnA				#temp cache distance for "nearest" calcs
 if dCacheA < dNearestA
 dNearestA = dCacheA					#record nearest bus
-#
-#
-#
-#****
-rNearestA = varRidRCsnA             #record route # of nearest bus
-#****
-#
-#
-#
+rNearestA = rCacheA             	#record route short_name of nearest bus
 end
 #
 if dA < 0.250
@@ -281,10 +279,6 @@ varLngA = 0
 varLatA = blockA["location"]["lat"]
 varLngA = blockA["location"]["lng"]
 #
-#
-#
-#
-#****
 varRtA = blockA["route_id"]
 #--PARSE-CSV-ROUTES-CACHE--
 varRidRCsnA = 0
@@ -297,9 +291,6 @@ varRidRCsnA = aryRC["short_name"]
 varRidRClnA = aryRC["long_name"]
 end
 end
-#****
-#
-#
 #
 #--calc-distance--
 dtorA = Math::PI/180
@@ -314,19 +305,12 @@ aA = power(Math::sin(dlatA/2), 2) + Math::cos(rlat1A) * Math::cos(rlat2A) * powe
 cA = 2 * Math::atan2(Math::sqrt(aA), Math::sqrt(1-aA))
 dA = r * cA
 #
-#--STORE-NEAREST-BUS--
+#--STORE-NEAREST-BUS-INFO--
 dCacheA = dA						#temp cache distance for "nearest" calcs
+rCacheA = varRidRCsnA				#temp cache distance for "nearest" calcs
 if dCacheA < dNearestA
 dNearestA = dCacheA					#record nearest bus
-#
-#
-#
-#****
-rNearestA = varRidRCsnA             #record route # of nearest bus
-#****
-#
-#
-#
+rNearestA = rCacheA             	#record route short_name of nearest bus
 end
 #
 if dA < 0.250
@@ -334,7 +318,11 @@ varVctA += 1
 end
 end
 File.open(hbname, "a+") do |hb1|
+	#if dNearestA < 0.250
 	hb1.puts "#{"['#{rNearestA}',"}#{varXTime}, #{dNearestA}, '#{varNameA}', #{varVctA}#{"],"}"				#[time,distance] ---> # "[#{varXTime}, #{dNearest}],"
+	#else
+	#hb1.puts "#{"['',"}#{varXTime}, #{dNearestA}, '#{varNameA}', #{varVctA}#{"],"}"				#[time,distance] ---> # "[#{varXTime}, #{dNearest}],"
+	#end
 end
 #
 #--BLOCK-B--
@@ -344,10 +332,6 @@ varLngB = 0
 varLatB = blockB["location"]["lat"]
 varLngB = blockB["location"]["lng"]
 #
-#
-#
-#
-#****
 varRtB = blockB["route_id"]
 #--PARSE-CSV-ROUTES-CACHE--
 varRidRCsnB = 0
@@ -360,9 +344,6 @@ varRidRCsnB = aryRC["short_name"]
 varRidRClnB = aryRC["long_name"]
 end
 end
-#****
-#
-#
 #
 #--calc-distance--
 dtorB = Math::PI/180
@@ -377,19 +358,12 @@ aB = power(Math::sin(dlatB/2), 2) + Math::cos(rlat1B) * Math::cos(rlat2B) * powe
 cB = 2 * Math::atan2(Math::sqrt(aB), Math::sqrt(1-aB))
 dB = r * cB
 #
-#--STORE-NEAREST-BUS--
+#--STORE-NEAREST-BUS-INFO--
 dCacheB = dB						#temp cache distance for "nearest" calcs
+rCacheB = varRidRCsnB				#temp cache distance for "nearest" calcs
 if dCacheB < dNearestB
 dNearestB = dCacheB					#record nearest bus
-#
-#
-#
-#****
-rNearestB = varRidRCsnB             #record route # of nearest bus
-#****
-#
-#
-#
+rNearestB = rCacheB             	#record route short_name of nearest bus
 end
 #
 if dB < 0.250
@@ -402,10 +376,6 @@ varLngB = 0
 varLatB = blockB["location"]["lat"]
 varLngB = blockB["location"]["lng"]
 #
-#
-#
-#
-#****
 varRtB = blockB["route_id"]
 #--PARSE-CSV-ROUTES-CACHE--
 varRidRCsnB = 0
@@ -418,9 +388,6 @@ varRidRCsnB = aryRC["short_name"]
 varRidRClnB = aryRC["long_name"]
 end
 end
-#****
-#
-#
 #
 #--calc-distance--
 dtorB = Math::PI/180
@@ -435,19 +402,12 @@ aB = power(Math::sin(dlatB/2), 2) + Math::cos(rlat1B) * Math::cos(rlat2B) * powe
 cB = 2 * Math::atan2(Math::sqrt(aB), Math::sqrt(1-aB))
 dB = r * cB
 #
-#--STORE-NEAREST-BUS--
+#--STORE-NEAREST-BUS-INFO--
 dCacheB = dB						#temp cache distance for "nearest" calcs
+rCacheB = varRidRCsnB				#temp cache distance for "nearest" calcs
 if dCacheB < dNearestB
 dNearestB = dCacheB					#record nearest bus
-#
-#
-#
-#****
-rNearestB = varRidRCsnB             #record route # of nearest bus
-#****
-#
-#
-#
+rNearestB = rCacheB             	#record route short_name of nearest bus
 end
 #
 if dB < 0.250
@@ -460,10 +420,6 @@ varLngB = 0
 varLatB = blockB["location"]["lat"]
 varLngB = blockB["location"]["lng"]
 #
-#
-#
-#
-#****
 varRtB = blockB["route_id"]
 #--PARSE-CSV-ROUTES-CACHE--
 varRidRCsnB = 0
@@ -476,9 +432,6 @@ varRidRCsnB = aryRC["short_name"]
 varRidRClnB = aryRC["long_name"]
 end
 end
-#****
-#
-#
 #
 #--calc-distance--
 dtorB = Math::PI/180
@@ -493,19 +446,12 @@ aB = power(Math::sin(dlatB/2), 2) + Math::cos(rlat1B) * Math::cos(rlat2B) * powe
 cB = 2 * Math::atan2(Math::sqrt(aB), Math::sqrt(1-aB))
 dB = r * cB
 #
-#--STORE-NEAREST-BUS--
+#--STORE-NEAREST-BUS-INFO--
 dCacheB = dB						#temp cache distance for "nearest" calcs
+rCacheB = varRidRCsnB				#temp cache distance for "nearest" calcs
 if dCacheB < dNearestB
 dNearestB = dCacheB					#record nearest bus
-#
-#
-#
-#****
-rNearestB = varRidRCsnB             #record route # of nearest bus
-#****
-#
-#
-#
+rNearestB = rCacheB             	#record route short_name of nearest bus
 end
 #
 if dB < 0.250
@@ -513,7 +459,11 @@ varVctB += 1
 end
 end
 File.open(hbname, "a+") do |hb1|
+	#if dNearestB < 0.250
 	hb1.puts "#{"['#{rNearestB}',"}#{varXTime}, #{dNearestB}, '#{varNameB}', #{varVctB}#{"],"}"				#[time,distance] ---> # "[#{varXTime}, #{dNearest}],"
+	#else
+	#hb1.puts "#{"['',"}#{varXTime}, #{dNearestB}, '#{varNameB}', #{varVctB}#{"],"}"				#[time,distance] ---> # "[#{varXTime}, #{dNearest}],"
+	#end
 end
 #
 File.open(hcname, "w+") do |hc1|
@@ -522,8 +472,11 @@ File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"title: 'Distance to Nearest Bus by Time-of-Day',"}"			
 	hc1.puts "#{"hAxis: {title: 'Time of Day'},"}"
 	hc1.puts "#{"vAxis: {title: 'Miles to Nearest Bus'},"}"
-	hc1.puts "#{"sizeAxis: {minSize: 0},"}"
+	hc1.puts "#{"explorer: {},"}"
+	hc1.puts "#{"sizeAxis: {minSize: 10},"}"
 	hc1.puts "#{"sizeAxis: {maxSize: 22},"}"
+	#hc1.puts "#{"chartArea: {left: 5},"}"
+	hc1.puts "#{"chartArea: {top: 50},"}"
 	hc1.puts "#{"};"}"
 	hc1.puts "#{"var chart = new google.visualization.BubbleChart(document.getElementById('series_chart_div'));"}"												# var chart2 = new google.visualization.BarChart(document.getElementById('chart_div2'));	
 	hc1.puts "#{"chart.draw(data, options);"}"
@@ -531,7 +484,7 @@ File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"</script>"}"
 	hc1.puts "#{"</head>"}"
 	hc1.puts "#{"<body>"}"
-	hc1.puts "#{"<div id="}#{'"'}#{"series_chart_div"}#{'"'}#{" style="}#{'"'}#{"width: 1400px; height: 600px;"}#{'"'}#{"></div>"}"
+	hc1.puts "#{"<div id="}#{'"'}#{"series_chart_div"}#{'"'}#{" style="}#{'"'}#{"width: 1800px; height: 800px;"}#{'"'}#{"></div>"}"
 	hc1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{30}#{'"'}#{">"}"#refresh code
 	hc1.puts "<font size=#{'"'}30#{'"'} color=#{'"'}red#{'"'}><b>#{varVctA}</b></font><br>"
 	hc1.puts "buses within 1/4 mile of #{varNameA}"
@@ -541,7 +494,7 @@ File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"</body>"}"
 	hc1.puts "#{"</html>"}"
 end
-
+#
 #--CACHE-WORK--
 File.open(hfull, "w+") do |zz1|
 zz1.puts ""
@@ -568,5 +521,6 @@ end
 File.delete(haname)
 #File.delete(hbname)
 File.delete(hcname)
+#File.delete(RCname)
 exit
 #  
