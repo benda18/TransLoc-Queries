@@ -18,7 +18,48 @@ require 'unirest'
 require 'json'
 require 'time'
 require 'date'
+require 'CSV'
 #require 'socket'
+#
+#--ROUTES-CACHE--
+# get route_id, short_name, long_name
+RCname = "routesCache#{Time.now.strftime('%Y%m%d')}.txt"
+if not File.exists?(RCname)						#only calls this api if the routes haven't already been cached
+data_hashR = 0
+payloadR = 0
+payload2R = 0
+varRIDr = 0
+varSNMr = 0
+varLNMr = 0
+responseR = 0
+# These code snippets use an open-source library. http://unirest.io/ruby
+sleep(10)
+responseR = Unirest.get "https://transloc-api-1-2.p.mashape.com/routes.jsonp?agencies=20%2C12%2C16&callback=call",
+  headers:{
+    "X-Mashape-Key" => "<key>"
+  }
+payload2R = responseR.body					#sets the call response body as a variable
+payloadR = payload2R[/{.+}/]					#removes the callback prefix and suffix from the response body
+data_hashR = JSON.parse(payloadR)				#parses the response body and stores as a variable
+routesfile = File.open(RCname, "w")
+routesfile.puts "route_id,short_name,long_name"	#header
+Array(data_hashR["data"]["20"]).each do |aryR|
+varRIDr = 0
+varSNMr = 0
+varLNMr = 0
+varRIDr = aryR["route_id"]
+varSNMr = aryR["short_name"]
+varLNMr = aryR["long_name"]
+routesfile.puts "#{varRIDr},#{varSNMr},#{varLNMr}"
+end
+routesfile.close
+data_hashR = 0
+payloadR = 0
+payload2R = 0
+varRIDr = 0
+varSNMr = 0
+varLNMr = 0
+end
 #
 #--VARS--
 hfull = "BusesNearMe.html"
@@ -32,6 +73,8 @@ varMin = 0
 varXTime = 0							#time value for x axis in scatter chart
 dNearestA = 9999							#record nearest bus - SET HIGH up front and reduce
 dNearestB = 9999							#record nearest bus - SET HIGH up front and reduce
+rNearestA = "xxxx"
+rNearestB = "xxxx"
 dCacheA = 0
 dCacheB = 0
 dA = 0
@@ -52,7 +95,7 @@ File.open(haname, "w+") do |ha1|
 	ha1.puts "#{"google.setOnLoadCallback(drawChart);"}"					# google.setOnLoadCallback(drawChart3);
 	ha1.puts "#{"function drawChart() {"}"									# function drawChart3() {
 	ha1.puts "#{"var data = google.visualization.arrayToDataTable(["}"		# var data3 = google.visualization.arrayToDataTable([	
-	ha1.puts "#{"['ID', 'Time', 'Miles', 'Color', 'Buses w/in 1/4 mile'],"}"										# "['#{varXTime}', '#{d}'],"
+	ha1.puts "#{"['ID', 'Time', 'Miles', 'Location', 'Buses w/in 1/4 mile'],"}"										# "['#{varXTime}', '#{d}'],"
 end
 puts "\e[H\e[2J"
 def power(num, pow)
@@ -90,9 +133,9 @@ varmyLat = 35.838014	#crabtree valley mall
 varName = "Crabtree Valley Mall"
 =end
 #
-varmyLngA = -78.637277	#moore square
-varmyLatA = 35.777531	#moore square
-varNameA = "Moore Square Station"
+varmyLngA = -78.662871	#Cameron Village
+varmyLatA = 35.790878	#Cameron Village
+varNameA = "Cameron Village"
 #
 varmyLngB = -78.646095	#Raleigh Union Station
 varmyLatB = 35.777135	#Raleigh Union Station
@@ -107,7 +150,6 @@ response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?ag
 payload2 = response.body
 payload = payload2[/{.+}/]
 data_hash = JSON.parse(payload)
-
 varGenTime = data_hash["generated_on"]
 varDate = DateTime.parse(varGenTime)
 varDate = varDate.to_time.iso8601
@@ -115,12 +157,33 @@ varDate = DateTime.parse(varDate)
 varHour = varDate.hour.to_f
 varMin = varDate.minute.to_f
 varXTime = varHour + (varMin / 60)
+#
 #--BLOCK-A--
 Array(data_hash["data"]["20"]).each do |blockA|
 varLatA = 0
 varLngA = 0
 varLatA = blockA["location"]["lat"]
 varLngA = blockA["location"]["lng"]
+#
+#
+#
+#
+#****
+varRtA = blockA["route_id"]
+#--PARSE-CSV-ROUTES-CACHE--
+varRidRCsnA = 0
+varRidRClnA = 0
+varRidRCA = 0
+CSV.foreach(RCname, :headers => true) do |aryRC|
+varRidRCA = aryRC["route_id"]
+if varRidRCA == varRtA 
+varRidRCsnA = aryRC["short_name"]
+varRidRClnA = aryRC["long_name"]
+end
+end
+#****
+#
+#
 #
 #--calc-distance--
 dtorA = Math::PI/180
@@ -135,10 +198,19 @@ aA = power(Math::sin(dlatA/2), 2) + Math::cos(rlat1A) * Math::cos(rlat2A) * powe
 cA = 2 * Math::atan2(Math::sqrt(aA), Math::sqrt(1-aA))
 dA = r * cA
 #
-#--STORE-NEAREST-BUS--
+#--STORE-NEAREST-BUS-INFO--
 dCacheA = dA						#temp cache distance for "nearest" calcs
 if dCacheA < dNearestA
 dNearestA = dCacheA					#record nearest bus
+#
+#
+#
+#****
+rNearestA = varRidRCsnA             #record route # of nearest bus
+#****
+#
+#
+#
 end
 #
 if dA < 0.250
@@ -151,6 +223,26 @@ varLngA = 0
 varLatA = blockA["location"]["lat"]
 varLngA = blockA["location"]["lng"]
 #
+#
+#
+#
+#****
+varRtA = blockA["route_id"]
+#--PARSE-CSV-ROUTES-CACHE--
+varRidRCsnA = 0
+varRidRClnA = 0
+varRidRCA = 0
+CSV.foreach(RCname, :headers => true) do |aryRC|
+varRidRCA = aryRC["route_id"]
+if varRidRCA == varRtA 
+varRidRCsnA = aryRC["short_name"]
+varRidRClnA = aryRC["long_name"]
+end
+end
+#****
+#
+#
+#
 #--calc-distance--
 dtorA = Math::PI/180
 r = 3959
@@ -168,6 +260,15 @@ dA = r * cA
 dCacheA = dA						#temp cache distance for "nearest" calcs
 if dCacheA < dNearestA
 dNearestA = dCacheA					#record nearest bus
+#
+#
+#
+#****
+rNearestA = varRidRCsnA             #record route # of nearest bus
+#****
+#
+#
+#
 end
 #
 if dA < 0.250
@@ -180,6 +281,26 @@ varLngA = 0
 varLatA = blockA["location"]["lat"]
 varLngA = blockA["location"]["lng"]
 #
+#
+#
+#
+#****
+varRtA = blockA["route_id"]
+#--PARSE-CSV-ROUTES-CACHE--
+varRidRCsnA = 0
+varRidRClnA = 0
+varRidRCA = 0
+CSV.foreach(RCname, :headers => true) do |aryRC|
+varRidRCA = aryRC["route_id"]
+if varRidRCA == varRtA 
+varRidRCsnA = aryRC["short_name"]
+varRidRClnA = aryRC["long_name"]
+end
+end
+#****
+#
+#
+#
 #--calc-distance--
 dtorA = Math::PI/180
 r = 3959
@@ -197,6 +318,15 @@ dA = r * cA
 dCacheA = dA						#temp cache distance for "nearest" calcs
 if dCacheA < dNearestA
 dNearestA = dCacheA					#record nearest bus
+#
+#
+#
+#****
+rNearestA = varRidRCsnA             #record route # of nearest bus
+#****
+#
+#
+#
 end
 #
 if dA < 0.250
@@ -204,7 +334,7 @@ varVctA += 1
 end
 end
 File.open(hbname, "a+") do |hb1|
-	hb1.puts "#{"['',"}#{varXTime}, #{dNearestA}, '#{varNameA}', #{varVctA}#{"],"}"				#[time,distance] ---> # "[#{varXTime}, #{dNearest}],"
+	hb1.puts "#{"['#{rNearestA}',"}#{varXTime}, #{dNearestA}, '#{varNameA}', #{varVctA}#{"],"}"				#[time,distance] ---> # "[#{varXTime}, #{dNearest}],"
 end
 #
 #--BLOCK-B--
@@ -213,6 +343,26 @@ varLatB = 0
 varLngB = 0
 varLatB = blockB["location"]["lat"]
 varLngB = blockB["location"]["lng"]
+#
+#
+#
+#
+#****
+varRtB = blockB["route_id"]
+#--PARSE-CSV-ROUTES-CACHE--
+varRidRCsnB = 0
+varRidRClnB = 0
+varRidRCB = 0
+CSV.foreach(RCname, :headers => true) do |aryRC|
+varRidRCB = aryRC["route_id"]
+if varRidRCB == varRtB 
+varRidRCsnB = aryRC["short_name"]
+varRidRClnB = aryRC["long_name"]
+end
+end
+#****
+#
+#
 #
 #--calc-distance--
 dtorB = Math::PI/180
@@ -231,6 +381,15 @@ dB = r * cB
 dCacheB = dB						#temp cache distance for "nearest" calcs
 if dCacheB < dNearestB
 dNearestB = dCacheB					#record nearest bus
+#
+#
+#
+#****
+rNearestB = varRidRCsnB             #record route # of nearest bus
+#****
+#
+#
+#
 end
 #
 if dB < 0.250
@@ -243,6 +402,26 @@ varLngB = 0
 varLatB = blockB["location"]["lat"]
 varLngB = blockB["location"]["lng"]
 #
+#
+#
+#
+#****
+varRtB = blockB["route_id"]
+#--PARSE-CSV-ROUTES-CACHE--
+varRidRCsnB = 0
+varRidRClnB = 0
+varRidRCB = 0
+CSV.foreach(RCname, :headers => true) do |aryRC|
+varRidRCB = aryRC["route_id"]
+if varRidRCB == varRtB 
+varRidRCsnB = aryRC["short_name"]
+varRidRClnB = aryRC["long_name"]
+end
+end
+#****
+#
+#
+#
 #--calc-distance--
 dtorB = Math::PI/180
 r = 3959
@@ -260,6 +439,15 @@ dB = r * cB
 dCacheB = dB						#temp cache distance for "nearest" calcs
 if dCacheB < dNearestB
 dNearestB = dCacheB					#record nearest bus
+#
+#
+#
+#****
+rNearestB = varRidRCsnB             #record route # of nearest bus
+#****
+#
+#
+#
 end
 #
 if dB < 0.250
@@ -272,6 +460,26 @@ varLngB = 0
 varLatB = blockB["location"]["lat"]
 varLngB = blockB["location"]["lng"]
 #
+#
+#
+#
+#****
+varRtB = blockB["route_id"]
+#--PARSE-CSV-ROUTES-CACHE--
+varRidRCsnB = 0
+varRidRClnB = 0
+varRidRCB = 0
+CSV.foreach(RCname, :headers => true) do |aryRC|
+varRidRCB = aryRC["route_id"]
+if varRidRCB == varRtB 
+varRidRCsnB = aryRC["short_name"]
+varRidRClnB = aryRC["long_name"]
+end
+end
+#****
+#
+#
+#
 #--calc-distance--
 dtorB = Math::PI/180
 r = 3959
@@ -289,6 +497,15 @@ dB = r * cB
 dCacheB = dB						#temp cache distance for "nearest" calcs
 if dCacheB < dNearestB
 dNearestB = dCacheB					#record nearest bus
+#
+#
+#
+#****
+rNearestB = varRidRCsnB             #record route # of nearest bus
+#****
+#
+#
+#
 end
 #
 if dB < 0.250
@@ -296,18 +513,17 @@ varVctB += 1
 end
 end
 File.open(hbname, "a+") do |hb1|
-	hb1.puts "#{"['',"}#{varXTime}, #{dNearestB}, '#{varNameB}', #{varVctB}#{"],"}"				#[time,distance] ---> # "[#{varXTime}, #{dNearest}],"
+	hb1.puts "#{"['#{rNearestB}',"}#{varXTime}, #{dNearestB}, '#{varNameB}', #{varVctB}#{"],"}"				#[time,distance] ---> # "[#{varXTime}, #{dNearest}],"
 end
 #
 File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"]);"}"
-	hc1.puts "#{"var options = {"}"								# var options3 = {	
-	hc1.puts "#{"title: 'Distance to Nearest Bus by Time-of-Day',"}"			# title: 'foo',
+	hc1.puts "#{"var options = {"}"								
+	hc1.puts "#{"title: 'Distance to Nearest Bus by Time-of-Day',"}"			
 	hc1.puts "#{"hAxis: {title: 'Time of Day'},"}"
 	hc1.puts "#{"vAxis: {title: 'Miles to Nearest Bus'},"}"
-	#hc1.puts "#{"legend: 'none'"}"
-	#hc1.puts "#{"histogram: { bucketSize: 0.25 },"}"
-	#hc1.puts "#{"isStacked: ['True']"}"
+	hc1.puts "#{"sizeAxis: {minSize: 0},"}"
+	hc1.puts "#{"sizeAxis: {maxSize: 22},"}"
 	hc1.puts "#{"};"}"
 	hc1.puts "#{"var chart = new google.visualization.BubbleChart(document.getElementById('series_chart_div'));"}"												# var chart2 = new google.visualization.BarChart(document.getElementById('chart_div2'));	
 	hc1.puts "#{"chart.draw(data, options);"}"
@@ -315,7 +531,7 @@ File.open(hcname, "w+") do |hc1|
 	hc1.puts "#{"</script>"}"
 	hc1.puts "#{"</head>"}"
 	hc1.puts "#{"<body>"}"
-	hc1.puts "#{"<div id="}#{'"'}#{"series_chart_div"}#{'"'}#{" style="}#{'"'}#{"width: 1800px; height: 800px;"}#{'"'}#{"></div>"}"
+	hc1.puts "#{"<div id="}#{'"'}#{"series_chart_div"}#{'"'}#{" style="}#{'"'}#{"width: 1400px; height: 600px;"}#{'"'}#{"></div>"}"
 	hc1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{30}#{'"'}#{">"}"#refresh code
 	hc1.puts "<font size=#{'"'}30#{'"'} color=#{'"'}red#{'"'}><b>#{varVctA}</b></font><br>"
 	hc1.puts "buses within 1/4 mile of #{varNameA}"
@@ -352,4 +568,5 @@ end
 File.delete(haname)
 #File.delete(hbname)
 File.delete(hcname)
+exit
 #  
