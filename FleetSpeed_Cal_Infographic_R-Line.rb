@@ -1,6 +1,5 @@
 # A script that does statistical analysis on an array
-require 'descriptive_statistics'
-# descriptive_statistics documentation here: https://rubygems.org/gems/descriptive_statistics
+require 'descriptive_statistics'	# descriptive_statistics documentation here: https://rubygems.org/gems/descriptive_statistics
 require 'csv'
 require 'time'
 require 'date'
@@ -32,6 +31,7 @@ end
 # puts "done counting lines - duration #{varNow.round(1)} seconds lapsed"
 #/Count total lines in all .txt files
 
+=begin
 #CACHE_A
 File.open(cacheA, "a+") do |ca1|
 ca1.puts "<html>"
@@ -65,6 +65,7 @@ cc1.puts "</html>"
 end
 # varNow = Time.now - varSt
 # puts "done cacheA & cacheB - duration #{varNow.round(1)} seconds lapsed"
+=end
 
 #INPUTS
 #---year----------------/
@@ -132,7 +133,10 @@ randfile = File.open(cacheRand, "a+")
 list = CSV.foreach(foo) do |row1|
 varRN = row1[9]
 if varRN == "r-line"
+varRnd = rand(1..4)						#INPUT sampling percentage
+if varRnd == 1
 randfile.puts "#{row1[0]},#{row1[1]},#{row1[2]},#{row1[3]},#{row1[4]},#{row1[5]},#{row1[6]},#{row1[7]},#{row1[8]},#{row1[9]},#{row1[10]}"
+end
 end
 end
 randfile.close
@@ -205,25 +209,43 @@ end
 end
 end
 File.open(cacheB, "a+") do |cb1|
-cb1.puts "[ new Date(#{varYi}, #{varMi}, #{varDi}), #{arrCal.mean.round(2)} ],"
+if arrCal.mean > 0
+cb1.puts "[ new Date(#{varYi}, #{varMi}, #{varDi}), #{arrCal.mean.round(1)} ],"
 end
-
-arrCal = nil
-arrCal = [0]
-puts "array cleared"
-varNow = Time.now
-varNow1 = varNow - varLast
-puts "day iteration complete - duration:  #{varNow1.round(0)} seconds lapsed"
-varLast = varNow
-varDi +=1;
-end until varDi > 31
-
-
-varNow = Time.now
-varNow1 = varNow - varLast
-puts "one more file parsed - duration #{varNow1.round(0)} seconds lapsed"
-varLast = varNow
-#end 
+end
+#CACHE_A
+File.open(cacheA, "a+") do |ca1|
+ca1.puts "<html>"
+ca1.puts "<head>"
+ca1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{" src="}#{'"'}#{"https://www.google.com/jsapi"}#{'"'}#{"></script>"}"
+ca1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{">"}"
+ca1.puts "#{"google.load("}#{'"'}#{"visualization"}#{'"'}#{", "}#{'"'}#{"1.1"}#{'"'}#{", {packages:["}#{'"'}#{"calendar"}#{'"'}#{"]"}#{'}'}#{");"}"
+ca1.puts "#{"google.setOnLoadCallback(drawChart);"}"
+ca1.puts "#{"function drawChart() {"}"	
+ca1.puts "#{"var dataTable = new google.visualization.DataTable();"}"
+ca1.puts "#{"dataTable.addColumn({ type: 'date', id: 'Date'});"}"
+ca1.puts "#{"dataTable.addColumn({ type: 'number', id: 'Won/Loss' });"}"
+ca1.puts "#{"dataTable.addRows(["}"
+end
+#CACHE_C
+File.open(cacheC, "a+") do |cc1|
+cc1.puts "#{"]);"}"
+cc1.puts "#{"var chart = new google.visualization.Calendar(document.getElementById('calendar_basic'));"}"
+cc1.puts "#{"var options = {"}"
+cc1.puts "#{"title: "}#{'"'}#{"R-Line Avg. Fleet Speed (mph)"}#{'"'}#{","}"
+cc1.puts "#{"height: 350,"}"
+cc1.puts "#{"};"}"
+cc1.puts "#{"chart.draw(dataTable, options);"}"
+cc1.puts "}"
+cc1.puts "</script>"
+cc1.puts "</head>"
+cc1.puts "<body>"
+cc1.puts "#{"<div id="}#{'"'}#{"calendar_basic"}#{'"'}#{" style="}#{'"'}#{"width: 1000px; height: 350px;"}#{'"'}#{"></div>"}"
+cc1.puts "</body>"
+cc1.puts "</html>"
+end
+# varNow = Time.now - varSt
+# puts "done cacheA & cacheB - duration #{varNow.round(1)} seconds lapsed"
 
 #cachework
 File.open(calFull, "w+") do |zz1|
@@ -250,8 +272,60 @@ ha5.puts hccontents
 end
 #--CLEANUP--
 File.delete(cacheA)
-File.delete(cacheB)
+#File.delete(cacheB)
 File.delete(cacheC)
+
+
+
+
+arrCal = nil
+arrCal = [0]
+puts "array cleared"
+varNow = Time.now
+varNow1 = varNow - varLast
+puts "day iteration complete - duration:  #{varNow1.round(0)} seconds lapsed"
+varLast = varNow
+varDi +=1;
+end until varDi > 31
+
+
+varNow = Time.now
+varNow1 = varNow - varLast
+puts "one more file parsed - duration #{varNow1.round(0)} seconds lapsed"
+varLast = varNow
+#end 
+
+=begin
+#cachework
+File.open(calFull, "w+") do |zz1|
+zz1.puts ""
+end
+hafile = File.open(cacheA, "r")
+hacontents = hafile.read
+hafile.close
+File.open(calFull, "a+") do |ha3|
+ha3.puts hacontents
+end
+
+hbfile = File.open(cacheB, "r")
+hbcontents = hbfile.read
+hbfile.close
+File.open(calFull, "a+") do |ha4|
+ha4.puts hbcontents
+end
+hcfile = File.open(cacheC, "r")
+hccontents = hcfile.read
+hcfile.close
+File.open(calFull, "a+") do |ha5|
+ha5.puts hccontents
+end
+#--CLEANUP--
+File.delete(cacheA)
+File.delete(cacheC)
+=end
+File.delete(cacheB)
+
+
 
 
 fileCR=File.open(cacheRand,"r")
