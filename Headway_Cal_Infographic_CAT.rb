@@ -12,9 +12,9 @@ varYi = 2014 	#year increment start
 #---month---------------/
 varMi = 11 		#month increment start (0 = jan, 1 = feb, etc)
 #---day-----------------/
-varDi = 11		#day increment start
+varDi = 2		#day increment start
 #---sample-size---------/
-vSS = 1000		#percent sample rate 1/x
+vSS = 2000		#percent sample rate 1/x
 #/INPUTS
 
 #vars/defs
@@ -63,14 +63,6 @@ varLNC += 1;
 }
 end
 #/Count total lines in all .txt files
-=begin
-#OTHER SETUP
-arrTemp = "cal_temarray.txt"
-if File.exists?(arrTemp)	
-File.delete(arrTemp)
-end
-#/OTHER SETUP
-=end
 puts "**************"
 puts "Start Date: #{varYi}-#{varMi}-#{varDi}"
 puts "Population Size: #{varLNC}"
@@ -128,12 +120,6 @@ list = CSV.foreach(cacheRand) do |row|			#****
 	varYer = 0
 	varMon = 0
 	varDay = 0
-#	varRtnam = 0
-#	varAgc = 0
-#	varMins = 0
-#	varWday = 0
-#	varMins = row[3].to_f
-#	varRtnam = row[9]#.to_a
 
 	#PARSE TIME
 	varDate = row[0]
@@ -250,14 +236,6 @@ varLast = varNow
 
 #--CLEANUP--
 File.delete(cacheB)
-
-=begin
-fileCR=File.open(cacheRand,"r")
-puts ""
-puts "#{fileCR.readlines.size} lines queried"
-fileCR.close
-=end
-
 puts ""
 varEn = Time.now
 puts "Ended: #{varEn}" 
