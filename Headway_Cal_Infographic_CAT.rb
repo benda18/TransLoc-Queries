@@ -12,9 +12,9 @@ varYi = 2014 	#year increment start
 #---month---------------/
 varMi = 11 		#month increment start (0 = jan, 1 = feb, etc)
 #---day-----------------/
-varDi = 3		#day increment start
+varDi = 2		#day increment start
 #---sample-size---------/
-vSS = 3		#percent sample rate 1/x
+vSS = 2000		#percent sample rate 1/x
 #/INPUTS
 
 #vars/defs
@@ -79,7 +79,6 @@ Dir.glob('CATAvgStopWait*.txt') do |foo|
 randfile = File.open(cacheRand, "a+")
 list = CSV.foreach(foo) do |row1|
 varRN = row1[3]
-# if varRN == "r-line"
 if varRN == "route_number"
 else
 varRnd = rand(1..vSS)						#INPUT sampling percentage
@@ -117,34 +116,34 @@ list = CSV.foreach(cacheRand) do |row|			#****
 # [7]..lon
 # [8]..lat
 
-varDate=0
-varYer = 0
-varMon = 0
-varDay = 0
+	varDate=0
+	varYer = 0
+	varMon = 0
+	varDay = 0
 
-#PARSE TIME
-varDate = row[0]
-varDate = DateTime.parse(varDate)
-varDate = varDate.to_time.iso8601
-varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-varYer = varDate.year
-varMon = varDate.month
-varDay = varDate.day
+	#PARSE TIME
+	varDate = row[0]
+	varDate = DateTime.parse(varDate)
+	varDate = varDate.to_time.iso8601
+	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
+	varYer = varDate.year
+	varMon = varDate.month
+	varDay = varDate.day
+#	varWday = varDate.wday
 
 if varYer == varYi
 if varMon == varMi+1
 if varDay == varDi
-if row[6].to_f < 0
-else
 arrCal << row[6].to_f
 end
 end
 end
 end
-end
 File.open(cacheB, "a+") do |cb1|
-# ['<date>', <min>, <25%>, <75%>, <max>]
-cb1.puts "['#{varYi}-#{varMi+1}-#{varDi}', #{arrCal.min.round(0)}, #{arrCal.percentile(25).round(0)}, #{arrCal.percentile(75).round(0)}, #{arrCal.max.round(0)}, #{arrCal.mean.round(1)}], //#{arrCal.number}" 
+if arrCal.mean > 0
+cb1.puts "[ new Date(#{varYi}, #{varMi}, #{varDi}), #{arrCal.mean.round(1)} ], //#{arrCal.number}"
+#cb1.puts "[ new Date(#{varYi}, #{varMi}, #{varDi}), #{arrCal.number} ],"
+end
 end
 
 #CACHE_A
@@ -153,32 +152,29 @@ ca1.puts "<html>"
 ca1.puts "<head>"
 ca1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{" src="}#{'"'}#{"https://www.google.com/jsapi"}#{'"'}#{"></script>"}"
 ca1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{">"}"
-ca1.puts "#{"google.load("}#{'"'}#{"visualization"}#{'"'}#{", "}#{'"'}#{"1"}#{'"'}#{", {packages:["}#{'"'}#{"corechart"}#{'"'}#{"]"}#{'}'}#{");"}"
+ca1.puts "#{"google.load("}#{'"'}#{"visualization"}#{'"'}#{", "}#{'"'}#{"1.1"}#{'"'}#{", {packages:["}#{'"'}#{"calendar"}#{'"'}#{"]"}#{'}'}#{");"}"
 ca1.puts "#{"google.setOnLoadCallback(drawChart);"}"
 ca1.puts "#{"function drawChart() {"}"	
-ca1.puts "#{"var data = new google.visualization.arrayToDataTable(["}"
-#ca1.puts "#{"dataTable.addColumn({ type: 'date', id: 'Date'});"}"
-#ca1.puts "#{"dataTable.addColumn({ type: 'number', id: 'Won/Loss' });"}"
-#ca1.puts "#{"dataTable.addRows(["}"
+ca1.puts "#{"var dataTable = new google.visualization.DataTable();"}"
+ca1.puts "#{"dataTable.addColumn({ type: 'date', id: 'Date'});"}"
+ca1.puts "#{"dataTable.addColumn({ type: 'number', id: 'Won/Loss' });"}"
+ca1.puts "#{"dataTable.addRows(["}"
 end
 
 #CACHE_C
 File.open(cacheC, "a+") do |cc1|
-cc1.puts "#{"], true);"}"
-cc1.puts "#{"var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));"}"
+cc1.puts "#{"]);"}"
+cc1.puts "#{"var chart = new google.visualization.Calendar(document.getElementById('calendar_basic'));"}"
 cc1.puts "#{"var options = {"}"
-cc1.puts "#{"legend: 'none',"}"
-cc1.puts "#{"title: 'R-Line Average Daily Observed Headway (mins) - Quartiles',"}"
-cc1.puts "#{"vAxis: {title: "}#{'"'}#{"minutes"}#{'"'}#{"},"}"
-cc1.puts "#{"seriesType: "}#{'"'}#{"candlesticks"}#{'"'}#{","}"
-cc1.puts "#{"series: {1: {type: "}#{'"'}#{"line"}#{'"'}#{"}}"}"
+cc1.puts "#{"title: "}#{'"'}#{"R-Line Avg. Headway (mins)"}#{'"'}#{","}"
+cc1.puts "#{"height: 350,"}"
 cc1.puts "#{"};"}"
-cc1.puts "#{"chart.draw(data, options);"}"
+cc1.puts "#{"chart.draw(dataTable, options);"}"
 cc1.puts "}"
 cc1.puts "</script>"
 cc1.puts "</head>"
 cc1.puts "<body>"
-cc1.puts "#{"<div id="}#{'"'}#{"chart_div"}#{'"'}#{" style="}#{'"'}#{"width: 1300px; height: 500px;"}#{'"'}#{"></div>"}"
+cc1.puts "#{"<div id="}#{'"'}#{"calendar_basic"}#{'"'}#{" style="}#{'"'}#{"width: 1000px; height: 350px;"}#{'"'}#{"></div>"}"
 cc1.puts "</body>"
 cc1.puts "</html>"
 end
