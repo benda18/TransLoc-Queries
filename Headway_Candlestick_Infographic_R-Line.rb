@@ -14,7 +14,7 @@ varMi = 11 		#month increment start (0 = jan, 1 = feb, etc)
 #---day-----------------/
 varDi = 3		#day increment start
 #---sample-size---------/
-vSS = 3		#percent sample rate 1/x
+vSS = 500		#percent sample rate 1/x
 #/INPUTS
 
 #vars/defs
@@ -34,7 +34,7 @@ cacheC = "cacheC.txt"
 if File.exists?(cacheC)	
 File.delete(cacheC)
 end
-calFull = "Headway_Cal_Infographic_R-Line.html"		#chart output file
+calFull = "FleetSpeed_Candlestick_Infographic_CAT.html"		#chart output file
 arrCal = [0]
 varI = 1
 varDate=0
@@ -50,14 +50,14 @@ varMin = 0
 
 #HEADERS
 puts "\e[H\e[2J"
-puts "Headway_Cal_Infographic_R-Line.rb"
+puts "FleetSpeed_Candlestick_Infographic_CAT.rb"
 varSt = Time.now 
 varLast = varSt
 puts "Started: #{varSt}" 
 puts ""
 #Count total lines in all .txt files
 varLNC = 0		#count of line numbers in all .txt files
-Dir.glob('CATAvgStopWait*.txt') do |cl1|
+Dir.glob('VehicleSpeed_bus*.txt') do |cl1|
 File.foreach(cl1).with_index { |line, line_num|
 varLNC += 1;
 }
@@ -75,16 +75,21 @@ puts ""
 if File.exists?(cacheRand)	
 File.delete(cacheRand)
 end
-Dir.glob('CATAvgStopWait*.txt') do |foo|
+Dir.glob('VehicleSpeed_bus*.txt') do |foo|
 randfile = File.open(cacheRand, "a+")
 list = CSV.foreach(foo) do |row1|
-varRN = row1[3]
+varRN = row1[9]
+varSegID = row1[8]
+if varSegID == nil
+else
 # if varRN == "r-line"
-if varRN == "route_number"
+if varRN == "rt_short_name"
 else
 varRnd = rand(1..vSS)						#INPUT sampling percentage
 if varRnd == 1
-randfile.puts "#{row1[0]},#{row1[1]},#{row1[2]},#{row1[3]},#{row1[4]},#{row1[5]},#{row1[6]},#{row1[7]},#{row1[8]}"
+randfile.puts "#{row1[0]},#{row1[1]},#{row1[2]},#{row1[3]},#{row1[4]},#{row1[5]},#{row1[6]},#{row1[7]},#{row1[8]},#{row1[9]},#{row1[10]}"
+#randfile.puts "#{row1[0]},,,#{row1[3]},,,#{row1[6]},,#{row1[8]},#{row1[9]},"
+end
 end
 end
 end
@@ -109,13 +114,15 @@ list = CSV.foreach(cacheRand) do |row|			#****
 # Headers
 # [0]..gendate
 # [1]..agency
-# [2]..route_id
-# [3]..route_number
-# [4]..route_name
-# [5]..stop_id
-# [6]..MinsToArriv
-# [7]..lon
-# [8]..lat
+# [2]..bus_id
+# [3]..mph
+# [4]..lon
+# [5]..lat
+# [6]..route_id
+# [7]..heading
+# [8]..segment_id
+# [9]..rt_short_name
+# [10].rt_long_name
 
 varDate=0
 varYer = 0
@@ -134,17 +141,51 @@ varDay = varDate.day
 if varYer == varYi
 if varMon == varMi+1
 if varDay == varDi
-if row[6].to_f < 0
+if row[3].to_f <= 0
 else
-arrCal << row[6].to_f
+arrCal << row[3].to_f
 end
 end
 end
 end
 end
+
+=begin
+#TESTING
+counts = Hash.new 0
+arrCal.each do |nums|
+counts[nums] += 1
+end
+puts counts
+sleep(1000)
+#/TESTING
+=end
+
+
 File.open(cacheB, "a+") do |cb1|
+if arrCal.max > 0
 # ['<date>', <min>, <25%>, <75%>, <max>]
-cb1.puts "['#{varYi}-#{varMi+1}-#{varDi}', #{arrCal.min.round(0)}, #{arrCal.percentile(25).round(0)}, #{arrCal.percentile(75).round(0)}, #{arrCal.max.round(0)}, #{arrCal.mean.round(1)}], //#{arrCal.number}" 
+cb1.puts "['#{varYi}-#{varMi+1}-#{varDi}', #{arrCal.min.round(1)}, #{arrCal.percentile(25).round(1)}, #{arrCal.percentile(75).round(1)}, #{arrCal.max.round(1)}, #{arrCal.mean.round(1)}], //#{arrCal.number}" 
+=begin
+varIQR = arrCal.percentile(75) - arrCal.percentile(25)
+varNmin = arrCal.percentile(25) - (1.5 * (arrCal.percentile(75) - arrCal.percentile(25)))
+varNmax = arrCal.percentile(75) + (1.5 * (arrCal.percentile(75) - arrCal.percentile(25)))
+puts "Min: #{arrCal.min.round(1)}"
+puts "Q1: #{arrCal.percentile(25).round(1)}"
+puts "Median: #{arrCal.median.round(1)}"
+puts "Q3: #{arrCal.percentile(75).round(1)}"
+puts "Max: #{arrCal.max.round(1)}"
+puts ""
+puts "IQR: #{varIQR.round(1)}"
+puts ""
+puts "Min: #{varNmin.round(1)}"
+puts "Q1: #{arrCal.percentile(25).round(1)}"
+puts "Median: #{arrCal.median.round(1)}"
+puts "Q3: #{arrCal.percentile(75).round(1)}"
+puts "Max: #{varNmax.round(1)}"
+cb1.puts "['#{varYi}-#{varMi+1}-#{varDi}', #{varNmin.round(1)}, #{arrCal.percentile(25).round(1)}, #{arrCal.percentile(75).round(1)}, #{varNmax.round(1)}, #{arrCal.mean.round(1)}], //#{arrCal.number}" 
+=end
+end
 end
 
 #CACHE_A
@@ -168,10 +209,10 @@ cc1.puts "#{"], true);"}"
 cc1.puts "#{"var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));"}"
 cc1.puts "#{"var options = {"}"
 cc1.puts "#{"legend: 'none',"}"
-cc1.puts "#{"title: 'R-Line Average Daily Observed Headway (mins) - Quartiles',"}"
-cc1.puts "#{"vAxis: {title: "}#{'"'}#{"minutes"}#{'"'}#{"},"}"
+cc1.puts "#{"title: 'CAT Average Observed Daily Fleet Speed (mins) - Quartiles',"}"
+cc1.puts "#{"vAxis: {title: "}#{'"'}#{"Speed (MPH)"}#{'"'}#{"},"}"
 cc1.puts "#{"seriesType: "}#{'"'}#{"candlesticks"}#{'"'}#{","}"
-cc1.puts "#{"series: {1: {type: "}#{'"'}#{"line"}#{'"'}#{"}}"}"
+cc1.puts "#{"series: {1: {type: "}#{'"'}#{"area"}#{'"'}#{"}}"}"
 cc1.puts "#{"};"}"
 cc1.puts "#{"chart.draw(data, options);"}"
 cc1.puts "}"
