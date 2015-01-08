@@ -12,9 +12,9 @@ varYi = 2014 	#year increment start
 #---month---------------/
 varMi = 11 		#month increment start (0 = jan, 1 = feb, etc)
 #---day-----------------/
-varDi = 2		#day increment start
+varDi = 3		#day increment start
 #---sample-size---------/
-vSS = 50		#percent sample rate 1/x
+vSS = 3		#percent sample rate 1/x
 #/INPUTS
 
 #vars/defs
@@ -79,9 +79,9 @@ Dir.glob('CATAvgStopWait*.txt') do |foo|
 randfile = File.open(cacheRand, "a+")
 list = CSV.foreach(foo) do |row1|
 varRN = row1[3]
-if varRN == "r-line"
-# if varRN == "route_number"
-# else
+# if varRN == "r-line"
+if varRN == "route_number"
+else
 varRnd = rand(1..vSS)						#INPUT sampling percentage
 if varRnd == 1
 randfile.puts "#{row1[0]},#{row1[1]},#{row1[2]},#{row1[3]},#{row1[4]},#{row1[5]},#{row1[6]},#{row1[7]},#{row1[8]}"
@@ -143,10 +143,8 @@ end
 end
 end
 File.open(cacheB, "a+") do |cb1|
-if arrCal.mean > 0
 # ['<date>', <min>, <25%>, <75%>, <max>]
-cb1.puts "['#{varYi}-#{varMi+1}-#{varDi}', #{arrCal.min}, #{arrCal.percentile(25)}, #{arrCal.percentile(75)}, #{arrCal.max}], //#{arrCal.number}" 
-end
+cb1.puts "['#{varYi}-#{varMi+1}-#{varDi}', #{arrCal.min.round(0)}, #{arrCal.percentile(25).round(0)}, #{arrCal.percentile(75).round(0)}, #{arrCal.max.round(0)}, #{arrCal.mean.round(1)}], //#{arrCal.number}" 
 end
 
 #CACHE_A
@@ -167,17 +165,20 @@ end
 #CACHE_C
 File.open(cacheC, "a+") do |cc1|
 cc1.puts "#{"], true);"}"
-cc1.puts "#{"var chart = new google.visualization.CandlestickChart(document.getElementById('chart_div'));"}"
+cc1.puts "#{"var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));"}"
 cc1.puts "#{"var options = {"}"
 cc1.puts "#{"legend: 'none',"}"
-cc1.puts "#{"title: 'R-Line Average Daily Observed Headway (mins) - Quartiles'"}"
+cc1.puts "#{"title: 'R-Line Average Daily Observed Headway (mins) - Quartiles',"}"
+cc1.puts "#{"vAxis: {title: "}#{'"'}#{"minutes"}#{'"'}#{"},"}"
+cc1.puts "#{"seriesType: "}#{'"'}#{"candlesticks"}#{'"'}#{","}"
+cc1.puts "#{"series: {1: {type: "}#{'"'}#{"line"}#{'"'}#{"}}"}"
 cc1.puts "#{"};"}"
 cc1.puts "#{"chart.draw(data, options);"}"
 cc1.puts "}"
 cc1.puts "</script>"
 cc1.puts "</head>"
 cc1.puts "<body>"
-cc1.puts "#{"<div id="}#{'"'}#{"chart_div"}#{'"'}#{" style="}#{'"'}#{"width: 900px; height: 500px;"}#{'"'}#{"></div>"}"
+cc1.puts "#{"<div id="}#{'"'}#{"chart_div"}#{'"'}#{" style="}#{'"'}#{"width: 1300px; height: 500px;"}#{'"'}#{"></div>"}"
 cc1.puts "</body>"
 cc1.puts "</html>"
 end
