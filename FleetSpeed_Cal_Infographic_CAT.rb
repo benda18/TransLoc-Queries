@@ -113,7 +113,6 @@ end
 end
 end
 end
-end
 randfile.close
 end
 #/Create temp sample cache .txt file
