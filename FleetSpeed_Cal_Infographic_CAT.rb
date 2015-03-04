@@ -30,7 +30,7 @@ varMi = 11 		#month increment start (0 = jan, 1 = feb, etc)
 #---day-----------------/
 varDi = 11		#day increment start
 #---sample-size---------/
-vSS = 50				#percent sample rate 1/x
+vSS = 1000				#percent sample rate 1/x
 #/INPUTS
 
 #vars/defs
@@ -96,22 +96,11 @@ puts "**************"
 puts ""
 #/HEADERS
 
-#Create temp sample cache .txt file
-varLNC2 = 0										#Variable will tell how many lines in a record
+#Create temp sample cache .txt file								#Variable will tell how many lines in a record
 Dir.glob('VehicleSpeed_bus*.txt') do |foo|		#For each file named 'Vehicle...txt" read as foo
 randfile = File.open(cacheRand, "a+")			#Open the cache file
-varLNC2 = 0										#reset line counter variable to 0
-#Count how many records in foo
-File.foreach(foo).with_index { |line, line_num|	#For each record in foo
-varLNC2 += 1;									#Count each line 												
-} 												
-
-
-											
+										
 list = CSV.foreach(foo) do |row1|				#For each record in foo
-
-if varLNC2 > 12000							#if the file is a complete day's worth of data
-
 
 varRN = row1[9]								#read an attribute of the record
 if varRN == "rt_short_name"					#if the line of the file is the header
