@@ -1,4 +1,20 @@
-# A script that does statistical analysis on an array
+# A ruby script that post-processes real-time vehicle speed data
+# to create a calendar chart showing average bus speed for each 
+# calendar date during a period of time.  
+
+# Place this script in the same directory as your vehicle speed 
+# data named VehicleSpeed_bus*.txt.  
+
+# Under INPUTS below enter the start date that you want to begin the
+# query from (will run until the last day of the last year you have
+# data for).  Also, for vSS enter your desired sample rate as an 
+# integer(i) 1/i.  The script has a lot of data to process so sampling
+# a fraction (sometimes as little as 1%) results in a decent output
+# completed in a fraction of the time. 
+
+# The output FleetSpeed_Cal_Infographic_CAT.html will be created in 
+# the same directory this script is run from.  
+
 
 require 'descriptive_statistics'	
 # descriptive_statistics documentation here: https://rubygems.org/gems/descriptive_statistics
@@ -34,8 +50,9 @@ cacheC = "cacheC.txt"
 if File.exists?(cacheC)	
 File.delete(cacheC)
 end
-calFull = "R-LineSpeedCal.html"		#chart output file
+calFull = "FleetSpeed_Cal_Infographic_CAT.html"		#chart output file
 arrCal = [0]
+arrCount = [0]						#counting how many lines in each file to filter out incomplete days
 varI = 1
 varDate=0
 varYer = 0
@@ -80,15 +97,31 @@ puts ""
 #/HEADERS
 
 #Create temp sample cache .txt file
-Dir.glob('VehicleSpeed_bus*.txt') do |foo|
-randfile = File.open(cacheRand, "a+")
-list = CSV.foreach(foo) do |row1|
-varRN = row1[9]
-if varRN == "rt_short_name"
-else
-varRnd = rand(1..vSS)						#INPUT sampling percentage
-if varRnd == 1
+varLNC2 = 0										#Variable will tell how many lines in a record
+Dir.glob('VehicleSpeed_bus*.txt') do |foo|		#For each file named 'Vehicle...txt" read as foo
+randfile = File.open(cacheRand, "a+")			#Open the cache file
+varLNC2 = 0										#reset line counter variable to 0
+#Count how many records in foo
+File.foreach(foo).with_index { |line, line_num|	#For each record in foo
+varLNC2 += 1;									#Count each line 												
+} 												
+
+
+											
+list = CSV.foreach(foo) do |row1|				#For each record in foo
+
+if varLNC2 > 12000							#if the file is a complete day's worth of data
+
+
+varRN = row1[9]								#read an attribute of the record
+if varRN == "rt_short_name"					#if the line of the file is the header
+else										#skip the line
+if row1[1] = "CAT"
+varRnd = rand(1..vSS)						#Create a sample ratio value
+if varRnd == 1								#Sample that percentage of records
 randfile.puts "#{row1[0]},#{row1[1]},#{row1[2]},#{row1[3]},#{row1[4]},#{row1[5]},#{row1[6]},#{row1[7]},#{row1[8]},#{row1[9]},#{row1[10]}"
+end
+end
 end
 end
 end
@@ -108,7 +141,7 @@ begin 	#begin YEAR		Yi
 begin 	#begin MONTH 	Mi
 begin	#begin DAY		Di
 puts "YMD - #{varYi} #{varMi} #{varDi} "
-list = CSV.foreach(cacheRand) do |row|			#****
+list = CSV.foreach(cacheRand) do |row|			# for each record in the cacheRand
 
 # Headers
 # [0]..gendate
@@ -123,7 +156,7 @@ list = CSV.foreach(cacheRand) do |row|			#****
 # [9]..rt_short_name
 # [10].rt_long_name
 
-	varDate=0
+	varDate = 0
 	varYer = 0
 	varMon = 0
 	varDay = 0
@@ -147,14 +180,16 @@ list = CSV.foreach(cacheRand) do |row|			#****
 if varYer == varYi
 if varMon == varMi+1
 if varDay == varDi
-arrCal << row[3].to_f
+if row[1] == "CAT"							#only write CAT buses - some old log files include TTA et. al. 
+arrCal << row[3].to_f						#add bus MPH to array
+end
 end
 end
 end
 end
 File.open(cacheB, "a+") do |cb1|
 if arrCal.mean > 0
-cb1.puts "[ new Date(#{varYi}, #{varMi}, #{varDi}), #{arrCal.mean.round(1)} ],"
+cb1.puts "[ new Date(#{varYi}, #{varMi}, #{varDi}), #{arrCal.mean.round(1)} ],  //Count: #{arrCal.count}"	#TODO - //count of records that day
 end
 end
 
