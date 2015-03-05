@@ -1,4 +1,5 @@
 # A script that does statistical analysis on an array
+#To-Do - integrate with other scripts - this is good. 
 
 require 'descriptive_statistics'	
 # descriptive_statistics documentation here: https://rubygems.org/gems/descriptive_statistics
