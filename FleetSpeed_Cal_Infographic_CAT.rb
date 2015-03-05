@@ -24,13 +24,14 @@ require 'date'
 
 #INPUTS
 #---year----------------/
-varYi = 2014 	#year increment start
+varYi = 2015 	#year increment start
 #---month---------------/
-varMi = 11 		#month increment start (0 = jan, 1 = feb, etc)
+varMi = 1 		#month increment start (0 = jan, 1 = feb, etc)
+varMia = varMi + 1
 #---day-----------------/
-varDi = 11		#day increment start
+varDi = 1		#day increment start
 #---sample-size---------/
-vSS = 1000				#percent sample rate 1/x
+vSS = 1000			#percent sample rate 1/x
 #/INPUTS
 
 #vars/defs
@@ -64,6 +65,14 @@ varMin = 0
 #varAgc = 0
 #varMins = 0
 #/vars/defs
+
+# p043raise.rb  
+def raise_exception  
+  puts 'I am before the raise.'  
+  raise 'An error has occuredzzzz'  
+  puts 'I am after the raise'  
+end  
+#raise_exception 
 
 #HEADERS
 puts "\e[H\e[2J"
@@ -101,16 +110,28 @@ Dir.glob('VehicleSpeed_bus*.txt') do |foo|		#For each file named 'Vehicle...txt"
 randfile = File.open(cacheRand, "a+")			#Open the cache file
 										
 list = CSV.foreach(foo) do |row1|				#For each record in foo
+varRN = row1[0]									#read an attribute of the record
+if varRN == "gendate"							#if the line of the file is the header
+else											#skip the line
+varRNy = row1[0][0...4].to_i					#Manual parse to get the year of the record 
+varRNm = row1[0][5...7].to_i					#Manual parse to get the month of the record
+varRNd = row1[0][8...10].to_i					#Manual parse to get the day of the record
 
-varRN = row1[9]								#read an attribute of the record
-if varRN == "rt_short_name"					#if the line of the file is the header
-else										#skip the line
-if row1[1] = "CAT"
-varRnd = rand(1..vSS)						#Create a sample ratio value
-if varRnd == 1								#Sample that percentage of records
+if varRNy > 0									#Error handling - if record is null just skip
+varRNb = Date.new(varRNy,varRNm,varRNd).yday	#Get the day of year for the record
+varRNb = varRNy.to_f + (varRNb.to_f / 365)		#Convert it to a floating point integer
+varRNc = Date.new(varYi,varMia,varDi).yday		#Get the day of year for the query start date
+varRNc = varYi.to_f + (varRNc.to_f / 365)		#Convert it to a floating point integer
+
+if varRNb >= varRNc								#If the record date falls after the query start date - continue
+if row1[1] = "CAT"								#If the agency is CAT - continue
+varRnd = rand(1..vSS)							#Create a sample ratio value
+if varRnd == 1									#Sample that percentage of records
 randfile.puts "#{row1[0]},#{row1[1]},#{row1[2]},#{row1[3]},#{row1[4]},#{row1[5]},#{row1[6]},#{row1[7]},#{row1[8]},#{row1[9]},#{row1[10]}"
 end
 end
+end												
+end												
 end
 end
 randfile.close
@@ -128,7 +149,7 @@ varLast = varNow
 begin 	#begin YEAR		Yi
 begin 	#begin MONTH 	Mi
 begin	#begin DAY		Di
-puts "YMD - #{varYi} #{varMi} #{varDi} "
+#puts "YMD - #{varYi} #{varMi} #{varDi} "
 list = CSV.foreach(cacheRand) do |row|			# for each record in the cacheRand
 
 # Headers
@@ -163,6 +184,12 @@ list = CSV.foreach(cacheRand) do |row|			# for each record in the cacheRand
 	varYer = varDate.year
 	varMon = varDate.month
 	varDay = varDate.day
+=begin #error checking.  
+	puts "#{varDate.hour}:#{varDate.minute}" #time
+	puts ""
+	sleep(10)
+=end
+	
 #	varWday = varDate.wday
 
 if varYer == varYi
@@ -203,6 +230,7 @@ cc1.puts "#{"var chart = new google.visualization.Calendar(document.getElementBy
 cc1.puts "#{"var options = {"}"
 cc1.puts "#{"title: "}#{'"'}#{"CAT Avg. Fleet Speed (mph)"}#{'"'}#{","}"
 cc1.puts "#{"height: 350,"}"
+cc1.puts "#{"colorAxis: {colors: ['pink', 'navy']},"}"
 cc1.puts "#{"};"}"
 cc1.puts "#{"chart.draw(dataTable, options);"}"
 cc1.puts "}"
@@ -241,12 +269,12 @@ File.delete(cacheC)
 
 arrCal = nil
 arrCal = [0]
-puts "array cleared"
+#puts "array cleared"
 
 #STATUS UPDATE
 varNow = Time.now
 varNow1 = varNow - varLast
-puts "day iteration complete - duration:  #{varNow1.round(0)} seconds lapsed"
+puts "#{varYi} #{varMi} #{varDi} iteration complete - duration:  #{varNow1.round(0)} seconds lapsed"
 varLast = varNow
 #STATUS UPDATE
 
