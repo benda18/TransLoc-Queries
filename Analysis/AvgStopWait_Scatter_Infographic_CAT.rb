@@ -1,9 +1,8 @@
 # A ruby script that post-processes [logged] real-time next bus arrival 
 # data to create a scatter chart showing average wait in minutes for a 
-# particular bus stop as a scatter chart during a queriedperiod of time.  
-# X = time of day; Y = minutes to next bus arrival. You are able to 
-# query specific stops and routes in the #INPUTS section of the code
-# below
+# particular bus stop as a scatter chart for a queried date.  X = time 
+# of day; Y = minutes to next bus arrival. You are able to query 
+# specific stops and routes in the #INPUTS section of the code below
 
 # Place this script in the same directory as your next bus arrival 
 # data named CATAvgStopWait*.txt.  
@@ -26,21 +25,21 @@ require 'date'
 
 #INPUTS
 #---begin-hour----------/
-vHrMin = 7			# 7 = 0700 = 7am start	#TB
+#vHrMin = 7			# 7 = 0700 = 7am start	#TB700
 #---end-hour------------/
-vHrMax = 17			# 9 = 1700 = 4:49pm end #TB
+#vHrMax = 17			# 9 = 1700 = 4:49pm end #TB700
 #---stop----------------/
-#varStp1 = "4100198"	#4102202 = Peact St. at Seaboard Station, 4100198 == moore square station
+varStp1 = "4102202"	#4102202 = Peace St. at Seaboard Station, 4100198 == moore square station
 #---route---------------/
 varRt1 = "r-line"		
 #---year----------------/
 varYi1 = 2015 		#year increment start
 #---month---------------/
-varMi1 = 0 		#month increment start (0 = jan, 1 = feb, etc)
+varMi1 = 2 		#month increment start (0 = jan, 1 = feb, etc)
 #---day-----------------/
-varDi1 = 1			#day increment start
+varDi1 = 3			#day increment start
 #---sample-size---------/
-vSS1 = 100			#percent sample rate 1/x
+vSS1 = 1			#percent sample rate 1/x
 #/INPUTS
 
 #vars/defs
@@ -60,22 +59,18 @@ cacheC1 = "cacheCwt1.txt"
 if File.exists?(cacheC1)	
 File.delete(cacheC1)
 end
-calFull = "AvgStopWait_Cal_Infographic_CAT.html"		#chart output file
-arrCal = [0]
+calFull = "AvgStopWait_Scatter_Infographic_CAT.html"		#chart output file
+#arrCal = [0]		#TB700
 arrCount = [0]						#counting how many lines in each file to filter out incomplete days
 varI = 1
-varDate=0
+varDate = 0
 varYer = 0
 varMon = 0
 varDay = 0
 varHr = 0
 varMin = 0
+#varRt1 = varRt1.to_s	#TB700
 varMia = varMi1 + 1		#logic that converts month integer back to true calendar (i.e. 12 = dec)
-#vHrMin = vHrMin + 5		#sets the minimum and maximum start times query and ajdusts to GMT #TB
-#vHrMax = vHrMax + 5		#sets the minimum and maximum start times query and ajdusts to GMT #TB
-#varRtnam = 0
-#varAgc = 0
-#varMins = 0
 #/vars/defs
 
 #HEADERS
@@ -93,14 +88,6 @@ varLNC += 1;
 }
 end
 #/Count total lines in all .txt files
-=begin
-#OTHER SETUP
-arrTemp = "cal_temarray.txt"
-if File.exists?(arrTemp)	
-File.delete(arrTemp)
-end
-#/OTHER SETUP
-=end
 puts "**************"
 puts "Start Date: #{varYi1}-#{varMi1}-#{varDi1}"
 puts "Population Size: #{varLNC}"
@@ -124,11 +111,6 @@ varFooYr = foo[15...19].to_i	#TB1
 varFooMo = foo[19...21].to_i	#TB1
 varFooDa = foo[21...23].to_i	#TB1
 
-#puts "filename: #{foo}" 		#TB1
-#puts varFooYr					#TB1
-#puts varFooMo					#TB1
-#puts varFooDa					#TB1
-
 
 varFooC = Date.new(varFooYr,varFooMo,varFooDa).yday	#filename day of year	#TB1
 varFooC = varFooYr.to_f + (varFooC.to_f / 365)		#TB1
@@ -136,13 +118,6 @@ varFooD = Date.new(varYi1,varMia,varDi1).yday		#day of year of query	#TB1
 varFooD = varYi1.to_f + (varFooD.to_f / 365)		#TB1
 
 if varFooC >= varFooD				#TB1
-#puts "true - varFooC >= varFooD"
-#puts "varFooC = #{varFooC}"		#TB1
-#puts "varFooD = #{varFooD}"		#TB1
-#sleep(100000)					#TB1										
-#end
-
-
 
 list = CSV.foreach(foo) do |row1|				#For each record in foo
 varRN = row1[0]									#read an attribute of the record
@@ -152,34 +127,25 @@ varRNy = row1[0][0...4].to_i					#Manual parse to get the year of the record
 varRNm = row1[0][5...7].to_i					#Manual parse to get the month of the record
 varRNd = row1[0][8...10].to_i					#Manual parse to get the day of the record
 varRNh = row1[0][11...13].to_i					#Manual parse to get the hour of the record
-#puts row1[0][11...13]					#TB
-#sleep(100)								#TB
 
 if varRNy > 0									#Error handling - if record is null just skip
 varRNb = Date.new(varRNy,varRNm,varRNd).yday	#Get the day of year for the record
 varRNb = varRNy.to_f + (varRNb.to_f / 365)		#Convert it to a floating point integer
-varRNc = Date.new(varYi1,varMia,varDi1).yday		#Get the day of year for the query start date
+varRNc = Date.new(varYi1,varMia,varDi1).yday	#Get the day of year for the query start date
 varRNc = varYi1.to_f + (varRNc.to_f / 365)		#Convert it to a floating point integer
 
-if varRNb >= varRNc								#If the record date falls after the query start date - continue
-#if varRNh >= vHrMin						#TB
-#if varRNh < vHrMax						#TB
+if varRNb == varRNc						#TB700	#If the record date falls after the query start date - continue
+#if varRNb >= varRNc					#TB700
 if row1[1] = 20									#If the agency is CAT - continue
-if row1[3] == varRt1					#TB
-#if row1[5] == varStp1					#TB
-#puts "true"							#TB
-#sleep(100)								#TB
-#if row1[0].include? "T08" 				#TB
+if row1[3] == varRt1							#If route number = queried route - continue
+if row1[5] == varStp1
 varRnd = rand(1..vSS1)							#Create a sample ratio value
 if varRnd == 1									#Sample that percentage of records
 randfile.puts "#{row1[0]},#{row1[1]},#{row1[2]},#{row1[3]},#{row1[4]},#{row1[5]},#{row1[6]},#{row1[7]},#{row1[8]}"
 end
-#end									#TB
-#end									#TB
+end
 end										#TB
 end
-#end										#TB
-#end										#TB
 end												
 end												
 end
@@ -198,9 +164,9 @@ varLast = varNow
 #/STATUS UPDATE
 
 #DATA ANALYSIS & CHART CREATION
-begin 	#begin YEAR		Yi
-begin 	#begin MONTH 	Mi
-begin	#begin DAY		Di
+#begin 	#begin YEAR		Yi	#TB700
+#begin 	#begin MONTH 	Mi	#TB700
+#begin	#begin DAY		Di	#TB700
 #puts "YMD - #{varYi1} #{varMi1} #{varDi1} "
 list = CSV.foreach(cacheRand1) do |row|			# for each record in the cacheRand1
 
@@ -215,6 +181,9 @@ list = CSV.foreach(cacheRand1) do |row|			# for each record in the cacheRand1
 # [7]..lon
 # [8]..lat
 
+	varX = 0	#scatter chart x-axis time value
+	varXh = 0
+	varXm = 0
 	varDate = 0
 	varYer = 0
 	varMon = 0
@@ -233,77 +202,73 @@ list = CSV.foreach(cacheRand1) do |row|			# for each record in the cacheRand1
 	varDate = DateTime.parse(varDate)
 	varDate = varDate.to_time.iso8601
 	varDate = DateTime.parse(varDate)		#time is parsed and in local (gmt-5) format
-	varYer = varDate.year
-	varMon = varDate.month
-	varDay = varDate.day
+	varYer = varDate.year	#TB700
+	varMon = varDate.month	#TB700
+	varDay = varDate.day	#TB700
 	varHr = varDate.hour
 	varMin = varDate.minute
-=begin #error checking.  
-	puts "#{varDate.hour}:#{varDate.minute}" #time
-	puts ""
-	sleep(10)
-=end
+#	varXh = varHr.to_f
+#	varXm = varMin.to_f
+#	varX = varXh + (varXm /60)
 	
-#	varWday = varDate.wday
 
-if varYer == varYi1
-if varMon == varMi1+1
-if varDay == varDi1
-#if row[1] == 20							#only write CAT buses - some old log files include TTA et. al. 
-#if row[5] == varStp1						#TB - only write for queried stop
-#if row[3] == varRt1						#TB - only write for queried route
-#puts "true"			#TB
-#sleep(100)				#TB
-if varHr >= vHrMin		#TB
-if varHr < vHrMax		#TB
-arrCal << row[6].to_f						#add MinsToArriv to array
-end						#TB
-end						#TB
-#end					#TB
-#end					#TB
-#end						
-end
-end
-end
-end
+#if varYer == varYi1	#TB700
+#if varMon == varMi1+1	#TB700
+#if varDay == varDi1	#TB700
+#if varHr >= vHrMin		#TB700
+#if varHr < vHrMax		#TB700
+#arrCal << row[6].to_f		#TB700				#add MinsToArriv to array
+#end						#TB700
+#end						#TB700
+#end					#TB700
+#end					#TB700
+#end					#TB700
 File.open(cacheB1, "a+") do |cb1|
-if arrCal.mean > 0
-cb1.puts "[ new Date(#{varYi1}, #{varMi1}, #{varDi1}), #{arrCal.mean.round(1)} ],  //Count: #{arrCal.count}"	#TODO - //count of records that day
+#cb1.puts "[#{varX},#{row[6]}],// stop_id: #{row[5]}"	#TB700
+cb1.puts "[new Date(#{varYer}, #{varMon}, #{varDay}, #{varHr}, #{varMin}, 0), #{row[6]}],// stop_id: #{row[5]}"	#TB700
 end
 end
+
 
 #CACHE_A
 File.open(cacheA1, "a+") do |ca1|
-ca1.puts "<html>"
-ca1.puts "<head>"
-ca1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{" src="}#{'"'}#{"https://www.google.com/jsapi"}#{'"'}#{"></script>"}"
-ca1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{">"}"
-ca1.puts "#{"google.load("}#{'"'}#{"visualization"}#{'"'}#{", "}#{'"'}#{"1.1"}#{'"'}#{", {packages:["}#{'"'}#{"calendar"}#{'"'}#{"]"}#{'}'}#{");"}"
-ca1.puts "#{"google.setOnLoadCallback(drawChart);"}"
-ca1.puts "#{"function drawChart() {"}"	
-ca1.puts "#{"var dataTable = new google.visualization.DataTable();"}"
-ca1.puts "#{"dataTable.addColumn({ type: 'date', id: 'Date'});"}"
-ca1.puts "#{"dataTable.addColumn({ type: 'number', id: 'Mins to next bus' });"}"
-ca1.puts "#{"dataTable.addRows(["}"
+	ca1.puts "<html>"
+	ca1.puts "<head>"
+	#ca1.puts "#{"<META HTTP-EQUIV="}#{'"'}#{"refresh"}#{'"'}#{" CONTENT="}#{'"'}#{30}#{'"'}#{">"}"#refresh code
+	ca1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{" src="}#{'"'}#{"https://www.google.com/jsapi"}#{'"'}#{"></script>"}"
+	ca1.puts "#{"<script type="}#{'"'}#{"text/javascript"}#{'"'}#{">"}"
+	ca1.puts "#{"google.load("}#{'"'}#{"visualization"}#{'"'}#{", "}#{'"'}#{"1"}#{'"'}#{", {packages:["}#{'"'}#{"corechart"}#{'"'}#{"]"}#{'}'}#{");"}"
+	ca1.puts "google.setOnLoadCallback(drawChart3);"
+	ca1.puts "function drawChart3() {"
+	ca1.puts "var data3 = google.visualization.arrayToDataTable(["
+	ca1.puts "['Clock Face - Minute', 'Next Bus Wait - Minutes'],"
 end
 
 #CACHE_C
 File.open(cacheC1, "a+") do |cc1|
-cc1.puts "#{"]);"}"
-cc1.puts "#{"var chart = new google.visualization.Calendar(document.getElementById('calendar_basic'));"}"
-cc1.puts "#{"var options = {"}"
-cc1.puts "#{"title: "}#{'"'}#{"Minutes to Next Bus at All Stops on Route #"}#{varRt1}#{'"'}#{","}"
-cc1.puts "#{"height: 350,"}"
-cc1.puts "#{"colorAxis: {colors: ['pink', 'navy']},"}"
-cc1.puts "#{"};"}"
-cc1.puts "#{"chart.draw(dataTable, options);"}"
-cc1.puts "}"
-cc1.puts "</script>"
-cc1.puts "</head>"
-cc1.puts "<body>"
-cc1.puts "#{"<div id="}#{'"'}#{"calendar_basic"}#{'"'}#{" style="}#{'"'}#{"width: 1000px; height: 350px;"}#{'"'}#{"></div>"}"
-cc1.puts "</body>"
-cc1.puts "</html>"
+	cc1.puts "]);"
+	cc1.puts "var options3 = {"
+	cc1.puts "title: 'Moore Square Station Next Bus Wait Time vs Time of Hour',"
+	#cc1.puts "hAxis: {title: 'Clock Face - Minute', minValue: 0, maxValue: 59},"		#TB700
+	#cc1.puts "hAxis: {title: 'Clock Face - Minute'},"									#TB700
+	#cc1.puts "vAxis: {title: 'Next Bus Wait - Minutes', minValue: 0, maxValue: 59},"	#TB700
+	#cc1.puts "vAxis: {title: 'Next Bus Wait - Minutes'},"								#TB700
+	cc1.puts "curveType: 'none',"													#TB700		
+	cc1.puts "explorer: { axis: 'horizontal' },"															#TB700
+	cc1.puts "legend: 'none',"
+	cc1.puts "pointSize: 7,"															#TB700
+	cc1.puts "};"
+	#cc1.puts "var chart3 = new google.visualization.ScatterChart(document.getElementById('chart_div3'));"	#TB700
+	cc1.puts "var chart3 = new google.visualization.LineChart(document.getElementById('chart_div3'));"		#TB700
+	cc1.puts "chart3.draw(data3, options3);"
+	cc1.puts "}"
+	cc1.puts "</script>"
+	cc1.puts "</head>"
+	cc1.puts "<body>"
+	cc1.puts "#{"<div id="}#{'"'}#{"chart_div3"}#{'"'}#{" style="}#{'"'}#{"width: 1200px; height: 600px;"}#{'"'}#{"></div>"}"
+	cc1.puts "</body>"
+	cc1.puts "</html>"
+	#cc1.puts "Average Wait: #{varRtAvgWait.round(1)} mins"
 end
 
 #cachework
@@ -331,9 +296,8 @@ end
 File.delete(cacheA1)
 File.delete(cacheC1)
 
-arrCal = nil
-arrCal = [0]
-#puts "array cleared"
+#arrCal = nil	#TB700
+#arrCal = [0]	#TB700
 
 #STATUS UPDATE
 varNow = Time.now
@@ -342,6 +306,7 @@ puts "#{varYi1} #{varMi1} #{varDi1} iteration complete - duration:  #{varNow1.ro
 varLast = varNow
 #STATUS UPDATE
 
+=begin
 varDi1 +=1;
 end until varDi1 > 31	#/begin DAY
 varDi1 = 1
@@ -351,6 +316,7 @@ varDi1 = 1
 varMi1 = 0
 varYi1 +=1;
 end until varYi1 > 2015	#/begin YEAR
+=end 
 #/DATA ANALYSIS & CHART CREATION
 
 
