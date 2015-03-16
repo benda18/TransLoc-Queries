@@ -35,11 +35,11 @@ varRt1 = "r-line"
 #---year----------------/
 varYi1 = 2015 		#year increment start
 #---month---------------/
-varMi1 = 2 		#month increment start (0 = jan, 1 = feb, etc)
+varMi1 = 0 		#month increment start (0 = jan, 1 = feb, etc)
 #---day-----------------/
 varDi1 = 3			#day increment start
 #---sample-size---------/
-vSS1 = 1			#percent sample rate 1/x
+vSS1 = 5			#percent sample rate 1/x
 #/INPUTS
 
 #vars/defs
@@ -225,7 +225,7 @@ list = CSV.foreach(cacheRand1) do |row|			# for each record in the cacheRand1
 #end					#TB700
 File.open(cacheB1, "a+") do |cb1|
 #cb1.puts "[#{varX},#{row[6]}],// stop_id: #{row[5]}"	#TB700
-cb1.puts "[new Date(#{varYer}, #{varMon}, #{varDay}, #{varHr}, #{varMin}, 0), #{row[6]}],// stop_id: #{row[5]}"	#TB700
+cb1.puts "[new Date(#{varYer}, #{varMon - 1}, #{varDay}, #{varHr}, #{varMin}, 0), #{row[6]}],// stop_id: #{row[5]}"	#TB700
 end
 end
 
