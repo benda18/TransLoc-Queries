@@ -54,7 +54,7 @@ responseR = 0
 sleep(10)
 responseR = Unirest.get "https://transloc-api-1-2.p.mashape.com/routes.jsonp?agencies=20&callback=call",
   headers:{
-    "X-Mashape-Key" => "<key>"
+    "X-Mashape-Key" => "JvUSwjy4vVmshjFC0u1soQ4cUen8p1zDEzfjsndmsnZomPfbX1"
   }
 payload2R = responseR.body					#sets the call response body as a variable
 payloadR = payload2R[/{.+}/]					#removes the callback prefix and suffix from the response body
@@ -313,7 +313,7 @@ varSegw = 0
 #response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=12%2C16%2C20&callback=call&geo_area=35.777531%2C-78.637277%7C500.0", #this is the geoboundary example
 response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=20&callback=call",
   headers:{
-    "X-Mashape-Key" => "<key>"
+    "X-Mashape-Key" => "JvUSwjy4vVmshjFC0u1soQ4cUen8p1zDEzfjsndmsnZomPfbX1"
   }
 #<parse the call>
 payload2 = response.body					#sets the call response body as a variable
