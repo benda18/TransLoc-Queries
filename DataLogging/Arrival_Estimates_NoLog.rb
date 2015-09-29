@@ -43,7 +43,7 @@ begin
 #response = Unirest.get "https://transloc-api-1-2.p.mashape.com/arrival-estimates.jsonp?agencies=20&callback=call&routes=4000032&stops=4105778",
 response = Unirest.get "https://transloc-api-1-2.p.mashape.com/arrival-estimates.jsonp?agencies=20&callback=call",
   headers:{
-    "X-Mashape-Key" => "<key>"
+    "X-Mashape-Key" => "JvUSwjy4vVmshjFC0u1soQ4cUen8p1zDEzfjsndmsnZomPfbX1"
   }
 payload2 = response.body					#sets the call response body as a variable
 payload = payload2[/{.+}/]					#removes the callback prefix and suffix from the response body
