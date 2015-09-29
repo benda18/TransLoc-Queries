@@ -36,7 +36,7 @@ responseR = 0
 sleep(10)
 responseR = Unirest.get "https://transloc-api-1-2.p.mashape.com/routes.jsonp?agencies=20%2C12%2C16&callback=call",
   headers:{
-    "X-Mashape-Key" => "<key>"
+    "X-Mashape-Key" => "JvUSwjy4vVmshjFC0u1soQ4cUen8p1zDEzfjsndmsnZomPfbX1"
   }
 payload2R = responseR.body					#sets the call response body as a variable
 payloadR = payload2R[/{.+}/]					#removes the callback prefix and suffix from the response body
@@ -171,7 +171,7 @@ varNameB = "Raleigh Union Station"
 response = 0
 response = Unirest.get "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=20%2C12%2C16&callback=GET",
   headers:{
-    "X-Mashape-Key" => "<key>"
+    "X-Mashape-Key" => "JvUSwjy4vVmshjFC0u1soQ4cUen8p1zDEzfjsndmsnZomPfbX1"
   }
 payload2 = response.body
 payload = payload2[/{.+}/]
