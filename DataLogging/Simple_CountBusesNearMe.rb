@@ -35,7 +35,7 @@ varURL = "https://transloc-api-1-2.p.mashape.com/vehicles.jsonp?agencies=20&call
 # These code snippets use an open-source library. http://unirest.io/ruby
 response = Unirest.get varURL,
   headers:{
-    "X-Mashape-Key" => "<key>"
+    "X-Mashape-Key" => "JvUSwjy4vVmshjFC0u1soQ4cUen8p1zDEzfjsndmsnZomPfbX1"
   }
 payload2 = response.body
 payload = payload2[/{.+}/]
