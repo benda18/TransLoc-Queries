@@ -27,7 +27,7 @@ varCsid = 0
 # These code snippets use an open-source library. http://unirest.io/ruby
 responseS = Unirest.get "https://transloc-api-1-2.p.mashape.com/stops.jsonp?agencies=20&callback=call",
   headers:{
-    "X-Mashape-Key" => "<key>"
+    "X-Mashape-Key" => "JvUSwjy4vVmshjFC0u1soQ4cUen8p1zDEzfjsndmsnZomPfbX1"
   }
 payload2s = responseS.body					#sets the call response body as a variable
 payloads = payload2s[/{.+}/]					#removes the callback prefix and suffix from the response body
@@ -114,7 +114,7 @@ begin
 #response = Unirest.get "https://transloc-api-1-2.p.mashape.com/arrival-estimates.jsonp?agencies=20&callback=call&routes=4000032&stops=4105778",
 response = Unirest.get "https://transloc-api-1-2.p.mashape.com/arrival-estimates.jsonp?agencies=20&callback=call&routes=4000032",
   headers:{
-    "X-Mashape-Key" => "<key>"
+    "X-Mashape-Key" => "JvUSwjy4vVmshjFC0u1soQ4cUen8p1zDEzfjsndmsnZomPfbX1"
   }
 
 payload2 = response.body					#sets the call response body as a variable
